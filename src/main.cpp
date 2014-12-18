@@ -6,6 +6,9 @@
 #include <glimac/glm.hpp>
 #include <glimac/Sphere.hpp>
 #include <glimac/FreeFlyCamera.hpp>
+#include "../third-party/api/MAC/include/fmod.h"
+#include "../third-party/api/LINUX/include/fmod.h"
+#include <glimac/Sound.hpp>
 
 using namespace glimac;
 
@@ -53,6 +56,12 @@ struct GeneralProgram {
 };
 
 int main(int argc, char** argv) {
+    // Musique du jeu
+    FMOD_SYSTEM *music;
+    FMOD_System_Create(&music);
+    FMOD_System_Init(music, 2, FMOD_INIT_NORMAL, NULL);
+    int playing = 0;
+
     // Initialize SDL and open a window
     SDLWindowManager windowManager("Test Camera FreeFly", 0);
 
@@ -136,6 +145,13 @@ int main(int argc, char** argv) {
     // Application loop:
     bool done = false;
     while(!done) {
+        // Play the music
+        if(playing == 0)
+        {
+            playMusic(music, NULL, "./bin/assets/sound/SOR_TFM_Atmos_65.mp3");
+            playing = 1;
+        }
+
         // Event loop:
         SDL_Event e;
         while(windowManager.pollEvent(e)) {
