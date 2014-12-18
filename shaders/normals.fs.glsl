@@ -13,4 +13,4 @@ void main() {
 
 	fFragColor = normalize(vFragViewNormale);
 
-};
+}

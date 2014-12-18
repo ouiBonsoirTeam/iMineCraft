@@ -56,6 +56,7 @@ int main(int argc, char** argv) {
     // Initialize SDL and open a window
     SDLWindowManager windowManager(800, 600, "Test Camera FreeFly", 1);
 
+    glewExperimental = GL_TRUE;
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
     if(GLEW_OK != glewInitError) {
