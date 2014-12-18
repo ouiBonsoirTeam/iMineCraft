@@ -11,6 +11,6 @@ out vec3 fFragColor;
 
 void main() {
 
-	fFragColor = normalize(vFragViewNormale);
+	fFragColor = normalize(glm::vec3(1, 1, 1));
 
 }

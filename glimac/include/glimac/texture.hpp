@@ -1,5 +1,10 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+#include <glimac/Image.hpp>
+#include <GL/glew.h>
+
 namespace glimac
 {
 
