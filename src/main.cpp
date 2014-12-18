@@ -1,9 +1,9 @@
+#include <GL/glew.h>
+#include <iostream>
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/Program.hpp>
 #include <glimac/Image.hpp>
 #include <glimac/glm.hpp>
-#include <GL/glew.h>
-#include <iostream>
 #include <glimac/Sphere.hpp>
 #include <glimac/FreeFlyCamera.hpp>
 
