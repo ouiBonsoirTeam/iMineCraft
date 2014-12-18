@@ -54,7 +54,7 @@ struct GeneralProgram {
 
 int main(int argc, char** argv) {
     // Initialize SDL and open a window
-    SDLWindowManager windowManager("Test Camera FreeFly", 1);
+    SDLWindowManager windowManager("Test Camera FreeFly", 0);
 
     glewExperimental = GL_TRUE;
     // Initialize glew for OpenGL3+ support
