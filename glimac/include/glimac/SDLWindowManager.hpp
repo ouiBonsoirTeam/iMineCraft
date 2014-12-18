@@ -12,7 +12,7 @@ class SDLWindowManager {
     SDL_GLContext m_Context;
 
 public:
-    SDLWindowManager(uint32_t width, uint32_t height, const char* title, bool fullscreen = 0);
+    SDLWindowManager(const char* title, bool fullscreen = 0);
 
     ~SDLWindowManager();
 
