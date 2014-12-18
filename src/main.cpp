@@ -125,6 +125,7 @@ int main(int argc, char** argv) {
     //initialisation angle
     float angleX = 0;
     float angleY = 0;
+    float angleYfinal = 0;
 
     const float CAMERA_ROT_FACTOR = 0.05f;
 
@@ -153,18 +154,15 @@ int main(int argc, char** argv) {
             {
                 angleX += e.motion.xrel * CAMERA_ROT_FACTOR;
                 angleY += e.motion.yrel * CAMERA_ROT_FACTOR;
-                angleY = std::min(90.0f, std::max(-90.0f, angleY)); //pour pas passer sa tête entre ses jambes
+                angleYfinal += e.motion.yrel * CAMERA_ROT_FACTOR;
+                angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
             }
         }
         ffCam.rotateLeft(angleX);
-        ffCam.rotateUp(angleY);
+        if (angleYfinal != 90 && angleYfinal !=-90) ffCam.rotateUp(angleY);
         angleY = 0;
         angleX = 0;
-        //SDL_WarpMouse(200, 200);
-
-        //reset the mouse position to the center
-        //glfwSetMousePos(windowMidX, windowMidY);
-
+        
         //touche clavier
         if(windowManager.isKeyPressed(SDLK_z)) 
         {
