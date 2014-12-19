@@ -46,7 +46,7 @@ include_directories(${FMOD_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DI
 if(APPLE)
     set(ALL_LIBRARIES glimac ${CMAKE_SOURCE_DIR}/third-party/api/MAC/lib/libfmodex.dylib /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 else(APPLE)
-    set(ALL_LIBRARIES glimac ${FMOD_LIBRARIES} ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac ${CMAKE_SOURCE_DIR}/third-party/api/LINUX/lib/libfmodex-4.44.33.so ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 endif(APPLE)
 
 # Add the glimac library
