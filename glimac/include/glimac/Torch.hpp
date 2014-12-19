@@ -1,8 +1,9 @@
 #pragma once
 
 #include <iostream>
-#include <glimac/texture.hpp>
+#include <glimac/Texture.hpp>
 #include <glimac/glm.hpp>
+#include <glimac/CustomProgram.hpp>
 
 namespace glimac
 {
@@ -23,6 +24,9 @@ namespace glimac
 			// Getters
 			glm::vec3 getPosition(){ return _position; };
 			glm::vec3 getIntensity(){ return _intensity; };
+
+			// Methods
+			void draw(pointLightProgram & prog, glm::mat4 & matrixV);
 	};
 	
 }

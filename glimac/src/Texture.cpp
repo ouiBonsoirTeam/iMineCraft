@@ -1,4 +1,4 @@
-#include <glimac/texture.hpp>
+#include <glimac/Texture.hpp>
 
 namespace glimac 
 {
@@ -7,7 +7,7 @@ namespace glimac
 	{
 		_name = n;
 
-		_texturePointer = loadImage("/home/thibaud/Documents/Cours/S3/OpenGL/TP/GLImac-Template/assets/textures/" + _name);
+		_texturePointer = loadImage("../iMineCraft/assets/textures/" + _name);
 		if(_texturePointer == NULL)
 		{
 			std::cerr << "Probleme de chargement de texture." << std::endl;

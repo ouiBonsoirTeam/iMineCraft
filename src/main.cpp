@@ -5,8 +5,9 @@
 #include <glimac/Image.hpp>
 #include <glimac/glm.hpp>
 #include <glimac/Sphere.hpp>
+#include <glimac/CustomProgram.hpp>
 #include <glimac/FreeFlyCamera.hpp>
-#include <glimac/torch.hpp>
+#include <glimac/Torch.hpp>
 
 using namespace glimac;
 
@@ -35,48 +36,6 @@ using namespace glimac;
 struct Vertex {
 	glm::vec2 position;
 	glm::vec2 texCoords;
-};
-
-struct GeneralProgram {
-	Program m_Program;
-
-	GLint uMVPMatrix;
-	GLint uMVMatrix;
-	GLint uNormalMatrix;
-
-	GeneralProgram(const FilePath& applicationPath):
-		m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
-							  applicationPath.dirPath() + "shaders/normals.fs.glsl")) {
-		uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
-		uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
-		uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
-	}
-};
-
-struct pointLightProgram {
-	Program m_Program;
-
-	GLint uMVPMatrix;
-	GLint uMVMatrix;
-	GLint uNormalMatrix;
-	GLint uShininess;
-	GLint uKs;
-	GLint uKd;
-	GLint uLightPos_vs;
-	GLint uLightIntensity;
-
-	pointLightProgram(const FilePath& applicationPath):
-		m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
-							  applicationPath.dirPath() + "shaders/pointlight.fs.glsl")) {
-		uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
-		uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
-		uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
-		uShininess = glGetUniformLocation(m_Program.getGLId(), "uShininess");
-		uKs = glGetUniformLocation(m_Program.getGLId(), "uKs");
-		uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
-		uLightPos_vs = glGetUniformLocation(m_Program.getGLId(), "uLightPos_vs");
-		uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
-	}
 };
 
 int main(int argc, char** argv) {
@@ -162,7 +121,7 @@ int main(int argc, char** argv) {
 	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
 	// make me a torch
-	Torch torch(glm::vec3(0, 10, 0));
+	Torch torch(glm::vec3(6, 0, 0));
 
 	// Application loop:
 	bool done = false;
@@ -220,9 +179,7 @@ int main(int argc, char** argv) {
 		glm::mat4 matrixV = ffCam.getViewMatrix();
 
 		lProgram.m_Program.use();
-			glm::vec3 lightPos = glm::vec3(matrixV * glm::vec4(torch.getPosition(), 0));
-			glUniform3f(lProgram.uLightPos_vs, lightPos.r, lightPos.g, lightPos.b);
-			glUniform3f(lProgram.uLightIntensity, torch.getIntensity().r, torch.getIntensity().g, torch.getIntensity().b);
+			torch.draw(lProgram, matrixV);
 
 			glm::vec3 Kd = glm::vec3(1,1,1);
 			glm::vec3 Ks = glm::vec3(1,1,1);
@@ -249,11 +206,11 @@ int main(int argc, char** argv) {
 			glUniformMatrix4fv(lProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
 			glUniformMatrix4fv(lProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
 
-		gProgram.m_Program.use();
+		// gProgram.m_Program.use();
 
-		glUniformMatrix4fv(gProgram.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
-		glUniformMatrix4fv(gProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
-		glUniformMatrix4fv(gProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
+		// glUniformMatrix4fv(gProgram.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
+		// glUniformMatrix4fv(gProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
+		// glUniformMatrix4fv(gProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
 
 		//bind du vao
 		glBindVertexArray(vao);
