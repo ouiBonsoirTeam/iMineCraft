@@ -2,13 +2,37 @@
 
 
 // Constructor
-Chunk::Chunk(){}
+Chunk::Chunk(){
+	// Create the blocks
+    m_pBlocks = new Block**[CHUNK_SIZE];
+
+    for(int i = 0; i < CHUNK_SIZE; i++)
+    {
+        m_pBlocks[i] = new Block*[CHUNK_SIZE];
+
+        for(int j = 0; j < CHUNK_SIZE; j++)
+        {
+            m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+        }
+    }
+}
 
 // Destructor
-Chunk::~Chunk(){}
+Chunk::~Chunk(){
+	 // Delete the blocks
+    for (int i = 0; i < CHUNK_SIZE; ++i)
+    {
+        for (int j = 0; j < CHUNK_SIZE; ++j)
+        {
+            delete [] m_pBlocks[i][j];
+        }
 
-// Rendering
+        delete [] m_pBlocks[i];
+    }
+    delete [] m_pBlocks;
+}
+
+
 void Chunk::Render(){}
 
-// Updating
 void Chunk::Update(){}
