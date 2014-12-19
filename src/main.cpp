@@ -153,9 +153,9 @@ int main(int argc, char** argv) {
             //souris
             if (e.type == SDL_MOUSEMOTION)
             {
-                angleX += e.motion.xrel * CAMERA_ROT_FACTOR;
-                angleY += e.motion.yrel * CAMERA_ROT_FACTOR;
-                angleYfinal += e.motion.yrel * CAMERA_ROT_FACTOR;
+                angleX -= e.motion.xrel * CAMERA_ROT_FACTOR;
+                angleY -= e.motion.yrel * CAMERA_ROT_FACTOR;
+                angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
                 angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
             }
         }
