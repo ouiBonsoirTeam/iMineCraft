@@ -3,12 +3,27 @@
 
 namespace glimac {
 
-SDLWindowManager::SDLWindowManager(uint32_t width, uint32_t height, const char* title, bool fullscreen) {
+SDLWindowManager::SDLWindowManager(const char* title, bool fullscreen) {
+    uint32_t width = 0;
+    uint32_t height = 0;
+    SDL_DisplayMode current;
+
     if(0 != SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << SDL_GetError() << std::endl;
         return;
     }
 
+    int should_be_zero = SDL_GetCurrentDisplayMode(0, &current);
+    if (should_be_zero !=0)
+    {
+        std::cerr << SDL_GetError() << std::endl;
+    }
+    else{
+        std::cout << current.w << std::endl;
+        std::cout << current.h << std::endl;
+        width = current.w;
+        height = current.h;
+    }
 
     //antialiasing
     if (SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 ) == -1)
@@ -23,15 +38,26 @@ SDLWindowManager::SDLWindowManager(uint32_t width, uint32_t height, const char* 
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);                                               
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    m_pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,                
-                width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if(!m_pWindow) {
-        std::cerr << SDL_GetError() << std::endl;
-        return;
-    }
+    
 
     if(fullscreen)
-        SDL_SetWindowFullscreen(m_pWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    {
+        m_pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,                
+                width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+        if(!m_pWindow) {
+            std::cerr << SDL_GetError() << std::endl;
+            return;
+        }
+    }
+    else
+    {
+        m_pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,                
+                800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+        if(!m_pWindow) {
+            std::cerr << SDL_GetError() << std::endl;
+            return;
+        }
+    }
 
 
     m_Context = SDL_GL_CreateContext(m_pWindow);

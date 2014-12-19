@@ -40,7 +40,7 @@ struct Vertex {
 
 int main(int argc, char** argv) {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager(800, 600, "Test Camera FreeFly", 1);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -143,9 +143,9 @@ int main(int argc, char** argv) {
 			//souris
 			if (e.type == SDL_MOUSEMOTION)
 			{
-				angleX += e.motion.xrel * CAMERA_ROT_FACTOR;
-				angleY += e.motion.yrel * CAMERA_ROT_FACTOR;
-				angleYfinal += e.motion.yrel * CAMERA_ROT_FACTOR;
+				angleX -= e.motion.xrel * CAMERA_ROT_FACTOR;
+				angleY -= e.motion.yrel * CAMERA_ROT_FACTOR;
+				angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
 				angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
 			}
 		}
@@ -205,12 +205,6 @@ int main(int argc, char** argv) {
 			glUniformMatrix4fv(lProgram.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
 			glUniformMatrix4fv(lProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
 			glUniformMatrix4fv(lProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
-
-		// gProgram.m_Program.use();
-
-		// glUniformMatrix4fv(gProgram.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
-		// glUniformMatrix4fv(gProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
-		// glUniformMatrix4fv(gProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
 
 		//bind du vao
 		glBindVertexArray(vao);
