@@ -1,13 +1,5 @@
 #include "Block.hpp"
 
-enum BlockType { 
-	BlockType_Default = 0,
-
-	BlockType_Stone,
-
-	BlockType_Count
-};
-
 // Constructors
 Block::Block(){}
 
@@ -17,3 +9,17 @@ Block::Block(BlockType blockType){
 
 // Destructor
 Block::~Block(){}
+
+// Getter
+bool Block::isActive(){
+	return m_active;
+}
+
+// Setter
+void Block::setActive(){
+	m_active = true;
+}
+
+void Block::setInactive(){
+	m_active = false;
+}

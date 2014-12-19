@@ -81,8 +81,8 @@ macro(ADD_ASSET_DIRECTORY directory)
     endif()
 endmacro()
 
-file(GLOB HEADER_FILES src/*.hpp) # get all headers
-file(GLOB SRC_FILES src/*.cpp) # get all sources files
+file(GLOB_RECURSE HEADER_FILES src/*.hpp) # get all headers
+file(GLOB_RECURSE SRC_FILES src/*.cpp) # get all sources files
 file(GLOB_RECURSE SHADER_FILES shaders/*.glsl) # get all shaders
 file(GLOB_RECURSE ASSET_FILES assets/*) # get all the assets
 
