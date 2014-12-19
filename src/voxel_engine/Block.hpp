@@ -20,6 +20,8 @@ public:
 	Block(BlockType blockType);
 	~Block();
 
+	static const int BLOCK_RENDER_SIZE = 1;
+
 	bool isActive();
 	void setActive();
 	void setInactive();

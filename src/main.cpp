@@ -9,6 +9,8 @@
 #include <glimac/FreeFlyCamera.hpp>
 #include <glimac/Torch.hpp>
 
+#include "voxel_engine/Chunk.hpp"
+
 using namespace glimac;
 
 /*********************************
@@ -63,52 +65,12 @@ int main(int argc, char** argv) {
 	pointLightProgram lProgram(applicationPath);
 	gProgram.m_Program.use();
 
-
-	Sphere sphere (1, 32, 16);
-
-	//création vbo
-	GLuint vbo;
-	glGenBuffers (1, &vbo);
-
-	//bind le vbo
-	glBindBuffer (GL_ARRAY_BUFFER, vbo);
-
-	//buffer data void glBufferData(GLenum  target,  GLsizeiptr  size,  const GLvoid *  data,  GLenum  usage);
-	glBufferData (GL_ARRAY_BUFFER, sphere.getVertexCount() * sizeof(ShapeVertex),
-						 sphere.getDataPointer(), GL_STATIC_DRAW);
-
-	//debind le vbo
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//creation vao
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-
-	//bind le vao 
-	glBindVertexArray(vao);
-
-	const GLuint VERTEX_ATTR_POSITION = 0;
-	const GLuint VERTEX_ATTR_NORMALE = 1;
-
-	glEnableVertexAttribArray( VERTEX_ATTR_POSITION);
-	glEnableVertexAttribArray( VERTEX_ATTR_NORMALE);
-
-	glBindBuffer ( GL_ARRAY_BUFFER, vbo);
-
-	//void glVertexAttribPointer(GLuint  index,  GLint  size,  GLenum  type,  GLboolean  normalized,  GLsizei  stride,  const GLvoid *  pointer);
-	glVertexAttribPointer ( VERTEX_ATTR_POSITION, 3, GL_FLOAT,
-					GL_FALSE, 1 * sizeof(ShapeVertex), (const GLvoid*) (0*sizeof(GLfloat)));
-	glVertexAttribPointer ( VERTEX_ATTR_NORMALE, 3, GL_FLOAT,
-					GL_FALSE, 1 * sizeof(ShapeVertex), (const GLvoid*) (3*sizeof(GLfloat)));
-
-	//debind le vbo
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
-	
-	//debind le vao
-	glBindVertexArray(0);
-
 	//Initialisation camera freefly
 	FreeFlyCamera ffCam;
+
+	Chunk chunk;
+
+	chunk.createMesh();
 
 	//initialisation angle
 	float angleX = 0;
@@ -116,12 +78,6 @@ int main(int argc, char** argv) {
 	float angleYfinal = 0;
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
-
-	//comme P ne change jamais on peut la declarer a l'initialisation
-	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
-	// make me a torch
-	Torch torch(glm::vec3(6, 0, 0));
 
 	// Application loop:
 	bool done = false;
@@ -177,54 +133,14 @@ int main(int argc, char** argv) {
 		 *********************************/
 
 		glm::mat4 matrixV = ffCam.getViewMatrix();
-
-		lProgram.m_Program.use();
-			torch.draw(lProgram, matrixV);
-
-			glm::vec3 Kd = glm::vec3(1,1,1);
-			glm::vec3 Ks = glm::vec3(1,1,1);
-			float shininess = 3.f;
-
-
-
-			glUniform3f(lProgram.uKd, Kd.r, Kd.g, Kd.b);
-			glUniform3f(lProgram.uKs, Ks.r, Ks.g, Ks.b);
-			glUniform1f(lProgram.uShininess, shininess);
-
-
-			glm::mat4 matrixM = glm::mat4(1.0); 
-
-			glm::mat4 matrixMV = matrixV * matrixM;
-
-			//calcul de la matrixViewProjetée
-			glm::mat4 matrixMVP = matrixP * matrixMV;
-
-			//calcul de la normal matrix = (MVinverse)Transposée
-			glm::mat4 normalMatrix = glm::transpose(glm::inverse(matrixMV));
-
-			glUniformMatrix4fv(lProgram.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
-			glUniformMatrix4fv(lProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
-			glUniformMatrix4fv(lProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
-
-		//bind du vao
-		glBindVertexArray(vao);
 		
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//dessine triangles
-		glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
-
-		//debind du vao
-		glBindVertexArray(0);
+		chunk.render(gProgram, matrixV);
 
 		// Update the display
 		windowManager.swapBuffers();
 	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
 
 	return EXIT_SUCCESS;
 }

@@ -11,8 +11,10 @@ OpenGLRenderer::~OpenGLRenderer(){
 	glDeleteVertexArrays(1, &m_vao);
 }
 
-void OpenGLRenderer::addVertex(glm::vec3 position){
-	m_vertices.push_back(position);
+void OpenGLRenderer::addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3){
+	m_vertices.push_back(position_1);
+	m_vertices.push_back(position_2);
+	m_vertices.push_back(position_3);
 }
 
 void OpenGLRenderer::finishVbo(){
