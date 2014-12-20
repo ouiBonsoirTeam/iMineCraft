@@ -55,46 +55,39 @@ int main(int argc, char** argv) {
 
 	std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
-std::cout << "ERR01" << std::endl;
+
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 	// set up the cube map texture
-	SDL_Surface *xpos = IMG_Load("../skybox/xpos.png");	SDL_Surface *xneg = IMG_Load("../skybox/xneg.png");
-	SDL_Surface *ypos = IMG_Load("../skybox/ypos.png");	SDL_Surface *yneg = IMG_Load("../skybox/yneg.png");
-	SDL_Surface *zpos = IMG_Load("../skybox/zpos.png");	SDL_Surface *zneg = IMG_Load("../skybox/zneg.png");
+	SDL_Surface *xpos = IMG_Load("/assets/skybox/xpos.png");	SDL_Surface *xneg = IMG_Load("/assets/skybox/xneg.png");
+	SDL_Surface *ypos = IMG_Load("/assets/skybox/ypos.png");	SDL_Surface *yneg = IMG_Load("/assets/skybox/yneg.png");
+	SDL_Surface *zpos = IMG_Load("/assets/skybox/zpos.png");	SDL_Surface *zneg = IMG_Load("/assets/skybox/zneg.png");
 	GLuint cubemap_texture;
-std::cout << "ERR001" << std::endl;
 	setupCubeMap(cubemap_texture, xpos, xneg, ypos, yneg, zpos, zneg);
 	SDL_FreeSurface(xneg);	SDL_FreeSurface(xpos);
 	SDL_FreeSurface(yneg);	SDL_FreeSurface(ypos);
 	SDL_FreeSurface(zneg);	SDL_FreeSurface(zpos);
-std::cout << "ERR1" << std::endl;
-	// load our shaders and compile them.. create a program and link it
-	GLuint glShaderV = glCreateShader(GL_VERTEX_SHADER);
-	GLuint glShaderF = glCreateShader(GL_FRAGMENT_SHADER);
-	const GLchar* vShaderSource = loadFile("shaders/skybox.vs.glsl");
-	const GLchar* fShaderSource = loadFile("shaders/skybox.fs.glsl");
-	glShaderSource(glShaderV, 1, &vShaderSource, NULL);
-	glShaderSource(glShaderF, 1, &fShaderSource, NULL);
-	delete [] vShaderSource;
-	delete [] fShaderSource;
-	glCompileShader(glShaderV);
-	glCompileShader(glShaderF);
-	GLuint glProgram = glCreateProgram();
-	glAttachShader(glProgram, glShaderV);
-	glAttachShader(glProgram, glShaderF);
-	glLinkProgram(glProgram);
-	glUseProgram(glProgram);
-std::cout << "ERR2" << std::endl;
+
+	//Chargement des shaders
+    FilePath applicationPath(argv[0]);
+    Program glProgram = loadProgram(
+        applicationPath.dirPath() + "shaders/skybox.vs.glsl",
+        applicationPath.dirPath() + "shaders/skybox.fs.glsl"
+    );
+    glProgram.use();
+
+
 	// grab the pvm matrix and vertex location from our shader program
-	GLint PVM    = glGetUniformLocation(glProgram, "PVM");
-	GLint vertex = glGetAttribLocation(glProgram, "vertex");
+	GLint PVM    = glGetUniformLocation(glProgram.getGLId(), "PVM");
+	GLint vertex = glGetAttribLocation(glProgram.getGLId(), "vertex");
 
 	// these won't change for now
-	//glm::mat4 Projection = glm::perspective(45.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f); 
-	//glm::mat4 View       = glm::mat4(1.0f);
-	//glm::mat4 Model      = glm::scale(glm::mat4(1.0f),glm::vec3(50,50,50));
+	// glm::mat4 Projection = glm::perspective(45.0f, 800.f/600.f, 0.1f, 100.0f); 
+	// glm::mat4 View       = glm::mat4(1.0f);
+	// glm::mat4 Model      = glm::scale(glm::mat4(1.0f),glm::vec3(50,50,50));
+
+	glEnable(GL_DEPTH_TEST);
 
 	// cube vertices for vertex buffer object
 	GLfloat cube_vertices[] = {
@@ -111,10 +104,10 @@ std::cout << "ERR2" << std::endl;
 	glGenBuffers(1, &vbo_cube_vertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_vertices);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glEnableVertexAttribArray(vertex);
 	glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
-std::cout << "ERR3" << std::endl;
+
 	// cube indices for index buffer object
 	GLushort cube_indices[] = {
 	  0, 1, 2, 3,
@@ -128,8 +121,8 @@ std::cout << "ERR3" << std::endl;
 	glGenBuffers(1, &ibo_cube_indices);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_cube_indices);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices, GL_STATIC_DRAW);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-std::cout << "ERR4" << std::endl;
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	// rotation angles
 	float alpha = 0.0f, beta = 0.0f;
 
@@ -142,55 +135,55 @@ std::cout << "ERR4" << std::endl;
 
 
 
-	FilePath applicationPath(argv[0]);
+	// FilePath applicationPath(argv[0]);
 
-	GeneralProgram gProgram(applicationPath);
-	pointLightProgram lProgram(applicationPath);
-	gProgram.m_Program.use();
+	// GeneralProgram gProgram(applicationPath);
+	// pointLightProgram lProgram(applicationPath);
+	// gProgram.m_Program.use();
 
 
-	Sphere sphere (1, 32, 16);
+	// Sphere sphere (1, 32, 16);
 
-	//création vbo
-	GLuint vbo;
-	glGenBuffers (1, &vbo);
+	// //création vbo
+	// GLuint vbo;
+	// glGenBuffers (1, &vbo);
 
-	//bind le vbo
-	glBindBuffer (GL_ARRAY_BUFFER, vbo);
+	// //bind le vbo
+	// glBindBuffer (GL_ARRAY_BUFFER, vbo);
 
-	//buffer data void glBufferData(GLenum  target,  GLsizeiptr  size,  const GLvoid *  data,  GLenum  usage);
-	glBufferData (GL_ARRAY_BUFFER, sphere.getVertexCount() * sizeof(ShapeVertex),
-						 sphere.getDataPointer(), GL_STATIC_DRAW);
+	// //buffer data void glBufferData(GLenum  target,  GLsizeiptr  size,  const GLvoid *  data,  GLenum  usage);
+	// glBufferData (GL_ARRAY_BUFFER, sphere.getVertexCount() * sizeof(ShapeVertex),
+	// 					 sphere.getDataPointer(), GL_STATIC_DRAW);
 
-	//debind le vbo
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// //debind le vbo
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	//creation vao
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
+	// //creation vao
+	// GLuint vao;
+	// glGenVertexArrays(1, &vao);
 
-	//bind le vao 
-	glBindVertexArray(vao);
+	// //bind le vao 
+	// glBindVertexArray(vao);
 
-	const GLuint VERTEX_ATTR_POSITION = 0;
-	const GLuint VERTEX_ATTR_NORMALE = 1;
+	// const GLuint VERTEX_ATTR_POSITION = 0;
+	// const GLuint VERTEX_ATTR_NORMALE = 1;
 
-	glEnableVertexAttribArray( VERTEX_ATTR_POSITION);
-	glEnableVertexAttribArray( VERTEX_ATTR_NORMALE);
+	// glEnableVertexAttribArray( VERTEX_ATTR_POSITION);
+	// glEnableVertexAttribArray( VERTEX_ATTR_NORMALE);
 
-	glBindBuffer ( GL_ARRAY_BUFFER, vbo);
+	// glBindBuffer ( GL_ARRAY_BUFFER, vbo);
 
-	//void glVertexAttribPointer(GLuint  index,  GLint  size,  GLenum  type,  GLboolean  normalized,  GLsizei  stride,  const GLvoid *  pointer);
-	glVertexAttribPointer ( VERTEX_ATTR_POSITION, 3, GL_FLOAT,
-					GL_FALSE, 1 * sizeof(ShapeVertex), (const GLvoid*) (0*sizeof(GLfloat)));
-	glVertexAttribPointer ( VERTEX_ATTR_NORMALE, 3, GL_FLOAT,
-					GL_FALSE, 1 * sizeof(ShapeVertex), (const GLvoid*) (3*sizeof(GLfloat)));
+	// //void glVertexAttribPointer(GLuint  index,  GLint  size,  GLenum  type,  GLboolean  normalized,  GLsizei  stride,  const GLvoid *  pointer);
+	// glVertexAttribPointer ( VERTEX_ATTR_POSITION, 3, GL_FLOAT,
+	// 				GL_FALSE, 1 * sizeof(ShapeVertex), (const GLvoid*) (0*sizeof(GLfloat)));
+	// glVertexAttribPointer ( VERTEX_ATTR_NORMALE, 3, GL_FLOAT,
+	// 				GL_FALSE, 1 * sizeof(ShapeVertex), (const GLvoid*) (3*sizeof(GLfloat)));
 
-	//debind le vbo
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
+	// //debind le vbo
+	// glBindBuffer (GL_ARRAY_BUFFER, 0);
 	
-	//debind le vao
-	glBindVertexArray(0);
+	// //debind le vao
+	// glBindVertexArray(0);
 
 	//Initialisation camera freefly
 	FreeFlyCamera ffCam;
@@ -206,7 +199,7 @@ std::cout << "ERR4" << std::endl;
 	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
 	// make me a torch
-	Torch torch(glm::vec3(6, 0, 0));
+	// Torch torch(glm::vec3(6, 0, 0));
 
 	// Application loop:
 	bool done = false;
@@ -261,48 +254,59 @@ std::cout << "ERR4" << std::endl;
 		 * HERE SHOULD COME THE RENDERING CODE
 		 *********************************/
 
+
 		glm::mat4 matrixV = ffCam.getViewMatrix();
-
-		lProgram.m_Program.use();
-			torch.draw(lProgram, matrixV);
-
-			glm::vec3 Kd = glm::vec3(1,1,1);
-			glm::vec3 Ks = glm::vec3(1,1,1);
-			float shininess = 3.f;
-
+		glm::mat4 matrixM = glm::mat4(1.0); 
+		glm::mat4 matrixMV = matrixV * matrixM;
+		//calcul de la matrixViewProjetée
+		glm::mat4 matrixMVP = matrixP * matrixMV;
+		//calcul de la normal matrix = (MVinverse)Transposée
+		glm::mat4 normalMatrix = glm::transpose(glm::inverse(matrixMV));
 
 
-			glUniform3f(lProgram.uKd, Kd.r, Kd.g, Kd.b);
-			glUniform3f(lProgram.uKs, Ks.r, Ks.g, Ks.b);
-			glUniform1f(lProgram.uShininess, shininess);
 
+		// glm::mat4 RotateX = glm::rotate(glm::mat4(1.0f), angleX, glm::vec3(-1.0f, 0.0f, 0.0f));
+		// glm::mat4 RotateY = glm::rotate(RotateX, angleY, glm::vec3(0.0f, 1.0f, 0.0f));
+		// glm::mat4 M = Projection * View * Model * RotateY;
 
-			glm::mat4 matrixM = glm::mat4(1.0); 
+		glUniformMatrix4fv(PVM, 1, GL_FALSE, glm::value_ptr(matrixMVP));
 
-			glm::mat4 matrixMV = matrixV * matrixM;
-
-			//calcul de la matrixViewProjetée
-			glm::mat4 matrixMVP = matrixP * matrixMV;
-
-			//calcul de la normal matrix = (MVinverse)Transposée
-			glm::mat4 normalMatrix = glm::transpose(glm::inverse(matrixMV));
-
-			glUniformMatrix4fv(lProgram.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
-			glUniformMatrix4fv(lProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
-			glUniformMatrix4fv(lProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
-
-		//bind du vao
-		glBindVertexArray(vao);
-		
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		//dessine triangles
-		glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
-
 		glDrawElements(GL_QUADS, sizeof(cube_indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 
-		//debind du vao
-		glBindVertexArray(0);
+
+
+
+		// lProgram.m_Program.use();
+		// 	torch.draw(lProgram, matrixV);
+
+		// 	glm::vec3 Kd = glm::vec3(1,1,1);
+		// 	glm::vec3 Ks = glm::vec3(1,1,1);
+		// 	float shininess = 3.f;
+
+
+
+		// 	glUniform3f(lProgram.uKd, Kd.r, Kd.g, Kd.b);
+		// 	glUniform3f(lProgram.uKs, Ks.r, Ks.g, Ks.b);
+		// 	glUniform1f(lProgram.uShininess, shininess);
+
+
+			
+
+		// 	glUniformMatrix4fv(lProgram.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
+		// 	glUniformMatrix4fv(lProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
+		// 	glUniformMatrix4fv(lProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
+
+		// //bind du vao
+		// glBindVertexArray(vao);
+		
+		
+
+		// //dessine triangles
+		// glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
+
+		// //debind du vao
+		// glBindVertexArray(0);
 
 		// Update the display
 		windowManager.swapBuffers();
@@ -311,8 +315,8 @@ std::cout << "ERR4" << std::endl;
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
+	// glDeleteBuffers(1, &vbo);
+	// glDeleteVertexArrays(1, &vao);
 
 
 
@@ -330,11 +334,11 @@ std::cout << "ERR4" << std::endl;
 	deleteCubeMap(cubemap_texture);
 
 	// detach shaders from program and release
-	glDetachShader(glProgram, glShaderF);
-	glDetachShader(glProgram, glShaderV);
-	glDeleteShader(glShaderF);
-	glDeleteShader(glShaderV);
-	glDeleteProgram(glProgram);
+	// glDetachShader(glProgram, glShaderF);
+	// glDetachShader(glProgram, glShaderV);
+	// glDeleteShader(glShaderF);
+	// glDeleteShader(glShaderV);
+	// glDeleteProgram(glProgram);
 
 	return EXIT_SUCCESS;
 }
