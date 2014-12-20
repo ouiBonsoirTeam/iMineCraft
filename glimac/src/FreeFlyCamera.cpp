@@ -30,7 +30,12 @@ namespace glimac
 
 	void FreeFlyCamera::moveFront(float t)
 	{
-		m_Position += t * m_FrontVector;
+		m_Position += t * glm::vec3(m_FrontVector.x,0,m_FrontVector.z);
+	}
+
+	void FreeFlyCamera::moveUp(float t)
+	{
+		m_Position += t * glm::vec3(0,1,0);
 	}
 
 	void FreeFlyCamera::rotateLeft(float degrees)

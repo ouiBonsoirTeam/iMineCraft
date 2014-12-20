@@ -127,6 +127,14 @@ int main(int argc, char** argv) {
 		{
 			ffCam.moveLeft(-0.1f);
 		}
+		else if(windowManager.isKeyPressed(SDLK_SPACE)) 
+		{
+			ffCam.moveUp(0.1f);
+		}
+		else if(windowManager.isKeyPressed(SDLK_b)) 
+		{
+			ffCam.moveUp(-0.1f);
+		}
 
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE

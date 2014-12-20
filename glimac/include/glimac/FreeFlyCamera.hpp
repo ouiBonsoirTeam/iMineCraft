@@ -36,6 +36,8 @@ public:
 
 	void moveFront(float t);
 
+	void moveUp(float t);
+
 	void rotateLeft(float degrees);
 
 	void rotateUp(float degrees);
