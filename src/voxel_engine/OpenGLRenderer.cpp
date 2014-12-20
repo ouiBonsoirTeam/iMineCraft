@@ -41,7 +41,7 @@ void OpenGLRenderer::setVao(){
 	glBindVertexArray(0);
 }
 
-void OpenGLRenderer::draw(GeneralProgram &program, const glm::mat4 &viewMatrix){
+void OpenGLRenderer::renderMesh(GeneralProgram &program, const glm::mat4 &viewMatrix){
 	glm::mat4 modelMatrix = glm::mat4(1.f);
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 

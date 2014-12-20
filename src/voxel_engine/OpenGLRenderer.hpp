@@ -5,8 +5,19 @@
 #include <GL/glew.h>
 #include <glimac/CustomProgram.hpp>
 
-
 using namespace glimac;
+
+enum bufferType { 
+	INDEX_BUFFER = 0,
+
+	POS_VB,
+	NORMAL_VB,
+	TEXT_COORDS_VB,
+	WVP_MAT_VB,
+	WORLD_MAT_VB,
+
+	BUFFER_SIZE
+};
 
 class OpenGLRenderer
 {
@@ -30,6 +41,6 @@ public:
 	void addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3);
 	void finishVbo();
 	void setVao();
-	void draw(GeneralProgram &program, const glm::mat4 &viewMatrix);
+	void renderMesh(GeneralProgram &program, const glm::mat4 &viewMatrix);
 	
 };

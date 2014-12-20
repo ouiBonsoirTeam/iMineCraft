@@ -60,21 +60,21 @@ void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix)
 {
 	m_pRenderer->setVao();
 
-	m_pRenderer->draw(program, viewMatrix);
+	m_pRenderer->renderMesh(program, viewMatrix);
 }
 
 void Chunk::update(){}
 
 void Chunk::createCube(const int &x, const int &y, const int &z)
 {
-    glm::vec3 v1(x-Block::BLOCK_RENDER_SIZE, y-Block::BLOCK_RENDER_SIZE, z+Block::BLOCK_RENDER_SIZE);
-    glm::vec3 v2(x+Block::BLOCK_RENDER_SIZE, y-Block::BLOCK_RENDER_SIZE, z+Block::BLOCK_RENDER_SIZE);
-    glm::vec3 v3(x+Block::BLOCK_RENDER_SIZE, y+Block::BLOCK_RENDER_SIZE, z+Block::BLOCK_RENDER_SIZE);
-    glm::vec3 v4(x-Block::BLOCK_RENDER_SIZE, y+Block::BLOCK_RENDER_SIZE, z+Block::BLOCK_RENDER_SIZE);
-    glm::vec3 v5(x+Block::BLOCK_RENDER_SIZE, y-Block::BLOCK_RENDER_SIZE, z-Block::BLOCK_RENDER_SIZE);
-    glm::vec3 v6(x-Block::BLOCK_RENDER_SIZE, y-Block::BLOCK_RENDER_SIZE, z-Block::BLOCK_RENDER_SIZE);
-    glm::vec3 v7(x-Block::BLOCK_RENDER_SIZE, y+Block::BLOCK_RENDER_SIZE, z-Block::BLOCK_RENDER_SIZE);
-    glm::vec3 v8(x+Block::BLOCK_RENDER_SIZE, y+Block::BLOCK_RENDER_SIZE, z-Block::BLOCK_RENDER_SIZE);
+    glm::vec3 v1(x-Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
+    glm::vec3 v2(x+Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
+    glm::vec3 v3(x+Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
+    glm::vec3 v4(x-Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
+    glm::vec3 v5(x+Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
+    glm::vec3 v6(x-Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
+    glm::vec3 v7(x-Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
+    glm::vec3 v8(x+Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
 
     // A FAIRE NORMALE
     // glm::vec3 n1;
