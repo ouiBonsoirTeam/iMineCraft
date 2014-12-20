@@ -38,11 +38,15 @@ public:
 
 	void moveUp(float t);
 
+	void slide(glm::vec3 vec);
+
 	void rotateLeft(float degrees);
 
 	void rotateUp(float degrees);
 
 	glm::mat4 getViewMatrix() const;
+
+	glm::vec3 getPosition() const;
 
 };
 

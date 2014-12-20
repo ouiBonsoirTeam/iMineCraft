@@ -12,7 +12,7 @@ enum BlockType {
 class Block{
 
 private:
-	bool m_active = true;
+	bool m_active=false;
 	BlockType m_blockType;
 
 public:
