@@ -43,12 +43,23 @@ void Chunk::createMesh()
     {
         for (int y = 0; y < CHUNK_SIZE; y++)
         {
+            /* CUBE
             for (int z = 0; z < CHUNK_SIZE; z++)
             {
                 if(m_pBlocks[x][y][z].isActive() == false)
                     continue;
 
                 createCube(x, y, z);
+            }
+            */
+            // SPHERE
+            for (int z = 0; z < CHUNK_SIZE; z++)
+            {
+                if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2)
+                    createCube(x, y, z);
+
+                else
+                    continue;
             }
         }
     }
