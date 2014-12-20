@@ -66,22 +66,27 @@ int main(int argc, char** argv) {
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 	// set up the cube map texture
-	// SDL_Surface *xpos = IMG_Load("/assets/skybox/xpos.png");	SDL_Surface *xneg = IMG_Load("/assets/skybox/xneg.png");
-	// SDL_Surface *ypos = IMG_Load("/assets/skybox/ypos.png");	SDL_Surface *yneg = IMG_Load("/assets/skybox/yneg.png");
-	// SDL_Surface *zpos = IMG_Load("/assets/skybox/zpos.png");	SDL_Surface *zneg = IMG_Load("/assets/skybox/zneg.png");
+
+	system("pwd");
+	SDL_Surface *xpos = IMG_Load("bin/assets/skybox/xpos.png");	SDL_Surface *xneg = IMG_Load("bin/assets/skybox/xneg.png");
+	SDL_Surface *ypos = IMG_Load("bin/assets/skybox/ypos.png");	SDL_Surface *yneg = IMG_Load("bin/assets/skybox/yneg.png");
+	SDL_Surface *zpos = IMG_Load("bin/assets/skybox/zpos.png");	SDL_Surface *zneg = IMG_Load("bin/assets/skybox/zneg.png");
 	
-	// std::cerr << "girafe" << std::endl;
+	if (xpos == NULL)
+		std::cerr << "erreur !! " << std::endl;
+
+	std::cerr << "girafe" << std::endl;
 
 
-	// GLuint cubemap_texture;
-	// setupCubeMap(cubemap_texture, xpos, xneg, ypos, yneg, zpos, zneg);
+	GLuint cubemap_texture;
+	setupCubeMap(cubemap_texture, xpos, xneg, ypos, yneg, zpos, zneg);
 
-	// std::cerr << "koala" << std::endl;
+	std::cerr << "koala" << std::endl;
 
 
-	// SDL_FreeSurface(xneg);	SDL_FreeSurface(xpos);
-	// SDL_FreeSurface(yneg);	SDL_FreeSurface(ypos);
-	// SDL_FreeSurface(zneg);	SDL_FreeSurface(zpos);
+	SDL_FreeSurface(xneg);	SDL_FreeSurface(xpos);
+	SDL_FreeSurface(yneg);	SDL_FreeSurface(ypos);
+	SDL_FreeSurface(zneg);	SDL_FreeSurface(zpos);
 
 	std::cerr << "tortue" << std::endl;
 
@@ -166,13 +171,13 @@ int main(int argc, char** argv) {
 	// glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat), 0);
 	// glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 
 
 
 
 	// rotation angles
-	float alpha = 0.0f, beta = 0.0f;
+	//float alpha = 0.0f, beta = 0.0f;
 
 
 
@@ -251,6 +256,9 @@ int main(int argc, char** argv) {
 
 	std::cerr << "lol" << std::endl;
 
+	float alpha;
+	float beta;
+
 	// Application loop:
 	bool done = false;
 	while(!done) {
@@ -286,19 +294,28 @@ int main(int argc, char** argv) {
 		if(windowManager.isKeyPressed(SDLK_z)) 
 		{
 			ffCam.moveFront(0.1f);
+			alpha += 0.1f;
 		}
 		else if(windowManager.isKeyPressed(SDLK_s)) 
 		{
 			ffCam.moveFront(-0.1f);
+			alpha -= 0.1f;
+
 		}
 		else if(windowManager.isKeyPressed(SDLK_q)) 
 		{
 			ffCam.moveLeft(0.1f);
+			beta += 0.1f;
+
 		}
 		else if(windowManager.isKeyPressed(SDLK_d)) 
 		{
 			ffCam.moveLeft(-0.1f);
+			beta -= 0.1f;
 		}
+		 
+		glm::mat4 RotateX = glm::rotate(glm::mat4(1.0f), alpha, glm::vec3(-1.0f, 0.0f, 0.0f));
+		glm::mat4 RotateY = glm::rotate(RotateX, beta, glm::vec3(0.0f, 1.0f, 0.0f));
 
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
@@ -306,7 +323,7 @@ int main(int argc, char** argv) {
 
 
 		glm::mat4 matrixV = ffCam.getViewMatrix();
-		glm::mat4 matrixM = glm::mat4(1.0); 
+		glm::mat4 matrixM =  glm::scale(glm::mat4(1.0), glm::vec3(100, 100, 100)); 
 		glm::mat4 matrixMV = matrixV * matrixM;
 		//calcul de la matrixViewProjetée
 		glm::mat4 matrixMVP = matrixP * matrixMV;
@@ -320,9 +337,17 @@ int main(int argc, char** argv) {
 		// glm::mat4 M = Projection * View * Model * RotateY;
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glm::mat4 rotateCamMat = matrixMVP;
+		rotateCamMat[3][0] = 0;
+		rotateCamMat[3][1] = 0; 
+		rotateCamMat[3][2] = 0; 
+		rotateCamMat[3][3] = 1;  
+
 		
 
-		glUniformMatrix4fv(PVM, 1, GL_FALSE, glm::value_ptr(matrixMVP));
+		glUniformMatrix4fv(PVM, 1, GL_FALSE, glm::value_ptr(rotateCamMat));
+
+		
 
 		//glBindVertexArray(vao_cube);
 			glDrawElements(GL_QUADS, sizeof(cube_indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
@@ -384,7 +409,7 @@ int main(int argc, char** argv) {
 	glDeleteBuffers(1, &vbo_cube_vertices);
 
 	// release cube map
-	//deleteCubeMap(cubemap_texture);
+	deleteCubeMap(cubemap_texture);
 
 	// detach shaders from program and release
 	// glDetachShader(glProgram, glShaderF);
