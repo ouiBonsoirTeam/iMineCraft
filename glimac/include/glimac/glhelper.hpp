@@ -1,8 +1,8 @@
 #ifndef GLHELPER_H
 #define GLHELPER_H
 
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>

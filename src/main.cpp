@@ -56,18 +56,35 @@ int main(int argc, char** argv) {
 	std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
 
+	glEnable(GL_DEPTH_TEST);
+
+
+
+	std::cerr << "debut" << std::endl;
+
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 	// set up the cube map texture
-	SDL_Surface *xpos = IMG_Load("/assets/skybox/xpos.png");	SDL_Surface *xneg = IMG_Load("/assets/skybox/xneg.png");
-	SDL_Surface *ypos = IMG_Load("/assets/skybox/ypos.png");	SDL_Surface *yneg = IMG_Load("/assets/skybox/yneg.png");
-	SDL_Surface *zpos = IMG_Load("/assets/skybox/zpos.png");	SDL_Surface *zneg = IMG_Load("/assets/skybox/zneg.png");
-	GLuint cubemap_texture;
-	setupCubeMap(cubemap_texture, xpos, xneg, ypos, yneg, zpos, zneg);
-	SDL_FreeSurface(xneg);	SDL_FreeSurface(xpos);
-	SDL_FreeSurface(yneg);	SDL_FreeSurface(ypos);
-	SDL_FreeSurface(zneg);	SDL_FreeSurface(zpos);
+	// SDL_Surface *xpos = IMG_Load("/assets/skybox/xpos.png");	SDL_Surface *xneg = IMG_Load("/assets/skybox/xneg.png");
+	// SDL_Surface *ypos = IMG_Load("/assets/skybox/ypos.png");	SDL_Surface *yneg = IMG_Load("/assets/skybox/yneg.png");
+	// SDL_Surface *zpos = IMG_Load("/assets/skybox/zpos.png");	SDL_Surface *zneg = IMG_Load("/assets/skybox/zneg.png");
+	
+	// std::cerr << "girafe" << std::endl;
+
+
+	// GLuint cubemap_texture;
+	// setupCubeMap(cubemap_texture, xpos, xneg, ypos, yneg, zpos, zneg);
+
+	// std::cerr << "koala" << std::endl;
+
+
+	// SDL_FreeSurface(xneg);	SDL_FreeSurface(xpos);
+	// SDL_FreeSurface(yneg);	SDL_FreeSurface(ypos);
+	// SDL_FreeSurface(zneg);	SDL_FreeSurface(zpos);
+
+	std::cerr << "tortue" << std::endl;
+
 
 	//Chargement des shaders
     FilePath applicationPath(argv[0]);
@@ -76,6 +93,9 @@ int main(int argc, char** argv) {
         applicationPath.dirPath() + "shaders/skybox.fs.glsl"
     );
     glProgram.use();
+
+    std::cerr << "lapin" << std::endl;
+
 
 
 	// grab the pvm matrix and vertex location from our shader program
@@ -87,7 +107,6 @@ int main(int argc, char** argv) {
 	// glm::mat4 View       = glm::mat4(1.0f);
 	// glm::mat4 Model      = glm::scale(glm::mat4(1.0f),glm::vec3(50,50,50));
 
-	glEnable(GL_DEPTH_TEST);
 
 	// cube vertices for vertex buffer object
 	GLfloat cube_vertices[] = {
@@ -102,8 +121,9 @@ int main(int argc, char** argv) {
 	};
 	GLuint vbo_cube_vertices;
 	glGenBuffers(1, &vbo_cube_vertices);
+
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_vertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), cube_vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// glEnableVertexAttribArray(vertex);
@@ -126,8 +146,9 @@ int main(int argc, char** argv) {
 	};
 	GLuint ibo_cube_indices;
 	glGenBuffers(1, &ibo_cube_indices);
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_cube_indices);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 24 * sizeof(GLushort), cube_indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	
@@ -136,12 +157,13 @@ int main(int argc, char** argv) {
 
 	GLuint vao_cube;
 	glGenVertexArrays(1, &vao_cube);
-	glBindVertexArray(vao_cube);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_cube_indices);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_vertices);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindVertexArray(vao_cube);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_cube_indices);
+
+			glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_vertices);
+	glEnableVertexAttribArray(vertex);
+	glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
@@ -227,6 +249,8 @@ int main(int argc, char** argv) {
 	// make me a torch
 	// Torch torch(glm::vec3(6, 0, 0));
 
+	std::cerr << "lol" << std::endl;
+
 	// Application loop:
 	bool done = false;
 	while(!done) {
@@ -294,14 +318,14 @@ int main(int argc, char** argv) {
 		// glm::mat4 RotateX = glm::rotate(glm::mat4(1.0f), angleX, glm::vec3(-1.0f, 0.0f, 0.0f));
 		// glm::mat4 RotateY = glm::rotate(RotateX, angleY, glm::vec3(0.0f, 1.0f, 0.0f));
 		// glm::mat4 M = Projection * View * Model * RotateY;
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		
 
 		glUniformMatrix4fv(PVM, 1, GL_FALSE, glm::value_ptr(matrixMVP));
 
 		glBindVertexArray(vao_cube);
-		glDrawElements(GL_QUADS, sizeof(cube_indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_QUADS, sizeof(cube_indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 		glBindVertexArray(0);
 
 
@@ -360,7 +384,7 @@ int main(int argc, char** argv) {
 	glDeleteBuffers(1, &vbo_cube_vertices);
 
 	// release cube map
-	deleteCubeMap(cubemap_texture);
+	//deleteCubeMap(cubemap_texture);
 
 	// detach shaders from program and release
 	// glDetachShader(glProgram, glShaderF);
