@@ -56,8 +56,10 @@ void Chunk::createMesh()
             for (int z = 0; z < CHUNK_SIZE; z++)
             {
                 if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2)
-                    createCube(x, y, z);
-
+                    {
+                        createCube(x, y, z);
+                        m_pBlocks[x][y][z].setActive();
+                    }
                 else
                     continue;
             }
@@ -132,4 +134,9 @@ void Chunk::createCube(const int &x, const int &y, const int &z)
 
     m_pRenderer->addTriangle(v6, v5, v2);
     m_pRenderer->addTriangle(v6, v2, v1);
+}
+
+Block*** Chunk::getBlocks()
+{
+    return m_pBlocks;
 }

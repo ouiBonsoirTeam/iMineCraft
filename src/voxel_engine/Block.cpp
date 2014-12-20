@@ -1,9 +1,7 @@
 #include "Block.hpp"
 
 // Constructors
-Block::Block(){
-	m_active = true;
-}
+Block::Block(){}
 
 Block::Block(BlockType blockType){
 	m_blockType = blockType;

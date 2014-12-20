@@ -38,6 +38,11 @@ namespace glimac
 		m_Position += t * glm::vec3(0,1,0);
 	}
 
+	void FreeFlyCamera::slide(glm::vec3 vec)
+	{
+		m_Position += vec;
+	}
+
 	void FreeFlyCamera::rotateLeft(float degrees)
 	{
 		m_fPhi += glm::radians(degrees);
@@ -55,7 +60,10 @@ namespace glimac
 		return glm::lookAt(m_Position, m_Position + m_FrontVector, m_UpVector);
 	}
 
-
+	glm::vec3 FreeFlyCamera::getPosition() const
+	{
+		return m_Position;
+	}
 
 
 }

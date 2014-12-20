@@ -13,7 +13,7 @@ public:
 	Chunk();
 	~Chunk();
 
-	static const int CHUNK_SIZE = 16;																																																																																																																																				;
+	static const int CHUNK_SIZE = 20;																																																																																																																																				;
 
 	void createMesh();
 
@@ -22,4 +22,6 @@ public:
 	void update();
 
 	void createCube(const int &x, const int &y, const int &z);
+
+	Block*** getBlocks();
 };

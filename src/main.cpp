@@ -42,7 +42,7 @@ struct Vertex {
 
 int main(int argc, char** argv) {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -79,6 +79,10 @@ int main(int argc, char** argv) {
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
 
+	float lastTime = windowManager.getTime();
+	int nbFrames = 0;
+	
+
 	// Application loop:
 	bool done = false;
 	while(!done) {
@@ -111,10 +115,22 @@ int main(int argc, char** argv) {
 		angleX = 0;
 		
 		//touche clavier
+		/* TEST COLLISION
+		if(windowManager.isKeyPressed(SDLK_z)) 
+		{
+			Block*** blocks = chunk.getBlocks();
+			if(blocks[(int)ffCam.getPosition().x][(int)ffCam.getPosition().y][(int)ffCam.getPosition().z].isActive())
+				{
+					ffCam.slide(glm::vec3(-1,-1,-1));
+				}
+				else ffCam.moveFront(0.1f);
+		}*/
+				
 		if(windowManager.isKeyPressed(SDLK_z)) 
 		{
 			ffCam.moveFront(0.1f);
 		}
+		
 		else if(windowManager.isKeyPressed(SDLK_s)) 
 		{
 			ffCam.moveFront(-0.1f);
@@ -135,6 +151,24 @@ int main(int argc, char** argv) {
 		{
 			ffCam.moveUp(-0.1f);
 		}
+
+		// GRAVITY
+		ffCam.moveUp(-0.01f);
+		
+
+		// Measure speed
+		float currentTime = windowManager.getTime();
+		nbFrames++;
+		if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+		    // printf and reset timer
+		    std::cout << "fps : " << nbFrames << std::endl;
+		    nbFrames = 0;
+		    lastTime += 1.0;
+		    }
+
+
+
+
 
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
