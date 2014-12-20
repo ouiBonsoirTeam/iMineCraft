@@ -67,6 +67,8 @@ void OpenGLRenderer::setVao(){
 	glBindVertexArray(m_vao);
 
 	glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[POSITION]);
+	glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
 
 	if(m_textures.size() != 0)
 	{
@@ -79,12 +81,7 @@ void OpenGLRenderer::setVao(){
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[NORMAL]);
 	glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[POSITION]);
-
-	glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
-
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	glBindVertexArray(0);
 }
 

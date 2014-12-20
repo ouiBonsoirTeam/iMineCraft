@@ -59,6 +59,8 @@ int main(int argc, char** argv) {
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 
+	glEnable(GL_DEPTH_TEST);
+
 	FilePath applicationPath(argv[0]);
 
 	GeneralProgram gProgram(applicationPath);
@@ -151,7 +153,7 @@ int main(int argc, char** argv) {
 
 		glm::mat4 matrixV = ffCam.getViewMatrix();
 		
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		chunk.render(gProgram, matrixV, idTexture);
 
