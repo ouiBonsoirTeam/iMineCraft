@@ -98,15 +98,22 @@ int main(int argc, char** argv) {
 	  -1.0,  1.0, -1.0,
 	  -1.0, -1.0, -1.0,
 	   1.0, -1.0, -1.0,
-	   1.0,  1.0, -1.0,
+	   1.0,  1.0, -1.0
 	};
 	GLuint vbo_cube_vertices;
 	glGenBuffers(1, &vbo_cube_vertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_vertices);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glEnableVertexAttribArray(vertex);
-	glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// glEnableVertexAttribArray(vertex);
+	// glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		// glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_vertices);
+		// glEnableVertexAttribArray(vertex);
+		// glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		// glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// glEnableVertexAttribArray(vbo_cube_vertices);
+	// glVertexAttribPointer(vbo_cube_vertices, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
 
 	// cube indices for index buffer object
 	GLushort cube_indices[] = {
@@ -115,13 +122,32 @@ int main(int argc, char** argv) {
 	  7, 6, 5, 4,
 	  4, 5, 1, 0,
 	  0, 3, 7, 4,
-	  1, 2, 6, 5,
+	  1, 2, 6, 5
 	};
 	GLuint ibo_cube_indices;
 	glGenBuffers(1, &ibo_cube_indices);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_cube_indices);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	
+
+
+
+	GLuint vao_cube;
+	glGenVertexArrays(1, &vao_cube);
+	glBindVertexArray(vao_cube);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_cube_indices);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_vertices);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+
+
+
 
 	// rotation angles
 	float alpha = 0.0f, beta = 0.0f;
@@ -268,12 +294,15 @@ int main(int argc, char** argv) {
 		// glm::mat4 RotateX = glm::rotate(glm::mat4(1.0f), angleX, glm::vec3(-1.0f, 0.0f, 0.0f));
 		// glm::mat4 RotateY = glm::rotate(RotateX, angleY, glm::vec3(0.0f, 1.0f, 0.0f));
 		// glm::mat4 M = Projection * View * Model * RotateY;
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		
 
 		glUniformMatrix4fv(PVM, 1, GL_FALSE, glm::value_ptr(matrixMVP));
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glBindVertexArray(vao_cube);
 		glDrawElements(GL_QUADS, sizeof(cube_indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
-
+		glBindVertexArray(0);
 
 
 

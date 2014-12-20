@@ -1,6 +1,6 @@
-#version 330
+#version 330 core
 
-in vec3 vertex;
+layout(location = 0) in vec3 vertex;
 out vec3 texCoord;
 uniform mat4 PVM;
 
