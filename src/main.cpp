@@ -65,6 +65,23 @@ int main(int argc, char** argv) {
 	pointLightProgram lProgram(applicationPath);
 	gProgram.m_Program.use();
 
+	//Load texture
+	std::unique_ptr<Image> texturePointer;
+	texturePointer = loadImage("../iMineCraft/assets/textures/caisse.jpg");
+	if(texturePointer == NULL)
+	{
+		std::cerr << "Error while charging texture." << std::endl;
+	}
+
+	GLuint idTexture;
+	glGenTextures(1, &idTexture);
+	glBindTexture(GL_TEXTURE_2D,  idTexture);
+	glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
+					texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D,  0);
+
 	//Initialisation camera freefly
 	FreeFlyCamera ffCam;
 
@@ -136,7 +153,7 @@ int main(int argc, char** argv) {
 		
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		chunk.render(gProgram, matrixV);
+		chunk.render(gProgram, matrixV, idTexture);
 
 		// Update the display
 		windowManager.swapBuffers();

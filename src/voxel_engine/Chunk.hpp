@@ -17,7 +17,7 @@ public:
 
 	void createMesh();
 
-	void render(GeneralProgram &program, const glm::mat4 viewMatrix);
+	void render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
 
 	void update();
 

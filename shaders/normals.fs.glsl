@@ -7,10 +7,12 @@ in vec2 vFragTexture;
 out vec3 fFragColor;
 
 // uniform vec3 uColor;
-// uniform sampler2D uTexture;
+uniform sampler2D uTexture;
 
 void main() {
 
-	fFragColor = vec3(1, 1, 1);
+	//fFragColor = vec3(1, 1, 1);
+
+	fFragColor = vec3(texture(uTexture, vFragTexture));
 
 }

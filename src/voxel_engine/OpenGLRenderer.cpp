@@ -2,12 +2,12 @@
 
 // Constructor
 OpenGLRenderer::OpenGLRenderer(){
-	glGenBuffers(1, &m_vbo);
+	glGenBuffers(1, &m_buffer[POSITION]);
 }
 
 // Destructor
 OpenGLRenderer::~OpenGLRenderer(){
-	glDeleteBuffers(1, &m_vbo);
+	glDeleteBuffers(1, &m_buffer[POSITION]);
 	glDeleteVertexArrays(1, &m_vao);
 }
 
@@ -17,10 +17,24 @@ void OpenGLRenderer::addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm
 	m_vertices.push_back(position_3);
 }
 
-void OpenGLRenderer::finishVbo(){
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+void OpenGLRenderer::addTexture(glm::vec2 texPos_1, glm::vec2 texPos_2, glm::vec2 texPos_3){
+	m_textures.push_back(texPos_1);
+	m_textures.push_back(texPos_2);
+	m_textures.push_back(texPos_3);
+}
+
+void OpenGLRenderer::finishVboPosition(){
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[POSITION]);
 
 	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(glm::vec3), m_vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void OpenGLRenderer::finishVboTexture(){
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[TEXTURE]);
+
+	glBufferData(GL_ARRAY_BUFFER, m_textures.size() * sizeof(glm::vec2), m_textures.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -32,7 +46,14 @@ void OpenGLRenderer::setVao(){
 
 	glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	if(m_textures.size() != 0)
+	{
+		glEnableVertexAttribArray(VERTEX_ATTR_TEXTCOORD);
+		glBindBuffer(GL_ARRAY_BUFFER, m_buffer[TEXTURE]);
+		glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (const GLvoid*)(0));
+	}
+	
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[POSITION]);
 
 	glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
 
@@ -41,7 +62,7 @@ void OpenGLRenderer::setVao(){
 	glBindVertexArray(0);
 }
 
-void OpenGLRenderer::draw(GeneralProgram &program, const glm::mat4 &viewMatrix){
+void OpenGLRenderer::draw(GeneralProgram &program, const glm::mat4 &viewMatrix, GLuint idTexture){
 	glm::mat4 modelMatrix = glm::mat4(1.f);
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
@@ -57,7 +78,12 @@ void OpenGLRenderer::draw(GeneralProgram &program, const glm::mat4 &viewMatrix){
 
 	glBindVertexArray(m_vao);
 
+	glBindTexture(GL_TEXTURE_2D, idTexture);
+	glUniform1i(program.uTexture, 0);
+
 	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBindVertexArray(0);
 }
