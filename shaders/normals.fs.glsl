@@ -11,8 +11,8 @@ uniform sampler2D uTexture;
 
 void main() {
 
-	//fFragColor = vec3(1, 1, 1);
-
-	fFragColor = vec3(texture(uTexture, vFragTexture));
-
+	// fFragColor = vec3(1, 1, 1);
+	// fFragColor = vec3(texture(uTexture, vFragTexture));
+	
+	fFragColor = vFragViewNormale;
 }

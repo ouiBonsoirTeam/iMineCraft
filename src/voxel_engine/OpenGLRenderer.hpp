@@ -34,9 +34,11 @@ public:
 
 	void addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3);
 	void addTexture(glm::vec2 texPos_1, glm::vec2 texPos_2, glm::vec2 texPos_3);
+	void addNormal(glm::vec3 n);
 
 	void finishVboPosition();
 	void finishVboTexture();
+	void finishVboNormal();
 	void setVao();
 	void draw(GeneralProgram &program, const glm::mat4 &viewMatrix, GLuint idTexture);
 	

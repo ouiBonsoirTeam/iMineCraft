@@ -13,7 +13,7 @@ public:
 	Chunk();
 	~Chunk();
 
-	static const int CHUNK_SIZE = 16;
+	static const int CHUNK_SIZE = 1;
 
 	void createMesh();
 

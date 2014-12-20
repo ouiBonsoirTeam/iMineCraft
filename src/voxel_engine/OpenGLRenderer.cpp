@@ -3,11 +3,15 @@
 // Constructor
 OpenGLRenderer::OpenGLRenderer(){
 	glGenBuffers(1, &m_buffer[POSITION]);
+	glGenBuffers(1, &m_buffer[NORMAL]);
+	glGenBuffers(1, &m_buffer[TEXTURE]);
 }
 
 // Destructor
 OpenGLRenderer::~OpenGLRenderer(){
 	glDeleteBuffers(1, &m_buffer[POSITION]);
+	glDeleteBuffers(1, &m_buffer[NORMAL]);
+	glDeleteBuffers(1, &m_buffer[TEXTURE]);
 	glDeleteVertexArrays(1, &m_vao);
 }
 
@@ -21,6 +25,16 @@ void OpenGLRenderer::addTexture(glm::vec2 texPos_1, glm::vec2 texPos_2, glm::vec
 	m_textures.push_back(texPos_1);
 	m_textures.push_back(texPos_2);
 	m_textures.push_back(texPos_3);
+}
+
+void OpenGLRenderer::addNormal(glm::vec3 n){
+	m_normals.push_back(n);
+	m_normals.push_back(n);
+	m_normals.push_back(n);
+	m_normals.push_back(n);
+	m_normals.push_back(n);
+	m_normals.push_back(n);
+
 }
 
 void OpenGLRenderer::finishVboPosition(){
@@ -39,6 +53,14 @@ void OpenGLRenderer::finishVboTexture(){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void OpenGLRenderer::finishVboNormal(){
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[NORMAL]);
+
+	glBufferData(GL_ARRAY_BUFFER, m_normals.size() * sizeof(glm::vec2), m_normals.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 void OpenGLRenderer::setVao(){
 	glGenVertexArrays(1, &m_vao);
 
@@ -53,6 +75,10 @@ void OpenGLRenderer::setVao(){
 		glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (const GLvoid*)(0));
 	}
 	
+	glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[NORMAL]);
+	glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[POSITION]);
 
 	glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
@@ -71,10 +97,12 @@ void OpenGLRenderer::draw(GeneralProgram &program, const glm::mat4 &viewMatrix, 
 
 	glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
 
-	// Normale à faire
+	// Normale
+	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
 
 	glUniformMatrix4fv(program.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
 	glUniformMatrix4fv(program.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+	glUniformMatrix4fv(program.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
 	glBindVertexArray(m_vao);
 
