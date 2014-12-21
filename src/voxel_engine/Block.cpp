@@ -2,11 +2,12 @@
 
 // Constructors
 Block::Block(){
-	m_active = true;
+	m_active = false;
 }
 
 Block::Block(BlockType blockType){
 	m_blockType = blockType;
+	m_active = false;
 }
 
 // Destructor

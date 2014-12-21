@@ -88,6 +88,7 @@ int main(int argc, char** argv) {
 	FreeFlyCamera ffCam;
 
 	Chunk chunk;
+	chunk.init();
 
 	chunk.createMesh();
 

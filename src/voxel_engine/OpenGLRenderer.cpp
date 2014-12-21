@@ -61,6 +61,13 @@ void OpenGLRenderer::finishVboNormal(){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void OpenGLRenderer::finishVbo()
+{
+	finishVboPosition();
+	finishVboTexture();
+	finishVboNormal();
+}
+
 void OpenGLRenderer::setVao(){
 	glGenVertexArrays(1, &m_vao);
 
