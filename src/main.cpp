@@ -9,6 +9,8 @@
 #include <glimac/FreeFlyCamera.hpp>
 #include <glimac/Torch.hpp>
 
+#include "Skybox.hpp"
+
 using namespace glimac;
 
 /*********************************
@@ -40,7 +42,7 @@ struct Vertex {
 
 int main(int argc, char** argv) {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -53,18 +55,46 @@ int main(int argc, char** argv) {
 	std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
 
+	glEnable(GL_DEPTH_TEST);
+
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 
-	FilePath applicationPath(argv[0]);
+	//Chargement des shaders
+    FilePath applicationPath(argv[0]);
+
+	//Initialisation camera freefly
+	FreeFlyCamera ffCam;
+
+	//initialisation angle
+	float angleX = 0;
+	float angleY = 0;
+	float angleYfinal = 0;
+
+	const float CAMERA_ROT_FACTOR = 0.05f;
+
+	//comme P ne change jamais on peut la declarer a l'initialisation
+	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+
 
 	GeneralProgram gProgram(applicationPath);
 	pointLightProgram lProgram(applicationPath);
-	gProgram.m_Program.use();
+	SkyboxProgram skyProg(applicationPath);
+
+	// gProgram.m_Program.use();
+	// lProgram.m_Program.use();
+	// skyProg.m_Program.use();
+
+	
+	//make me a skybox
+	Skybox skybox;
+	skybox.init(skyProg);
 
 
-	Sphere sphere (1, 32, 16);
+	// make me a torch
+	Torch torch(glm::vec3(6, 0, 0));
+	Sphere sphere (0.5, 32, 16);
 
 	//création vbo
 	GLuint vbo;
@@ -107,21 +137,6 @@ int main(int argc, char** argv) {
 	//debind le vao
 	glBindVertexArray(0);
 
-	//Initialisation camera freefly
-	FreeFlyCamera ffCam;
-
-	//initialisation angle
-	float angleX = 0;
-	float angleY = 0;
-	float angleYfinal = 0;
-
-	const float CAMERA_ROT_FACTOR = 0.05f;
-
-	//comme P ne change jamais on peut la declarer a l'initialisation
-	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
-	// make me a torch
-	Torch torch(glm::vec3(6, 0, 0));
 
 	// Application loop:
 	bool done = false;
@@ -176,25 +191,27 @@ int main(int argc, char** argv) {
 		 * HERE SHOULD COME THE RENDERING CODE
 		 *********************************/
 
-		glm::mat4 matrixV = ffCam.getViewMatrix();
+		glm::mat4 viewMatrix = ffCam.getViewMatrix();
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		skyProg.m_Program.use();
+			skybox.draw(skyProg, viewMatrix);
 
 		lProgram.m_Program.use();
-			torch.draw(lProgram, matrixV);
+			torch.draw(lProgram, viewMatrix);
 
 			glm::vec3 Kd = glm::vec3(1,1,1);
 			glm::vec3 Ks = glm::vec3(1,1,1);
 			float shininess = 3.f;
 
-
-
 			glUniform3f(lProgram.uKd, Kd.r, Kd.g, Kd.b);
 			glUniform3f(lProgram.uKs, Ks.r, Ks.g, Ks.b);
 			glUniform1f(lProgram.uShininess, shininess);
 
-
 			glm::mat4 matrixM = glm::mat4(1.0); 
 
-			glm::mat4 matrixMV = matrixV * matrixM;
+			glm::mat4 matrixMV = viewMatrix * matrixM;
 
 			//calcul de la matrixViewProjetée
 			glm::mat4 matrixMVP = matrixP * matrixMV;
@@ -206,10 +223,9 @@ int main(int argc, char** argv) {
 			glUniformMatrix4fv(lProgram.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
 			glUniformMatrix4fv(lProgram.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
 
+		
 		//bind du vao
 		glBindVertexArray(vao);
-		
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		//dessine triangles
 		glDrawArrays(GL_TRIANGLES, 0, sphere.getVertexCount());
@@ -217,14 +233,18 @@ int main(int argc, char** argv) {
 		//debind du vao
 		glBindVertexArray(0);
 
+
 		// Update the display
 		windowManager.swapBuffers();
+
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glDeleteBuffers(1, &vbo);
 	glDeleteVertexArrays(1, &vao);
+	skybox.destruct();
+
 
 	return EXIT_SUCCESS;
 }

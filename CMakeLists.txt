@@ -30,7 +30,7 @@ if(UPEMLV)
     set(OPENGL_LIBRARIES /usr/lib/x86_64-linux-gnu/libGL.so.1)
 endif(UPEMLV)
 
-include_directories(${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
+include_directories(${SDL2TTF_INCLUDE_DIR} ${SDL2IMAGE_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
 
 if(APPLE)
     set(ALL_LIBRARIES glimac /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
