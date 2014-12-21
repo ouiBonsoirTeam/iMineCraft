@@ -12,6 +12,8 @@ private:
 public:
 
 	static const int CHUNK_SIZE = 8;
+	static const int TAILLE_X_TEXTURE = 4;
+	static const int TAILLE_Y_TEXTURE = 4;
 	// Construtors
 	Chunk();
 	
@@ -22,6 +24,7 @@ public:
 	bool blockExist(int x, int y, int z);
 	glm::mat3 getAdjacentMap(int x, int y, int z);
 	int countAdjacent(glm::mat3 adjacentMap);
+	glm::vec2 getCoordText(const int & x, const int & y, const int & taille_x = TAILLE_X_TEXTURE, const int & taille_y = TAILLE_Y_TEXTURE);
 	glm::vec2 getOcclusionCoordText(glm::mat3 adjacentMap);
 
 	// Create a cube with position and seen sides

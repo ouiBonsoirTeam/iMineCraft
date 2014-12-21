@@ -118,95 +118,92 @@ int Chunk::countAdjacent(glm::mat3 adjacentMap)
 	return sum;
 }
 
+glm::vec2 Chunk::getCoordText(const int & x, const int & y, const int & taille_x, const int & taille_y)
+{
+	return	glm::vec2(x * (1.0 / taille_x), y * (1.0 / taille_y));
+}
+
 glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
 {
 	int nb_adj = countAdjacent(adjacentMap);
-	float row = 0, col = 0;
 
 	int top = adjacentMap[0][1];
 	int bottom = adjacentMap[2][1];
 	int left = adjacentMap[1][0];
 	int right = adjacentMap[1][2];
 
+	glm::vec2 res;
+
 	switch(nb_adj)
 	{
 		case 0:
+			res = getCoordText(0, 0);
 		break;
 
 		case 1:
-			row = 0.25;
-
 			if(top == 1)
-				col = 0;
+				res = getCoordText(0, 1);
 
 			else if(right == 1)
-				col = 0.25;
+				res = getCoordText(1, 1);
 
 			else if(bottom == 1)
-				col = 0.5;
+				res = getCoordText(2, 1);
 
 			else if(left == 1)
-				col = 0.75;
+				res = getCoordText(3, 1);
 		break;
 
 		case 2:
 			if(top == 1 && bottom == 1)
 			{
-				row = 0;
-				col = 0.25;
+				res = getCoordText(1, 0);
 			}
 			else if(left == 1 && right == 1)
 			{
-				row = 0;
-				col = 0.5;
+				res = getCoordText(2, 0);
 			}
 			else if(top == 1 && right == 1)
 			{
-				row = 0.5;
-				col = 0;
+				res = getCoordText(0, 2);
 			}
 			else if(right == 1 && bottom == 1)
 			{
-				row = 0.5;
-				col = 0.25;
+				res = getCoordText(1, 2);
 			}
 			else if(bottom == 1 && left == 1)
 			{
-				row = 0.5;
-				col = 0.5;
+				res = getCoordText(2, 2);
 			}
 			else if(left == 1 && top == 1)
 			{	
-				row = 0.5;
-				col = 0.75;
+				res = getCoordText(3, 2);
 			}
 		break;
 
 		case 3:
-			row = 0.75;
-
 			if(left == 0)
-				col = 0;
+				res = getCoordText(0, 3);
 
 			else if(top == 0)
-				col = 0.25;
+				res = getCoordText(1, 3);
 
 			else if(right == 0)
-				col = 0.5;
+				res = getCoordText(2, 3);
 
 			else if(bottom == 0)
-				col = 0.75;
+				res = getCoordText(3, 3);
 		break;
 
 		case 4:
-			col = 0.75;
+			res = getCoordText(3, 0);
 		break;
 
 		default:
 		break;
 	}
 
-	return glm::vec2(col, row);
+	return res;
 }
 
 void Chunk::createMesh()
@@ -343,7 +340,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	{
 		glm::vec2 text_coord = getOcclusionCoordText(getAdjacentMap(x, y, z));	
 
-		std::cerr << "cube " << x << y << z;
 		n1 = glm::vec3(0.0f, 1.0f, 0.0f);
 		m_pRenderer->addNormal(n1);
 
@@ -354,8 +350,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		m_pRenderer->addTriangle(v4, v8, v7);
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
 		m_pRenderer->addTexture(text_coord + glm::vec2(0, 0.25), text_coord + glm::vec2(0.25, 0), text_coord + glm::vec2(0, 0));
-
-		std::cerr << "_________________________________" << std::endl << std::endl;
 
 	}
 
