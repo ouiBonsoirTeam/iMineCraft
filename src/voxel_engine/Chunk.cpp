@@ -45,6 +45,7 @@ void Chunk::init()
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
+				// Init a sphere
 				if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2.0)
 				{
 					m_pBlocks[x][y][z].setActive();
@@ -56,24 +57,6 @@ void Chunk::init()
 
 void Chunk::createMesh()
 {
-	/*
-	for (int x = 0; x < CHUNK_SIZE; x++)
-	{
-		for (int y = 0; y < CHUNK_SIZE; y++)
-		{
-			for (int z = 0; z < CHUNK_SIZE; z++)
-			{
-				if(m_pBlocks[x][y][z].isActive() == false)
-					continue;
-
-				createCube(x, y, z);
-			}
-		}
-	}
-	*/
-
-
-
 	bool lDefault = true;
 
 	for (int x = 0; x < CHUNK_SIZE; x++)
@@ -116,9 +99,7 @@ void Chunk::createMesh()
 	    }
 	}
 
-	m_pRenderer->finishVboPosition();
-	m_pRenderer->finishVboTexture();
-	m_pRenderer->finishVboNormal();
+	m_pRenderer->finishVbo();
 }
 
 void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
@@ -142,13 +123,9 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	glm::vec3 v7(x-Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
 	glm::vec3 v8(x+Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
 
-	// A FAIRE NORMALE
-	glm::vec3 n1;
 
-	// float r = 1.0f;
-	// float g = 1.0f;
-	// float b = 1.0f;
-	// float a = 1.0f;
+	// Normal
+	glm::vec3 n1;
 
 
 	// Front

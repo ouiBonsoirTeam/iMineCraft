@@ -16,13 +16,19 @@ private:
 	BlockType m_blockType;
 
 public:
-	Block();
-	Block(BlockType blockType);
-	~Block();
-
 	static const int BLOCK_RENDER_SIZE = 1;
 
+	// Constructors
+	Block();
+	Block(BlockType blockType);
+
+	// Getters
 	bool isActive();
+
+	// Setters
 	void setActive();
 	void setInactive();
+
+	// Destructors
+	~Block();
 };
