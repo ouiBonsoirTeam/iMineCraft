@@ -37,8 +37,26 @@ Chunk::~Chunk(){
 	delete m_pRenderer;
 }
 
+void Chunk::init()
+{
+	for (int x = 0; x < CHUNK_SIZE; x++)
+	{
+		for (int y = 0; y < CHUNK_SIZE; y++)
+		{
+			for (int z = 0; z < CHUNK_SIZE; z++)
+			{
+				if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2.0)
+				{
+					m_pBlocks[x][y][z].setActive();
+				}
+			}
+		}		
+	}
+}
+
 void Chunk::createMesh()
 {
+	/*
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int y = 0; y < CHUNK_SIZE; y++)
@@ -51,6 +69,51 @@ void Chunk::createMesh()
 				createCube(x, y, z);
 			}
 		}
+	}
+	*/
+
+
+
+	bool lDefault = true;
+
+	for (int x = 0; x < CHUNK_SIZE; x++)
+	{
+	    for (int y = 0; y < CHUNK_SIZE; y++)
+	    {
+	        for (int z = 0; z < CHUNK_SIZE; z++)
+	        {
+	            if(m_pBlocks[x][y][z].isActive() == false)
+	            {
+	                continue;
+	            }
+
+				bool lXNegative = lDefault;
+	            if(x > 0)
+	                lXNegative = !m_pBlocks[x-1][y][z].isActive();
+
+	            bool lXPositive = lDefault;
+	            if(x < CHUNK_SIZE - 1)
+	                lXPositive = !m_pBlocks[x+1][y][z].isActive();
+
+	            bool lYNegative = lDefault;
+	            if(y > 0)
+	                lYNegative = !m_pBlocks[x][y-1][z].isActive();
+
+	            bool lYPositive = lDefault;
+	            if(y < CHUNK_SIZE - 1)
+	                lYPositive = !m_pBlocks[x][y+1][z].isActive();
+
+	            bool lZNegative = lDefault;
+	            if(z > 0)
+	                lZNegative = !m_pBlocks[x][y][z-1].isActive();
+
+	            bool lZPositive = lDefault;
+	            if(z < CHUNK_SIZE - 1)
+	                lZPositive = !m_pBlocks[x][y][z+1].isActive();
+
+				createCube(x, y, z, lXNegative, lXPositive, lYNegative, lYPositive, lZNegative, lZPositive);
+	        }
+	    }
 	}
 
 	m_pRenderer->finishVboPosition();
@@ -67,7 +130,8 @@ void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint i
 
 void Chunk::update(){}
 
-void Chunk::createCube(const int &x, const int &y, const int &z)
+void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & lXNegative, const bool &lXPositive,
+						const bool &lYNegative, const bool &lYPositive, const bool &lZNegative, const bool &lZPositive)
 {
 	glm::vec3 v1(x-Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
 	glm::vec3 v2(x+Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
@@ -88,62 +152,86 @@ void Chunk::createCube(const int &x, const int &y, const int &z)
 
 
 	// Front
-	n1 = glm::vec3(0.0f, 0.0f, 1.0f);
-	m_pRenderer->addNormal(n1);
+	if(lZPositive)
+	{
+		n1 = glm::vec3(0.0f, 0.0f, 1.0f);
+		m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(v1, v2, v3);
+		m_pRenderer->addTriangle(v1, v2, v3);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-	m_pRenderer->addTriangle(v1, v3, v4);
+		
+		m_pRenderer->addTriangle(v1, v3, v4);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
+	}
 
 
 	// Back
-	n1 = glm::vec3(0.0f, 0.0f, -1.0f);
-	m_pRenderer->addNormal(n1);
+	if(lZNegative)
+	{
+		n1 = glm::vec3(0.0f, 0.0f, -1.0f);
+		m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(v5, v6, v7);
+		m_pRenderer->addTriangle(v5, v6, v7);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-	m_pRenderer->addTriangle(v5, v7, v8);
+		
+		m_pRenderer->addTriangle(v5, v7, v8);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
+	}
 
 	// Right
-	n1 = glm::vec3(1.0f, 0.0f, 0.0f);
-	m_pRenderer->addNormal(n1);
+	if(lXPositive)
+	{
+		n1 = glm::vec3(1.0f, 0.0f, 0.0f);
+		m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(v2, v5, v8);
+		m_pRenderer->addTriangle(v2, v5, v8);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-	m_pRenderer->addTriangle(v2, v8, v3);
+		
+		m_pRenderer->addTriangle(v2, v8, v3);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
+	}
 
 
 	// left
-	n1 = glm::vec3(-1.0f, 0.0f, 0.0f);
-	m_pRenderer->addNormal(n1);
+	if(lXNegative)
+	{
+		n1 = glm::vec3(-1.0f, 0.0f, 0.0f);
+		m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(v6, v1, v4);
+		m_pRenderer->addTriangle(v6, v1, v4);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-	m_pRenderer->addTriangle(v6, v4, v7);
+		
+		m_pRenderer->addTriangle(v6, v4, v7);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
+	}
 
 
 
 	// Top
-	n1 = glm::vec3(0.0f, 1.0f, 0.0f);
-	m_pRenderer->addNormal(n1);
+	if(lYPositive)
+	{
+		n1 = glm::vec3(0.0f, 1.0f, 0.0f);
+		m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(v4, v3, v8);
+		m_pRenderer->addTriangle(v4, v3, v8);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-	m_pRenderer->addTriangle(v4, v8, v7);
+		
+		m_pRenderer->addTriangle(v4, v8, v7);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
+	}
 
 
 	// Bottom
-	n1 = glm::vec3(0.0f, -1.0f, 0.0f);
-	m_pRenderer->addNormal(n1);
+	if(lYNegative)
+	{
+		n1 = glm::vec3(0.0f, -1.0f, 0.0f);
+		m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(v6, v5, v2);
+		m_pRenderer->addTriangle(v6, v5, v2);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-	m_pRenderer->addTriangle(v6, v2, v1);
+		
+		m_pRenderer->addTriangle(v6, v2, v1);
 		m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
+	}
 
 }
