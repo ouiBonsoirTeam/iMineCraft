@@ -11,12 +11,18 @@ private:
 
 public:
 
-	static const int CHUNK_SIZE = 32;
+	static const int CHUNK_SIZE = 4;
 	// Construtors
 	Chunk();
 	
 	// Create the world chunk model
 	void init();
+
+	// Occlusion management
+	bool blockExist(int x, int y, int z);
+	glm::mat3 getAdjacentMap(int x, int y, int z);
+	int countAdjacent(glm::mat3 adjacentMap);
+	glm::vec2 getOcclusionCoordText(glm::mat3 adjacentMap);
 
 	// Create a cube with position and seen sides
 	void createCube(const int &x, const int &y, const int &z, const bool & lXNegative, const bool &lXPositive,
