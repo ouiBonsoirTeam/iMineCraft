@@ -66,6 +66,9 @@ void Chunk::init()
 	}
 
 	m_pBlocks[1][1][1].setActive();
+	m_pBlocks[2][1][2].setActive();
+	m_pBlocks[2][1][1].setActive();
+
 }
 
 bool Chunk::blockExist(int x, int y, int z)
@@ -296,6 +299,8 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 	glm::vec2 text_coord = getOcclusionCoordText(getAdjacentMap(x, y, z));
 
+	text_coord = glm::vec2(text_coord[1], text_coord[0]);
+
 
 	std::cerr << "cube " << x << y << z;;
 	std::cerr << getAdjacentMap(x, y, z) << std::endl << std::endl;
@@ -371,7 +376,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v4, v3, v8);
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-		m_pRenderer->addTexture(text_coord + glm::vec2(0.25, 0), text_coord + glm::vec2(0.25, 0.25), text_coord + glm::vec2(0, 0.25));
+		m_pRenderer->addTexture(text_coord + glm::vec2(0, 0.25), text_coord + glm::vec2(0.25, 0.25), text_coord + glm::vec2(0.25, 0));
 		
 		std::cerr << text_coord + glm::vec2(0.25, 0) << std::endl;
 		std::cerr << text_coord + glm::vec2(0.25, 0.25) << std::endl;
@@ -379,7 +384,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		
 		m_pRenderer->addTriangle(v4, v8, v7);
 		 //m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
-		m_pRenderer->addTexture(text_coord + glm::vec2(0.25, 0), text_coord + glm::vec2(0, 0.25), text_coord + glm::vec2(0, 0));
+		m_pRenderer->addTexture(text_coord + glm::vec2(0, 0.25), text_coord + glm::vec2(0.25, 0), text_coord + glm::vec2(0, 0));
 
 		std::cerr << text_coord + glm::vec2(0.25, 0) << std::endl;
 		std::cerr << text_coord + glm::vec2(0, 0.25) << std::endl;
