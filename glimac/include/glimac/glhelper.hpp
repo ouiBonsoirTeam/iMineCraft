@@ -11,13 +11,18 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <glimac/Image.hpp>
+
+using namespace glimac;
 
 void setupTexture(GLuint& texture);
 void setupTexture(GLuint& texture, SDL_Surface *s);
+//void setupTexture(GLuint& texture, const std::unique_ptr<Image> &s);
 void deleteTexture(GLuint& texture);
 
 void setupCubeMap(GLuint& texture);
-void setupCubeMap(GLuint& texture, SDL_Surface *xpos, SDL_Surface *xneg, SDL_Surface *ypos, SDL_Surface *yneg, SDL_Surface *zpos, SDL_Surface *zneg);
+//void setupCubeMap(GLuint& texture, const std::unique_ptr<Image> &xpos, const std::unique_ptr<Image> &xneg, const std::unique_ptr<Image> &ypos, const std::unique_ptr<Image> &yneg, const std::unique_ptr<Image> &zpos, const std::unique_ptr<Image> &zneg);
+void setupCubeMap(GLuint& texture,SDL_Surface *xpos, SDL_Surface *xneg, SDL_Surface *ypos, SDL_Surface *yneg, SDL_Surface *zpos, SDL_Surface *zneg);
 void deleteCubeMap(GLuint& texture);
 
 void saveTGA(unsigned char* buffer, int width, int height, bool video = false);
