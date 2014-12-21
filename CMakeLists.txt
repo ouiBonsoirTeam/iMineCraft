@@ -11,8 +11,6 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH  ${PROJECT_BINARY_DIR}/lib)
 
 find_package(OpenGL REQUIRED)
-find_package(SDL2Image REQUIRED)
-find_package(SDL2TTF REQUIRED)
 
 if(WIN32)
     set(SDL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third-party/include/Windows)
@@ -35,9 +33,9 @@ endif(UPEMLV)
 include_directories(${SDL2TTF_INCLUDE_DIR} ${SDL2IMAGE_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
 
 if(APPLE)
-    set(ALL_LIBRARIES glimac ${SDL2TTF_LIBRARY} ${SDL2IMAGE_LIBRARIES} /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 else(APPLE)
-    set(ALL_LIBRARIES glimac ${SDL2TTF_LIBRARY} ${SDL2IMAGE_LIBRARIES} ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 endif(APPLE)
 
 # Add the glimac library

@@ -1,85 +1,132 @@
 #include "Skybox.hpp"
 
-#include <glimac/glhelper.hpp>
-#include <glimac/misc.hpp>
-
 using namespace glimac;
+
+bool Skybox::load_cube_map_side (GLenum side_target, const char* file_name)
+{
+  glBindTexture (GL_TEXTURE_CUBE_MAP, m_texture);
+
+  int x, y, n;
+  int force_channels = 4;
+  unsigned char*  image_data = stbi_load (
+    file_name, &x, &y, &n, force_channels);
+  if (!image_data) {
+    fprintf (stderr, "ERROR: could not load %s\n", file_name);
+    return false;
+  }
+  // non-power-of-2 dimensions check
+  if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) {
+    fprintf (
+      stderr, "WARNING: image %s is not power-of-2 dimensions\n", file_name
+    );
+  }
+  
+  // copy image data into 'target' side of cube map
+  glTexImage2D (
+	side_target,
+	0,
+	GL_RGBA,
+	x,
+	y,
+	0,
+	GL_BGRA,
+	GL_UNSIGNED_BYTE,
+	image_data
+  );
+  free (image_data);
+  return true;
+}
+
+void Skybox::create_cube_map (
+	const char* front,
+	const char* back,
+	const char* top,
+	const char* bottom,
+	const char* left,
+	const char* right)
+{
+	// generate a cube-map texture to hold all the sides
+	glActiveTexture (GL_TEXTURE0);
+	glGenTextures (1, &m_texture);
+
+	// load each image and copy into a side of the cube-map texture
+	assert (load_cube_map_side (GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, front));
+	assert (load_cube_map_side (GL_TEXTURE_CUBE_MAP_POSITIVE_Z, back));
+	assert (load_cube_map_side (GL_TEXTURE_CUBE_MAP_POSITIVE_Y, top));
+	assert (load_cube_map_side (GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, bottom));
+	assert (load_cube_map_side (GL_TEXTURE_CUBE_MAP_NEGATIVE_X, left));
+	assert (load_cube_map_side (GL_TEXTURE_CUBE_MAP_POSITIVE_X, right));
+	// format cube map texture
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
 
 void Skybox::init(SkyboxProgram &skyProg)
 {
-	// set up the cube map texture
+	create_cube_map ( "bin/assets/skybox/v1/zneg.png",
+					  "bin/assets/skybox/v1/zpos.png",
+					  "bin/assets/skybox/v1/ypos.png",
+					  "bin/assets/skybox/v1/yneg.png",
+					  "bin/assets/skybox/v1/xneg.png",
+					  "bin/assets/skybox/v1/xpos.png"
+					);
 
-	// std::unique_ptr<Image> xpos = loadImage("bin/assets/skybox/xpos.png");
-	// std::unique_ptr<Image> ypos = loadImage("bin/assets/skybox/xpos.png");
-	// std::unique_ptr<Image> zpos = loadImage("bin/assets/skybox/xpos.png");
-	// std::unique_ptr<Image> xneg = loadImage("bin/assets/skybox/xpos.png");
-	// std::unique_ptr<Image> yneg = loadImage("bin/assets/skybox/xpos.png");
-	// std::unique_ptr<Image> zneg = loadImage("bin/assets/skybox/xpos.png");
+	float vertices[] = {
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
 
-	SDL_Surface *xpos = IMG_Load("bin/assets/skybox/xpos.png");	SDL_Surface *xneg = IMG_Load("bin/assets/skybox/xneg.png");
-	SDL_Surface *ypos = IMG_Load("bin/assets/skybox/ypos.png");	SDL_Surface *yneg = IMG_Load("bin/assets/skybox/yneg.png");
-	SDL_Surface *zpos = IMG_Load("bin/assets/skybox/zpos.png");	SDL_Surface *zneg = IMG_Load("bin/assets/skybox/zneg.png");
-	
-	if (xpos == NULL)
-		std::cerr << "Error while charging texture. " << std::endl;
-	if (ypos == NULL)
-		std::cerr << "Error while charging texture. " << std::endl;
-	if (zpos == NULL)
-		std::cerr << "Error while charging texture. " << std::endl;
-	if (xneg == NULL)
-		std::cerr << "Error while charging texture. " << std::endl;
-	if (yneg == NULL)
-		std::cerr << "Error while charging texture. " << std::endl;
-	if (zneg == NULL)
-		std::cerr << "Error while charging texture. " << std::endl;
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
 
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
 
-	GLuint _texture;
-	setupCubeMap(_texture, xpos, xneg, ypos, yneg, zpos, zneg);
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
 
+		-1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
 
-	SDL_FreeSurface(xneg);	SDL_FreeSurface(xpos);
-	SDL_FreeSurface(yneg);	SDL_FreeSurface(ypos);
-	SDL_FreeSurface(zneg);	SDL_FreeSurface(zpos);
-
-
-	// cube vertices for vertex buffer object
-	GLfloat cube_vertices[] = {
-	  -1.0,  1.0,  1.0,
-	  -1.0, -1.0,  1.0,
-	   1.0, -1.0,  1.0,
-	   1.0,  1.0,  1.0,
-	  -1.0,  1.0, -1.0,
-	  -1.0, -1.0, -1.0,
-	   1.0, -1.0, -1.0,
-	   1.0,  1.0, -1.0
-	};
-	GLuint _vbo;
-	glGenBuffers(1, &_vbo);
-
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-	// cube indices for index buffer object
-	GLushort _cube_indices[] = {
-	  0, 1, 2, 3,
-	  3, 2, 6, 7,
-	  7, 6, 5, 4,
-	  4, 5, 1, 0,
-	  0, 3, 7, 4,
-	  1, 2, 6, 5
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f
 	};
 
-	GLuint _ibo;
-	glGenBuffers(1, &_ibo);
+	glGenBuffers (1, &m_vbo);
+	glBindBuffer (GL_ARRAY_BUFFER, m_vbo);
+	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_cube_indices), _cube_indices, GL_STATIC_DRAW);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glEnableVertexAttribArray(skyProg.vertex);
-	glVertexAttribPointer(skyProg.vertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glGenVertexArrays (1, &m_vao);
+	glBindVertexArray (m_vao);
+	glEnableVertexAttribArray (0);
+	glBindBuffer (GL_ARRAY_BUFFER, m_vbo);
+	glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	
 }
 
@@ -101,17 +148,21 @@ void Skybox::draw(SkyboxProgram &skyProg, const glm::mat4 &viewMatrix)
 
 	glUniformMatrix4fv(skyProg.PVM, 1, GL_FALSE, glm::value_ptr(rotateCamMat));
 
-	glDrawElements(GL_QUADS, sizeof(_cube_indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+	glActiveTexture (GL_TEXTURE0);
+	glBindTexture (GL_TEXTURE_CUBE_MAP, m_texture);
+	glBindVertexArray (m_vao);
+	glDrawArrays (GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
 
 }
 
 void Skybox::destruct()
 {
 	// release vertex and index buffer object
-	glDeleteBuffers(1, &_ibo);
-	glDeleteBuffers(1, &_vbo);
+	glDeleteVertexArrays(1, &m_vao);
+	glDeleteBuffers(1, &m_vbo);
 
 	// release cube map
-	deleteCubeMap(_texture);
+	glDeleteTextures(1, &m_texture);
 }
 

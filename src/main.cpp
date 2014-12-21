@@ -144,10 +144,6 @@ int main(int argc, char** argv) {
 
 		glm::mat4 viewMatrix = ffCam.getViewMatrix();
 
-		//calcul de la normal matrix = (MVinverse)Transposée
-		//glm::mat4 normalMatrix = glm::transpose(glm::inverse(matrixMV));
-
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		skybox.draw(skyProg, viewMatrix);
