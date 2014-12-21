@@ -21,7 +21,7 @@ class OpenGLRenderer
     std::vector<glm::vec2> m_textures;
 
     const static GLuint VERTEX_ATTR_POSITION = 0;
-	Constructort static GLuint VERTEX_ATTR_NORMAL = 1;
+	const static GLuint VERTEX_ATTR_NORMAL = 1;
 	const static GLuint VERTEX_ATTR_TEXTCOORD = 2;
 
 public:
