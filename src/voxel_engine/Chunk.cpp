@@ -65,9 +65,12 @@ void Chunk::init()
 		}	
 	}
 
-	m_pBlocks[1][1][1].setActive();
 	m_pBlocks[2][1][2].setActive();
-	m_pBlocks[2][1][1].setActive();
+	m_pBlocks[3][1][3].setActive();
+	m_pBlocks[3][1][2].setActive();
+
+	m_pBlocks[5][1][4].setActive();
+	m_pBlocks[5][1][6].setActive();
 
 }
 
@@ -78,47 +81,26 @@ bool Chunk::blockExist(int x, int y, int z)
 
 glm::mat3 Chunk::getAdjacentMap(int x, int y, int z)
 {
-	glm::mat3 adjacentMap = glm::mat3(0);
-	int i, j, k;
+    glm::mat3 adjacentMap = glm::mat3(0);  
 
-	i = x + 1;
-	j = y + 1;
-	k = z - 1;
-	// if(blockExist(i, j, k) && m_pBlocks[i][j][k].isActive())
-	// 	adjacentMap[0][0] = 1;
+    //left
+    
+    if(blockExist(x-1, y+1, z) && m_pBlocks[x-1][y+1][z].isActive())
+        adjacentMap[1][0] = 1;
 
-	k = z + 1;
-	i = x - 1;
-	if(blockExist(i, j, k) && m_pBlocks[i][j][k].isActive())
-		adjacentMap[1][0] = 1;
+    //top
+    if(blockExist(x, y+1, z-1) && m_pBlocks[x][y+1][z-1].isActive())
+        adjacentMap[0][1] = 1;
+    
+    //bottom
+    if(blockExist(x, y+1, z+1) && m_pBlocks[x][y+1][z+1].isActive())
+        adjacentMap[2][1] = 1;
 
-	k = z + 1;
-	// if(blockExist(i, j, k) && m_pBlocks[i][j][k].isActive())
-	// 	adjacentMap[2][0] = 1;
+    //right
+    if(blockExist(x+1, y+1, z) && m_pBlocks[x+1][y+1][z].isActive())
+        adjacentMap[1][2] = 1;
 
-	i = x;
-	k = z - 1;
-	if(blockExist(i, j, k) && m_pBlocks[i][j][k].isActive())
-		adjacentMap[0][1] = 1;
-
-	k = z + 1;
-	if(blockExist(i, j, k) && m_pBlocks[i][j][k].isActive())
-		adjacentMap[2][1] = 1;
-
-	i = x + 1;
-	k = z - 1;
-	// if(blockExist(i, j, k) && m_pBlocks[i][j][k].isActive())
-	// 	adjacentMap[0][2] = 1;
-
-	k = z;
-	if(blockExist(i, j, k) && m_pBlocks[i][j][k].isActive())
-		adjacentMap[1][2] = 1;
-
-	k = z + 1;
-	// if(blockExist(i, j, k) && m_pBlocks[i][j][k].isActive())
-	// 	adjacentMap[2][2] = 1;
-
-	return adjacentMap;
+    return adjacentMap;
 }
 
 
@@ -201,8 +183,6 @@ glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
 		break;
 
 		case 3:
-			std::cerr << "ca va gueuler" << std::endl << std::endl;
-			std::cerr << adjacentMap << std::endl << std::endl;
 			row = 0.75;
 
 			if(left == 0)
@@ -226,7 +206,7 @@ glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
 		break;
 	}
 
-	return glm::vec2(row, col);
+	return glm::vec2(col, row);
 }
 
 void Chunk::createMesh()
@@ -297,16 +277,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	glm::vec3 v7(x-Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
 	glm::vec3 v8(x+Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
 
-	glm::vec2 text_coord = getOcclusionCoordText(getAdjacentMap(x, y, z));
-
-	text_coord = glm::vec2(text_coord[1], text_coord[0]);
-
-
-	std::cerr << "cube " << x << y << z;;
-	std::cerr << getAdjacentMap(x, y, z) << std::endl << std::endl;
-	std::cerr << text_coord << std::endl << std::endl;
-
-
 
 	// Normal
 	glm::vec3 n1;
@@ -371,6 +341,9 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	// Top
 	if(lYPositive)
 	{
+		glm::vec2 text_coord = getOcclusionCoordText(getAdjacentMap(x, y, z));	
+
+		std::cerr << "cube " << x << y << z;
 		n1 = glm::vec3(0.0f, 1.0f, 0.0f);
 		m_pRenderer->addNormal(n1);
 
@@ -378,20 +351,15 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
 		m_pRenderer->addTexture(text_coord + glm::vec2(0, 0.25), text_coord + glm::vec2(0.25, 0.25), text_coord + glm::vec2(0.25, 0));
 		
-		std::cerr << text_coord + glm::vec2(0.25, 0) << std::endl;
-		std::cerr << text_coord + glm::vec2(0.25, 0.25) << std::endl;
-		std::cerr << text_coord + glm::vec2(0, 0.25) << std::endl << std::endl;
-		
 		m_pRenderer->addTriangle(v4, v8, v7);
-		 //m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
+		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
 		m_pRenderer->addTexture(text_coord + glm::vec2(0, 0.25), text_coord + glm::vec2(0.25, 0), text_coord + glm::vec2(0, 0));
 
-		std::cerr << text_coord + glm::vec2(0.25, 0) << std::endl;
-		std::cerr << text_coord + glm::vec2(0, 0.25) << std::endl;
-		std::cerr << text_coord + glm::vec2(0, 0) << std::endl << std::endl;
 		std::cerr << "_________________________________" << std::endl << std::endl;
+
 	}
 
+	
 
 	// Bottom
 	if(lYNegative)

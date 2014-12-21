@@ -11,7 +11,7 @@ private:
 
 public:
 
-	static const int CHUNK_SIZE = 4;
+	static const int CHUNK_SIZE = 8;
 	// Construtors
 	Chunk();
 	
