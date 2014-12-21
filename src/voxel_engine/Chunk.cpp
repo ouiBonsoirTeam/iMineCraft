@@ -3,21 +3,18 @@
 
 
 // Constructor
-Chunk::Chunk(){
-	// Create the blocks
-    m_pBlocks = new Block**[CHUNK_SIZE];
+Chunk::Chunk()
+{
+    m_setup = false;
+    m_loaded = true;
 
-    for(int i = 0; i < CHUNK_SIZE; i++)
-    {
-        m_pBlocks[i] = new Block*[CHUNK_SIZE];
+}
 
-        for(int j = 0; j < CHUNK_SIZE; j++)
-        {
-            m_pBlocks[i][j] = new Block[CHUNK_SIZE];
-        }
-    }
-
-    m_pRenderer = new OpenGLRenderer;
+Chunk::Chunk(glm::vec3 position)
+{
+    m_setup = false;
+    m_loaded = true;
+    m_position = position;
 }
 
 // Destructor
@@ -140,3 +137,70 @@ Block*** Chunk::getBlocks()
 {
     return m_pBlocks;
 }
+
+bool Chunk::isLoaded()
+{
+    return m_loaded;
+}
+
+bool Chunk::isSetup()
+{
+    return m_setup;
+}
+
+void Chunk::load()    //a coder
+{}
+
+void Chunk::setup()
+{
+    // Create the blocks
+    m_pBlocks = new Block**[CHUNK_SIZE];
+
+    for(int i = 0; i < CHUNK_SIZE; i++)
+    {
+        m_pBlocks[i] = new Block*[CHUNK_SIZE];
+
+        for(int j = 0; j < CHUNK_SIZE; j++)
+        {
+            m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+        }
+    }
+
+    m_pRenderer = new OpenGLRenderer;
+
+    m_setup = true; 
+}
+
+void Chunk::rebuildMesh()
+{
+    for (int x = 0; x < CHUNK_SIZE; x++)
+    {
+        for (int y = 0; y < CHUNK_SIZE; y++)
+        {
+            // CUBE
+            for (int z = 0; z < CHUNK_SIZE; z++)
+            {
+                if(m_pBlocks[x][y][z].isActive() == false)
+                    continue;
+
+                createCube(x, y, z);
+            }
+            
+        }
+    }
+
+    m_pRenderer->finishVbo();
+}
+
+void Chunk::destructBlock(const int &x, const int &y, const int &z)
+{
+    m_pBlocks[x][y][z].setInactive();
+}
+
+void Chunk::constructBlock(const int &x, const int &y, const int &z)
+{
+    m_pBlocks[x][y][z].setActive();
+}
+
+
+
