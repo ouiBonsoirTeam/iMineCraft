@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+
 #include <glimac/glm.hpp>
 #include <iostream>
 
@@ -35,6 +36,12 @@ Chunk::~Chunk(){
 	delete [] m_pBlocks;
 
 	delete m_pRenderer;
+}
+
+// Getter
+Block*** Chunk::getBlocks() const
+{
+	return m_pBlocks;
 }
 
 void Chunk::init()

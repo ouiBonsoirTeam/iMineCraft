@@ -16,6 +16,9 @@ public:
 	static const int TAILLE_Y_TEXTURE = 16;
 	// Construtors
 	Chunk();
+
+	// Getter
+	Block*** getBlocks() const;
 	
 	// Create the world chunk model
 	void init();

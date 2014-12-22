@@ -99,7 +99,6 @@ int main(int argc, char** argv) {
 	float angleYfinal = 0;
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
-	const float PLAYER_SPEED =0.05f;
 
 	float lastTime = windowManager.getTime();
 	int nbFrames = 0;
@@ -108,7 +107,7 @@ int main(int argc, char** argv) {
 	bool done = false;
 	while(!done) {
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,PLAYER_SPEED,done,chunk);
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunk);
 
 				
 

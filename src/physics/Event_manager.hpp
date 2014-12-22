@@ -10,9 +10,14 @@ void event_manager(SDLWindowManager& windowManager,
 				   FreeFlyCamera& ffCam,
 				   float& angleX,float& angleY,float& angleYfinal,
 				   float CAMERA_ROT_FACTOR,
-				   float PLAYER_SPEED,
 				   bool& done,
 				   Chunk& chunk){
+
+
+	Block*** blocks = chunk.getBlocks();
+	const float INERTIA_FACTOR = 1.0005;
+	float gravityFactor = 0.005f;
+	float playerSpeed = 0.01f;
 
 
 
@@ -49,32 +54,41 @@ void event_manager(SDLWindowManager& windowManager,
 			
 	if(windowManager.isKeyPressed(SDLK_z)) 
 	{
-		ffCam.moveFront(PLAYER_SPEED);
-		if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
+		if(!blocks[(int)(ffCam.getPosition().x+0.5)][(int)ffCam.getPosition().y][(int)ffCam.getPosition().z].isActive())
 		{
-			ffCam.moveFront(PLAYER_SPEED);
+			ffCam.moveFront(playerSpeed);
+			ffCam.setInertia(ffCam.getFrontVector()*playerSpeed);
+
+			if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
+			{
+				ffCam.moveFront(playerSpeed);
+			}
 		}
+		else ffCam.setInertia(glm::vec3(0,0,0));
 	}
 	
 	else if(windowManager.isKeyPressed(SDLK_s)) 
 	{
-		ffCam.moveFront(-PLAYER_SPEED);
+		ffCam.moveFront(-playerSpeed);
+		ffCam.setInertia(ffCam.getFrontVector()*(-playerSpeed));
 	}
 	if(windowManager.isKeyPressed(SDLK_q)) 
 	{
-		ffCam.moveLeft(PLAYER_SPEED);
+		ffCam.moveLeft(playerSpeed);
+		ffCam.setInertia(ffCam.getLeftVector()*playerSpeed);
 	}
 	else if(windowManager.isKeyPressed(SDLK_d)) 
 	{
-		ffCam.moveLeft(-PLAYER_SPEED);
+		ffCam.moveLeft(-playerSpeed);
+		ffCam.setInertia(ffCam.getLeftVector()*(-playerSpeed));
 	}
 	if(windowManager.isKeyPressed(SDLK_SPACE)) 
 	{
-		ffCam.moveUp(PLAYER_SPEED);
+		ffCam.moveUp(playerSpeed);
 	}
 	else if(windowManager.isKeyPressed(SDLK_b)) 
 	{
-		ffCam.moveUp(-PLAYER_SPEED);
+		ffCam.moveUp(-playerSpeed);
 	}
 
 
@@ -84,29 +98,8 @@ void event_manager(SDLWindowManager& windowManager,
 
 	// INERTIA
 
-	const float INERTIA_FACTOR = 1.005;
 
-	if(windowManager.isKeyPressed(SDLK_z)) 
-		{
-			ffCam.setInertia(ffCam.getFrontVector()*PLAYER_SPEED);
-		}
-	if(windowManager.isKeyPressed(SDLK_s)) 
-		{
-			ffCam.setInertia(ffCam.getFrontVector()*(-PLAYER_SPEED));
-		}
-	if(windowManager.isKeyPressed(SDLK_q)) 
-		{
-			ffCam.setInertia(ffCam.getLeftVector()*PLAYER_SPEED);
-		}
-	if(windowManager.isKeyPressed(SDLK_d)) 
-		{
-			ffCam.setInertia(ffCam.getLeftVector()*(-PLAYER_SPEED));
-		}
-	
-
-
-
-	if (sqrt(ffCam.getInertia().x*ffCam.getInertia().x + ffCam.getInertia().z*ffCam.getInertia().z) > 0.005
+	if (sqrt(ffCam.getInertia().x*ffCam.getInertia().x + ffCam.getInertia().z*ffCam.getInertia().z) > 0.001
 		&& !windowManager.isKeyPressed(SDLK_z)
 		&& !windowManager.isKeyPressed(SDLK_s)
 		&& !windowManager.isKeyPressed(SDLK_q)
@@ -117,25 +110,26 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.slide(ffCam.getInertia());
 	}
 
-
-
-	// GRAVITY
-
-	float gravityFactor = 0.005f;
-
 	
 
-	// TEST COLLISION
-	/*
-	Block*** blocks = chunk.getBlocks();
+	// COLLISION
+	
 	if(blocks[(int)ffCam.getPosition().x][(int)ffCam.getPosition().y-1][(int)ffCam.getPosition().z].isActive())
 		{
 			gravityFactor = 0.00f;
-			std::cerr<<"zizi"<<std::endl;
 		}
 
+
+
+
+
+
+
+
+
+
 	// GRAVITY
-*/
+
 	ffCam.moveUp(-gravityFactor);
 
 };
