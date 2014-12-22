@@ -11,6 +11,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH  ${PROJECT_BINARY_DIR}/lib)
 
 find_package(OpenGL REQUIRED)
+find_package(JsonCpp REQUIRED)
 
 if(WIN32)
     set(SDL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third-party/include/Windows)
@@ -30,12 +31,12 @@ if(UPEMLV)
     set(OPENGL_LIBRARIES /usr/lib/x86_64-linux-gnu/libGL.so.1)
 endif(UPEMLV)
 
-include_directories(${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
+include_directories(${JSONCPP_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
 
 if(APPLE)
-    set(ALL_LIBRARIES glimac /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac ${JSONCPP_LIBRARIES} /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 else(APPLE)
-    set(ALL_LIBRARIES glimac ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac ${JSONCPP_LIBRARIES} ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 endif(APPLE)
 
 # Add the glimac library
@@ -81,8 +82,8 @@ macro(ADD_ASSET_DIRECTORY directory)
     endif()
 endmacro()
 
-file(GLOB_RECURSE HEADER_FILES src/*.hpp) # get all headers
-file(GLOB_RECURSE SRC_FILES src/*.cpp) # get all sources files
+file(GLOB HEADER_FILES src/*.hpp) # get all headers
+file(GLOB SRC_FILES src/*.cpp) # get all sources files
 file(GLOB_RECURSE SHADER_FILES shaders/*.glsl) # get all shaders
 file(GLOB_RECURSE ASSET_FILES assets/*) # get all the assets
 
