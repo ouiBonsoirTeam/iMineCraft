@@ -1,5 +1,7 @@
 #include "ChunkManager.hpp"
-
+#include <jsoncpp/json/json.h>
+#include <iostream>
+#include <fstream>
 
 void ChunkManager::updateLoadList()
 {
@@ -145,5 +147,33 @@ void ChunkManager::updateRenderList()
         
 }
 
+void ChunkManager::loadJsonFile(const std::string& fileName ){
+    std::ifstream file;
+    file.open(fileName);
+    std::string str, contents;
 
+     Json::Value root;   // will contains the root value after parsing
+    Json::Reader reader;
+
+    if (file.is_open())
+    {
+        while (std::getline(file, str))
+        {
+            contents += str;
+        }  
+        file.close();
+    }
+    else std::cout << "Unable to open file";
+
+    bool parsingSuccessful = reader.parse(contents, root);
+    if ( !parsingSuccessful )
+    {
+        // report to the user the failure and their locations in the document.
+        std::cout  << "Failed to parse configuration\n"
+                   << reader.getFormattedErrorMessages();
+        return;
+    }
+    else
+        std::cout << "Fichier chargé" << std::endl;
+}
 

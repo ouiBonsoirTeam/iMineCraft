@@ -23,18 +23,18 @@ class ChunkManager
 	const static int NUM_CHUNKS_PER_FRAME = 3;
 
 public:
-	ChunkManager();
-	~ChunkManager();
+	ChunkManager(){};
+	~ChunkManager(){};
 
+	// Update fonctions
 	void update(float dt, glm::vec3 cameraPosition, glm::vec3 cameraView);
 	void updateLoadList();
 	void updateunLoadList();
 	void updateSetupList();
 	void updateRebuildList();
-
 	void updateVisibilityList();
 	void updateUnloadList();
-
-
 	void updateRenderList();
+
+	void loadJsonFile(const std::string& fileName);
 };

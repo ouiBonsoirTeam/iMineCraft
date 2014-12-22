@@ -1,5 +1,4 @@
 #include <GL/glew.h>
-#include <iostream>
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/Program.hpp>
 #include <glimac/Image.hpp>
@@ -10,6 +9,7 @@
 #include <glimac/Torch.hpp>
 
 #include "voxel_engine/Chunk.hpp"
+#include "voxel_engine/ChunkManager.hpp"
 
 using namespace glimac;
 
@@ -71,6 +71,11 @@ int main(int argc, char** argv) {
 	Chunk chunk;
 	chunk.setup();
 	chunk.createMesh();
+
+	// TEST
+
+	ChunkManager chunkmanager;
+	chunkmanager.loadJsonFile("bin/assets/saves/test.json");
 
 	//initialisation angle
 	float angleX = 0;
