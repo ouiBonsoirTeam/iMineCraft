@@ -349,7 +349,8 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	// Normal
 	glm::vec3 n1;
 
-	glm::vec2 textCoord_caisse = getCoordText(0, 16);
+	glm::vec2 textCoord_up = getCoordText(0, 16);
+	glm::vec2 textCoord_side = getCoordText(1, 16);
 
 	glm::vec2 occluDefault = getCoordText(0,0);
 
@@ -362,15 +363,15 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v1, v2, v3);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,1), occluDefault + getCoordText(1,1)),
-								  glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,1), occluDefault + getCoordText(1,1)),
+								  glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)));
 		
 		m_pRenderer->addTriangle(v1, v3, v4);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)),
-								  glm::vec4(textCoord_caisse + getCoordText(0,0), occluDefault + getCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)),
+								  glm::vec4(textCoord_side + getCoordText(0,0), occluDefault + getCoordText(0,0)));
 	}
 
 
@@ -382,15 +383,15 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v5, v6, v7);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,1), occluDefault + getCoordText(1,1)),
-								  glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,1), occluDefault + getCoordText(1,1)),
+								  glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)));
 		
 		m_pRenderer->addTriangle(v5, v7, v8);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)),
-								  glm::vec4(textCoord_caisse + getCoordText(0,0), occluDefault + getCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)),
+								  glm::vec4(textCoord_side + getCoordText(0,0), occluDefault + getCoordText(0,0)));
 	}
 
 	// Right
@@ -401,15 +402,15 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v2, v5, v8);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,1), occluDefault + getCoordText(1,1)),
-								  glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,1), occluDefault + getCoordText(1,1)),
+								  glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)));
 		
 		m_pRenderer->addTriangle(v2, v8, v3);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)),
-								  glm::vec4(textCoord_caisse + getCoordText(0,0), occluDefault + getCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)),
+								  glm::vec4(textCoord_side + getCoordText(0,0), occluDefault + getCoordText(0,0)));
 	}
 
 
@@ -421,15 +422,15 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v6, v1, v4);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,1), occluDefault + getCoordText(1,1)),
-								  glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,1), occluDefault + getCoordText(1,1)),
+								  glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)));
 		
 		m_pRenderer->addTriangle(v6, v4, v7);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)),
-								  glm::vec4(textCoord_caisse + getCoordText(0,0), occluDefault + getCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)),
+								  glm::vec4(textCoord_side + getCoordText(0,0), occluDefault + getCoordText(0,0)));
 	}
 
 
@@ -444,15 +445,15 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v4, v3, v8);
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), text_occlu + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,1),  text_occlu + getCoordText(1,1)),
-								  glm::vec4(textCoord_caisse + getCoordText(1,0), text_occlu + getCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_up + getCoordText(0,1), text_occlu + getCoordText(0,1)),
+								 glm::vec4(textCoord_up + getCoordText(1,1),  text_occlu + getCoordText(1,1)),
+								  glm::vec4(textCoord_up + getCoordText(1,0), text_occlu + getCoordText(1,0)));
 		
 		m_pRenderer->addTriangle(v4, v8, v7);
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), text_occlu + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,0), text_occlu + getCoordText(1,0)),
-								  glm::vec4(textCoord_caisse + getCoordText(0,0), text_occlu + getCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_up + getCoordText(0,1), text_occlu + getCoordText(0,1)),
+								 glm::vec4(textCoord_up + getCoordText(1,0), text_occlu + getCoordText(1,0)),
+								  glm::vec4(textCoord_up + getCoordText(0,0), text_occlu + getCoordText(0,0)));
 
 	}
 
@@ -465,15 +466,15 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		m_pRenderer->addNormal(n1);
 
 		m_pRenderer->addTriangle(v6, v5, v2);
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,1), occluDefault + getCoordText(1,1)),
-								  glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,1), occluDefault + getCoordText(1,1)),
+								  glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)));
 		
 		m_pRenderer->addTriangle(v6, v2, v1);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_caisse + getCoordText(0,1), occluDefault + getCoordText(0,1)),
-								 glm::vec4(textCoord_caisse + getCoordText(1,0), occluDefault + getCoordText(1,0)),
-								  glm::vec4(textCoord_caisse + getCoordText(0,0), occluDefault + getCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + getCoordText(0,1), occluDefault + getCoordText(0,1)),
+								 glm::vec4(textCoord_side + getCoordText(1,0), occluDefault + getCoordText(1,0)),
+								  glm::vec4(textCoord_side + getCoordText(0,0), occluDefault + getCoordText(0,0)));
 	}
 
 }

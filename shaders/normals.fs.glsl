@@ -20,7 +20,7 @@ void main() {
 	// vec4 colPuppy = texture(texPuppy, Texcoord);
 	// outColor = mix(colKitten, colPuppy, 0.5);
 
-	// fFragColor = vec3(texture(uTexture, vFragTexture.xy)+ (texture(uTexture, vFragTexture.zw)));
+	//fFragColor = vec3(texture(uTexture, vFragTexture.xy));//+ (texture(uTexture, vFragTexture.zw)));
 	
 	// fFragColor = normalize(vFragViewNormale + vec3(0.2, 0.2, 0.2));
 }
