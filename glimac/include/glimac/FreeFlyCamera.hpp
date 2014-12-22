@@ -63,6 +63,8 @@ public:
 
 	glm::vec3 getLeftVector() const;
 
+	glm::vec3 getUpVector() const;
+
 	glm::vec3 getInertia() const;
 
 

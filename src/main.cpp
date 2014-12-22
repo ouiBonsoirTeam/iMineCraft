@@ -43,7 +43,7 @@ struct Vertex {
 
 int main(int argc, char** argv) {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -100,6 +100,7 @@ int main(int argc, char** argv) {
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
 
+
 	float lastTime = windowManager.getTime();
 	int nbFrames = 0;
 
@@ -116,7 +117,7 @@ int main(int argc, char** argv) {
 		nbFrames++;
 		if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
 		    // printf and reset timer
-		    //std::cout << "fps : " << nbFrames << std::endl;
+		    std::cout << "fps : " << nbFrames << std::endl;
 		    nbFrames = 0;
 		    lastTime += 1.0;
 		    }

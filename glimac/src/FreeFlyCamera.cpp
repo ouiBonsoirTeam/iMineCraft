@@ -96,6 +96,11 @@ namespace glimac
 		return m_LeftVector;
 	}
 
+	glm::vec3 FreeFlyCamera::getUpVector() const
+	{
+		return m_UpVector;
+	}
+
 	glm::vec3 FreeFlyCamera::getInertia() const
 	{
 		return m_Inertia;
