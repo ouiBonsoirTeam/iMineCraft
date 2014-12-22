@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
-	texturePointer = loadImage("../iMineCraft/assets/textures/ambiant_occlusion_4x4.png");
+	texturePointer = loadImage("../iMineCraft/assets/textures/ambiant_occlusion_16x16.png");
 	if(texturePointer == NULL)
 	{
 		std::cerr << "Error while charging texture." << std::endl;

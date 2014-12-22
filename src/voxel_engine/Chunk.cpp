@@ -72,6 +72,26 @@ void Chunk::init()
 	m_pBlocks[5][1][4].setActive();
 	m_pBlocks[5][1][6].setActive();
 
+	m_pBlocks[8][1][6].setActive();
+	m_pBlocks[9][1][6].setActive();
+	m_pBlocks[10][1][6].setActive();
+	m_pBlocks[4][1][16].setActive();
+	m_pBlocks[6][1][16].setActive();
+	m_pBlocks[6][1][16].setActive();
+	m_pBlocks[6][1][16].setActive();
+	m_pBlocks[16][1][8].setActive();
+	m_pBlocks[16][1][7].setActive();
+	m_pBlocks[15][1][6].setActive();
+	m_pBlocks[13][1][6].setActive();
+	m_pBlocks[4][1][8].setActive();
+	m_pBlocks[12][1][10].setActive();
+	m_pBlocks[12][1][11].setActive();
+	m_pBlocks[13][1][12].setActive();
+	m_pBlocks[10][1][2].setActive();
+	m_pBlocks[13][1][9].setActive();
+	m_pBlocks[13][1][11].setActive();
+
+
 }
 
 bool Chunk::blockExist(int x, int y, int z)
@@ -83,22 +103,41 @@ glm::mat3 Chunk::getAdjacentMap(int x, int y, int z)
 {
     glm::mat3 adjacentMap = glm::mat3(0);  
 
-    //left
-    
-    if(blockExist(x-1, y+1, z) && m_pBlocks[x-1][y+1][z].isActive())
-        adjacentMap[1][0] = 1;
+    //leftTop
+    if(blockExist(x-1, y+1, z-1) && m_pBlocks[x-1][y+1][z-1].isActive())
+        adjacentMap[0][0] = 1;
 
     //top
     if(blockExist(x, y+1, z-1) && m_pBlocks[x][y+1][z-1].isActive())
         adjacentMap[0][1] = 1;
-    
+
+     //topRight
+    if(blockExist(x+1, y+1, z-1) && m_pBlocks[x+1][y+1][z-1].isActive())
+        adjacentMap[0][2] = 1;
+
+     //right
+    if(blockExist(x+1, y+1, z) && m_pBlocks[x+1][y+1][z].isActive())
+        adjacentMap[1][2] = 1;
+
+    //rightBottom
+    if(blockExist(x+1, y+1, z+1) && m_pBlocks[x+1][y+1][z+1].isActive())
+        adjacentMap[2][2] = 1;
+
     //bottom
     if(blockExist(x, y+1, z+1) && m_pBlocks[x][y+1][z+1].isActive())
         adjacentMap[2][1] = 1;
 
-    //right
-    if(blockExist(x+1, y+1, z) && m_pBlocks[x+1][y+1][z].isActive())
-        adjacentMap[1][2] = 1;
+    //bottomLeft
+    if(blockExist(x-1, y+1, z+1) && m_pBlocks[x-1][y+1][z+1].isActive())
+        adjacentMap[2][0] = 1;
+
+    //left
+    if(blockExist(x-1, y+1, z) && m_pBlocks[x-1][y+1][z].isActive())
+        adjacentMap[1][0] = 1;
+
+    
+
+   
 
     return adjacentMap;
 }
@@ -127,81 +166,100 @@ glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
 {
 	int nb_adj = countAdjacent(adjacentMap);
 
+	int topLeft = adjacentMap[0][0];
 	int top = adjacentMap[0][1];
-	int bottom = adjacentMap[2][1];
-	int left = adjacentMap[1][0];
+	int topRight = adjacentMap[0][2];
 	int right = adjacentMap[1][2];
-
+	int bottomRight = adjacentMap[2][2];
+	int bottom = adjacentMap[2][1];
+	int bottomLeft = adjacentMap[2][0];
+	int left = adjacentMap[1][0];
+	
 	glm::vec2 res;
 
-	switch(nb_adj)
-	{
-		case 0:
-			res = getCoordText(0, 0);
-		break;
+	//texture coord x
+	if (left)
+		if (top)
+			if (topRight)
+				if(topLeft)
+					res[0] = 15;
+				else res[0] = 14;
 
-		case 1:
-			if(top == 1)
-				res = getCoordText(0, 1);
+			else if (topLeft)
+				res[0] = 11;
 
-			else if(right == 1)
-				res = getCoordText(1, 1);
+			else res[0] = 10;
 
-			else if(bottom == 1)
-				res = getCoordText(2, 1);
+		else if (topRight)
+			if(topLeft)
+				res[0] = 13;
+			else res[0] = 12;
 
-			else if(left == 1)
-				res = getCoordText(3, 1);
-		break;
+		else if (topLeft)
+			res[0] = 9;
 
-		case 2:
-			if(top == 1 && bottom == 1)
-			{
-				res = getCoordText(1, 0);
-			}
-			else if(left == 1 && right == 1)
-			{
-				res = getCoordText(2, 0);
-			}
-			else if(top == 1 && right == 1)
-			{
-				res = getCoordText(0, 2);
-			}
-			else if(right == 1 && bottom == 1)
-			{
-				res = getCoordText(1, 2);
-			}
-			else if(bottom == 1 && left == 1)
-			{
-				res = getCoordText(2, 2);
-			}
-			else if(left == 1 && top == 1)
-			{	
-				res = getCoordText(3, 2);
-			}
-		break;
+		else res[0] = 8;
 
-		case 3:
-			if(left == 0)
-				res = getCoordText(0, 3);
+	else if (top)
+		if (topRight)
+			if (topLeft)
+				res[0] = 7;
+			else
+				res[0] = 6;
+		else if (topLeft)
+			res[0] = 3;
+		else res[0] = 2;
+	
+	else if (topRight)
+		if (topLeft)
+			res[0] = 5;
+		else res[0] = 4;
+	else if (topLeft)
+		res[0] = 1;
+	else res[0] = 0;
 
-			else if(top == 0)
-				res = getCoordText(1, 3);
 
-			else if(right == 0)
-				res = getCoordText(2, 3);
 
-			else if(bottom == 0)
-				res = getCoordText(3, 3);
-		break;
+	if (bottom)
+		if(right)
+			if(bottomRight)
+				if(bottomLeft)
+					res[1] = 13;
+				else res[1] = 7;
 
-		case 4:
-			res = getCoordText(3, 0);
-		break;
+			else if (bottomLeft)
+				res[1] = 15;
+			else res[1] = 5;
 
-		default:
-		break;
-	}
+		else if (bottomRight)
+			if (bottomLeft)
+				res[1] = 14;
+			else res[1] = 12;
+
+		else if (bottomLeft)
+			res[1] = 6;
+
+		else res[1] = 4;
+
+	else if (right)
+		if (bottomRight)
+			if(bottomLeft)
+				res[1] = 11;
+			else res[1] = 9;
+
+		else if (bottomLeft)
+			res[1] = 3;
+		else res[1] = 1;
+
+	else if (bottomRight)
+		if (bottomLeft)
+			res[1] = 10;
+		else res[1] = 8;
+	else if (bottomLeft)
+		res[1] = 2;
+	else res[1] = 0;
+
+	res = getCoordText(res[0], res[1]);
 
 	return res;
 }
@@ -345,11 +403,11 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v4, v3, v8);
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-		m_pRenderer->addTexture(text_coord + glm::vec2(0, 0.25), text_coord + glm::vec2(0.25, 0.25), text_coord + glm::vec2(0.25, 0));
+		m_pRenderer->addTexture(text_coord + getCoordText(0,1), text_coord + getCoordText(1,1), text_coord + getCoordText(1,0));
 		
 		m_pRenderer->addTriangle(v4, v8, v7);
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
-		m_pRenderer->addTexture(text_coord + glm::vec2(0, 0.25), text_coord + glm::vec2(0.25, 0), text_coord + glm::vec2(0, 0));
+		m_pRenderer->addTexture(text_coord + getCoordText(0,1), text_coord + getCoordText(1,0), text_coord + getCoordText(0,0));
 
 	}
 
