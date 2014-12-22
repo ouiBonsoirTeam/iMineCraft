@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <iostream>
+#include <jsoncpp/json/json.h>
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/Program.hpp>
 #include <glimac/Image.hpp>
