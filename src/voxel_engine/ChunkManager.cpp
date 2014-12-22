@@ -147,13 +147,10 @@ void ChunkManager::updateRenderList()
         
 }
 
-void ChunkManager::loadJsonFile(const std::string& fileName ){
+void ChunkManager::loadAndParseJsonFile(const std::string& fileName ){
     std::ifstream file;
     file.open(fileName);
     std::string str, contents;
-
-     Json::Value root;   // will contains the root value after parsing
-    Json::Reader reader;
 
     if (file.is_open())
     {
@@ -165,6 +162,9 @@ void ChunkManager::loadJsonFile(const std::string& fileName ){
     }
     else std::cout << "Unable to open file";
 
+    Json::Value root;
+    Json::Reader reader;
+
     bool parsingSuccessful = reader.parse(contents, root);
     if ( !parsingSuccessful )
     {
@@ -175,5 +175,6 @@ void ChunkManager::loadJsonFile(const std::string& fileName ){
     }
     else
         std::cout << "Fichier chargé" << std::endl;
-}
 
+    std::cout << root[0]["block"][5][7][2]["active"] << std::endl;
+}

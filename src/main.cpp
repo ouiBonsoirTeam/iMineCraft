@@ -73,9 +73,8 @@ int main(int argc, char** argv) {
 	chunk.createMesh();
 
 	// TEST
-
 	ChunkManager chunkmanager;
-	chunkmanager.loadJsonFile("bin/assets/saves/test.json");
+	chunkmanager.loadAndParseJsonFile("bin/assets/saves/test.json");
 
 	//initialisation angle
 	float angleX = 0;

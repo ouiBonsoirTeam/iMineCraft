@@ -36,5 +36,5 @@ public:
 	void updateUnloadList();
 	void updateRenderList();
 
-	void loadJsonFile(const std::string& fileName);
+	void loadAndParseJsonFile(const std::string& fileName);
 };
