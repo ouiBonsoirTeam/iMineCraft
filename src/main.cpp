@@ -10,6 +10,7 @@
 #include <glimac/Torch.hpp>
 
 #include "voxel_engine/Chunk.hpp"
+#include "physics/Event_manager.hpp"
 
 using namespace glimac;
 
@@ -98,55 +99,29 @@ int main(int argc, char** argv) {
 	float angleYfinal = 0;
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
+	const float PLAYER_SPEED =0.05f;
+
+	float lastTime = windowManager.getTime();
+	int nbFrames = 0;
 
 	// Application loop:
 	bool done = false;
 	while(!done) {
 		// Event loop:
-		SDL_Event e;
-		while(windowManager.pollEvent(e)) {
-			if(e.type == SDL_QUIT) {
-				done = true; // Leave the loop after this iteration
-			}
-			if (e.type == SDL_KEYDOWN)
-			{
-				if (e.key.keysym.sym == SDLK_ESCAPE)
-				{
-					done = true; // Leave the loop after this iteration
-				}
-			}
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,PLAYER_SPEED,done,chunk);
 
-			//souris
-			if (e.type == SDL_MOUSEMOTION)
-			{
-				angleX -= e.motion.xrel * CAMERA_ROT_FACTOR;
-				angleY -= e.motion.yrel * CAMERA_ROT_FACTOR;
-				angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
-				angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
-			}
-		}
-		ffCam.rotateLeft(angleX);
-		if (angleYfinal != 90 && angleYfinal !=-90) ffCam.rotateUp(angleY);
-		angleY = 0;
-		angleX = 0;
-		
-		//touche clavier
-		if(windowManager.isKeyPressed(SDLK_z)) 
-		{
-			ffCam.moveFront(0.1f);
-		}
-		else if(windowManager.isKeyPressed(SDLK_s)) 
-		{
-			ffCam.moveFront(-0.1f);
-		}
-		else if(windowManager.isKeyPressed(SDLK_q)) 
-		{
-			ffCam.moveLeft(0.1f);
-		}
-		else if(windowManager.isKeyPressed(SDLK_d)) 
-		{
-			ffCam.moveLeft(-0.1f);
-		}
+				
+
+		// Measure speed
+		float currentTime = windowManager.getTime();
+		nbFrames++;
+		if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+		    // printf and reset timer
+		    //std::cout << "fps : " << nbFrames << std::endl;
+		    nbFrames = 0;
+		    lastTime += 1.0;
+		    }
+
 
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
