@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 	FreeFlyCamera ffCam;
 
 	Chunk chunk;
-
+	chunk.setup();
 	chunk.createMesh();
 
 	//initialisation angle
