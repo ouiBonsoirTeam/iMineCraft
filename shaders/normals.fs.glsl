@@ -2,15 +2,16 @@
 
 in vec3 vFragViewCoord;
 in vec3 vFragViewNormale;
-in vec2 vFragTexture;
+in vec4 vFragTexture;
 
 out vec3 fFragColor;
 
 // uniform vec3 uColor;
-// uniform sampler2D uTexture;
+uniform sampler2D uTexture;
 
 void main() {
 
-	fFragColor = vec3(1, 1, 1);
-
+	vec4 textCaisse = texture(uTexture, vFragTexture.xy);
+	vec4 textOcclu = vec4(1, 1, 1, 1) - texture(uTexture, vFragTexture.zw);
+	fFragColor = vec3(textCaisse - textOcclu * 0.5);
 }
