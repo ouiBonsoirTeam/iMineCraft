@@ -4,7 +4,6 @@
 
 namespace glimac
 {
-
 	struct GeneralProgram
 	{
 		Program m_Program;
@@ -49,6 +48,23 @@ namespace glimac
 			uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
 			uLightPos_vs = glGetUniformLocation(m_Program.getGLId(), "uLightPos_vs");
 			uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
+		}
+	};
+
+	struct SkyboxProgram
+	{
+		Program m_Program;
+
+		GLint vertex;
+		GLint PVM;
+
+		SkyboxProgram(const FilePath& applicationPath):
+			m_Program(loadProgram(applicationPath.dirPath() + "shaders/skybox.vs.glsl", 
+									applicationPath.dirPath() + "shaders/skybox.fs.glsl"))
+		{
+			vertex = glGetAttribLocation(m_Program.getGLId(), "vertex");
+			PVM = glGetUniformLocation(m_Program.getGLId(), "PVM");
+
 		}
 	};
 	

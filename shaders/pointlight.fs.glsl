@@ -45,6 +45,7 @@ void main() {
 	//fFragColor.rgb = texAvery.rgb;
 
 	fFragColor.rgb = blinnPhong();
+	//fFragColor.rgb = vec3(1, 1, 1);
 
 	//fFragColor.rgb = uLightDir_vs.rgb;
 

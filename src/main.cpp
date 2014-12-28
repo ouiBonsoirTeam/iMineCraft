@@ -12,6 +12,7 @@
 
 #include "voxel_engine/Chunk.hpp"
 #include "physics/Event_manager.hpp"
+#include "Skybox.hpp"
 
 using namespace glimac;
 
@@ -57,17 +58,27 @@ int main(int argc, char** argv) {
 	std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
 
+	glEnable(GL_DEPTH_TEST);
+
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 
 	glEnable(GL_DEPTH_TEST);
 
-	FilePath applicationPath(argv[0]);
+	//Chargement des shaders
+    FilePath applicationPath(argv[0]);
+
+	//comme P ne change jamais on peut la declarer a l'initialisation
+	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
 	GeneralProgram gProgram(applicationPath);
 	pointLightProgram lProgram(applicationPath);
-	gProgram.m_Program.use();
+	SkyboxProgram skyProg(applicationPath);
+
+	// gProgram.m_Program.use();
+	// lProgram.m_Program.use();
+	// skyProg.m_Program.use();
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
@@ -105,6 +116,14 @@ int main(int argc, char** argv) {
 	float lastTime = windowManager.getTime();
 	float lastTime2 = windowManager.getTime();
 	int nbFrames = 0;
+	
+	//make me a skybox
+	Skybox skybox;
+	skybox.init(skyProg);
+
+
+	// // make me a torch
+	// Torch torch;
 
 	// Application loop:
 	bool done = false;
@@ -139,15 +158,25 @@ int main(int argc, char** argv) {
 		 * HERE SHOULD COME THE RENDERING CODE
 		 *********************************/
 
-		glm::mat4 matrixV = ffCam.getViewMatrix();
-		
+		glm::mat4 viewMatrix = ffCam.getViewMatrix();
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		chunk.render(gProgram, matrixV, idTexture);
+		skyProg.m_Program.use();
+			skybox.draw(skyProg, viewMatrix);
+
+		gProgram.m_Program.use();
+			// torch.draw(lProgram, viewMatrix);
+
+		chunk.render(gProgram, viewMatrix, idTexture);
+
 
 		// Update the display
 		windowManager.swapBuffers();
+
 	}
+
+	skybox.destruct();
 
 	return EXIT_SUCCESS;
 }
