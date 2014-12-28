@@ -16,11 +16,11 @@ void event_manager(SDLWindowManager& windowManager,
 	// INIT
 
 	Block*** blocks = chunk.getBlocks();
-	const float INERTIA_FACTOR = 1.0005;
-	const float INERTIA_JUMP_FACTOR = 1.0005;
+	const float INERTIA_FACTOR = 1.01;
+	const float INERTIA_JUMP_FACTOR = 1.05;
 
-	float gravityFactor = 0.004f;
-	float playerSpeed = 0.005f;
+	float gravityFactor = 0.03f;
+	float playerSpeed = 0.05f;
 
 	glm::vec3 velocity=glm::vec3(0,0,0);
 
@@ -88,12 +88,12 @@ void event_manager(SDLWindowManager& windowManager,
 
 	if(windowManager.isKeyPressed(SDLK_SPACE)) 
 	{
-		velocity+=glm::vec3(0,1,0)*(2*playerSpeed);
-		ffCam.setJumpInertia(glm::vec3(0,0.008,0));
+		velocity+=glm::vec3(0,1,0)*(1.5f*playerSpeed);
+		ffCam.setJumpInertia(glm::vec3(0,1,0)*(1.5f*playerSpeed));
 	}
 	else if(windowManager.isKeyPressed(SDLK_b)) 
 	{
-		velocity+=glm::vec3(0,1,0)*(-2*playerSpeed);
+		velocity+=glm::vec3(0,1,0)*(-playerSpeed);
 	}
 
 
@@ -112,61 +112,90 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.setInertia(glm::vec3(0,0,0));
 	}
 
+	if(blocks[(int)glm::round(ffCam.getPosition().x)]
+		     [(int)glm::round(ffCam.getPosition().y+0.5)]
+		     [(int)glm::round(ffCam.getPosition().z)]
+		     .isActive())
+	{
+		velocity=glm::vec3(velocity.x,0,velocity.z);
+		ffCam.setJumpInertia(glm::vec3(0,0,0));
+	}
+
+	int countCollision =0;
+
 	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
+			 .isActive() ||
+	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
 			 .isActive())
 	{
+		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
 		{
-			velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
+			velocity=glm::vec3(0,velocity.y,ffCam.getFrontVector().z*playerSpeed);
 		}
-		else velocity=glm::vec3(0,0,0);
+		else velocity=glm::vec3(0,velocity.y,0);
 		ffCam.setInertia(glm::vec3(0,0,0));
-
 	}
 
 	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.2)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
+			 .isActive() ||
+	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
 			 .isActive())
 	{
+		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
 		{
-			velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
+			velocity=glm::vec3(0,velocity.y,ffCam.getFrontVector().z*playerSpeed);
 		}
-		else velocity=glm::vec3(0,0,0);
+		else velocity=glm::vec3(0,velocity.y,0);
 		ffCam.setInertia(glm::vec3(0,0,0));
-
 	}
 
 	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.2)]
+			 .isActive() ||
+	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.2)]
 			 .isActive())
 	{
+		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
 		{
-			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
+			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,velocity.y,0);
 		}
-		else velocity=glm::vec3(0,0,0);
+		else velocity=glm::vec3(0,velocity.y,0);
 		ffCam.setInertia(glm::vec3(0,0,0));
-
 	}
 
 	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.2)]
+			 .isActive() ||
+	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.2)]
 			 .isActive())
 	{
+		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
 		{
-			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
+			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,velocity.y,0);
 		}
-		else velocity=glm::vec3(0,0,0);
+		else velocity=glm::vec3(0,velocity.y,0);
 		ffCam.setInertia(glm::vec3(0,0,0));
-
 	}
+
+	if(countCollision > 1) velocity=glm::vec3(0,velocity.y,0);
 
 
 

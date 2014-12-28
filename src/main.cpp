@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     FilePath applicationPath(argv[0]);
 
 	//comme P ne change jamais on peut la declarer a l'initialisation
-	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+	//glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
 	GeneralProgram gProgram(applicationPath);
 	pointLightProgram lProgram(applicationPath);
