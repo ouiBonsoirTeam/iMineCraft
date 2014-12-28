@@ -13,13 +13,16 @@ void event_manager(SDLWindowManager& windowManager,
 				   bool& done,
 				   Chunk& chunk){
 
+	// INIT
 
 	Block*** blocks = chunk.getBlocks();
 	const float INERTIA_FACTOR = 1.0005;
-	float gravityFactor = 0.005f;
-	float playerSpeed = 0.01f;
+	const float INERTIA_JUMP_FACTOR = 1.0005;
 
+	float gravityFactor = 0.004f;
+	float playerSpeed = 0.005f;
 
+	glm::vec3 velocity=glm::vec3(0,0,0);
 
 	// EVENTS
 	SDL_Event e;
@@ -54,52 +57,147 @@ void event_manager(SDLWindowManager& windowManager,
 			
 	if(windowManager.isKeyPressed(SDLK_z)) 
 	{
-		if(!blocks[(int)(ffCam.getPosition().x+0.5)][(int)ffCam.getPosition().y][(int)ffCam.getPosition().z].isActive())
-		{
-			ffCam.moveFront(playerSpeed);
-			ffCam.setInertia(ffCam.getFrontVector()*playerSpeed);
+		velocity+=ffCam.getFrontVector()*playerSpeed;
+		ffCam.setInertia(ffCam.getFrontVector()*playerSpeed);
 
-			if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
-			{
-				ffCam.moveFront(playerSpeed);
-			}
+		if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
+		{
+			velocity+=ffCam.getFrontVector()*playerSpeed;
 		}
-		else ffCam.setInertia(glm::vec3(0,0,0));
 	}
 	
 	else if(windowManager.isKeyPressed(SDLK_s)) 
 	{
-		ffCam.moveFront(-playerSpeed);
+		velocity+=ffCam.getFrontVector()*(-playerSpeed);
 		ffCam.setInertia(ffCam.getFrontVector()*(-playerSpeed));
 	}
+
+
 	if(windowManager.isKeyPressed(SDLK_q)) 
 	{
-		ffCam.moveLeft(playerSpeed);
+		velocity+=ffCam.getLeftVector()*playerSpeed;
 		ffCam.setInertia(ffCam.getLeftVector()*playerSpeed);
 	}
+
 	else if(windowManager.isKeyPressed(SDLK_d)) 
 	{
-		ffCam.moveLeft(-playerSpeed);
+		velocity+=ffCam.getLeftVector()*(-playerSpeed);
 		ffCam.setInertia(ffCam.getLeftVector()*(-playerSpeed));
 	}
+
+
 	if(windowManager.isKeyPressed(SDLK_SPACE)) 
 	{
-		ffCam.moveUp(playerSpeed);
+		velocity+=glm::vec3(0,1,0)*(2*playerSpeed);
+		ffCam.setJumpInertia(glm::vec3(0,0.008,0));
 	}
 	else if(windowManager.isKeyPressed(SDLK_b)) 
 	{
-		ffCam.moveUp(-playerSpeed);
+		velocity+=glm::vec3(0,1,0)*(-2*playerSpeed);
 	}
+
 
 
 	// PHYSICS
 
+
+	// COLLISION
 	
+	if(blocks[(int)glm::round(ffCam.getPosition().x)]
+		     [(int)glm::round(ffCam.getPosition().y-1.5)]
+		     [(int)glm::round(ffCam.getPosition().z)]
+		     .isActive())
+	{
+		gravityFactor = 0.00f;
+		ffCam.setInertia(glm::vec3(0,0,0));
+	}
 
-	// INERTIA
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
+			 .isActive())
+	{
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
+		}
+		else velocity=glm::vec3(0,0,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
+
+	}
+
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
+			 .isActive())
+	{
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
+		}
+		else velocity=glm::vec3(0,0,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
+
+	}
+
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.2)]
+			 .isActive())
+	{
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
+		}
+		else velocity=glm::vec3(0,0,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
+
+	}
+
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.2)]
+			 .isActive())
+	{
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
+		}
+		else velocity=glm::vec3(0,0,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
+
+	}
 
 
-	if (sqrt(ffCam.getInertia().x*ffCam.getInertia().x + ffCam.getInertia().z*ffCam.getInertia().z) > 0.001
+
+
+
+
+
+
+
+
+
+
+
+
+	// MOUVEMENT
+
+	// mouvements
+	ffCam.slide(velocity);
+	// gravity
+	ffCam.moveUp(-gravityFactor);
+	// y inertia
+	if (ffCam.getJumpInertia().y > 0.001
+		&& !windowManager.isKeyPressed(SDLK_SPACE)
+		)
+	{
+		ffCam.divideJumpInertia(INERTIA_JUMP_FACTOR);
+
+		ffCam.moveUp(ffCam.getJumpInertia().y);
+	}
+	// x/z inertia
+	if (sqrt(ffCam.getInertia().x*ffCam.getInertia().x + ffCam.getInertia().z*ffCam.getInertia().z) > 0.0005
 		&& !windowManager.isKeyPressed(SDLK_z)
 		&& !windowManager.isKeyPressed(SDLK_s)
 		&& !windowManager.isKeyPressed(SDLK_q)
@@ -109,27 +207,5 @@ void event_manager(SDLWindowManager& windowManager,
 
 		ffCam.slide(ffCam.getInertia());
 	}
-
-	
-
-	// COLLISION
-	
-	if(blocks[(int)ffCam.getPosition().x][(int)ffCam.getPosition().y-1][(int)ffCam.getPosition().z].isActive())
-		{
-			gravityFactor = 0.00f;
-		}
-
-
-
-
-
-
-
-
-
-
-	// GRAVITY
-
-	ffCam.moveUp(-gravityFactor);
 
 };

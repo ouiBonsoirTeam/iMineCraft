@@ -48,6 +48,11 @@ namespace glimac
 		m_Inertia = vec;
 	}
 
+	void FreeFlyCamera::setJumpInertia(glm::vec3 vec)
+	{
+		m_JumpInertia = vec;
+	}
+
 	void FreeFlyCamera::updateInertia(glm::vec3 vec)
 	{
 		m_Inertia += vec;
@@ -56,6 +61,11 @@ namespace glimac
 	void FreeFlyCamera::divideInertia(float t)
 	{
 		m_Inertia = glm::vec3(m_Inertia.x/t,0,m_Inertia.z/t);
+	}
+
+	void FreeFlyCamera::divideJumpInertia(float t)
+	{
+		m_JumpInertia = glm::vec3(0,m_JumpInertia.y/t,0);
 	}
 
 	void FreeFlyCamera::rotateLeft(float degrees)
@@ -96,9 +106,19 @@ namespace glimac
 		return m_LeftVector;
 	}
 
+	glm::vec3 FreeFlyCamera::getUpVector() const
+	{
+		return m_UpVector;
+	}
+
 	glm::vec3 FreeFlyCamera::getInertia() const
 	{
 		return m_Inertia;
+	}
+
+	glm::vec3 FreeFlyCamera::getJumpInertia() const
+	{
+		return m_JumpInertia;
 	}
 
 }
