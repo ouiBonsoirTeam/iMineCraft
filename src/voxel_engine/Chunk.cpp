@@ -104,6 +104,12 @@ void Chunk::init()
 	m_pBlocks[2][5][2].setActive();
 	m_pBlocks[3][5][3].setActive();
 	m_pBlocks[3][5][2].setActive();
+
+
+	m_pBlocks[8][1][9].setActive();
+	m_pBlocks[7][1][9].setActive();
+	m_pBlocks[9][1][9].setActive();
+	m_pBlocks[7][1][7].setActive();
 }
 
 bool Chunk::blockExist(int x, int y, int z)
@@ -134,14 +140,14 @@ glm::mat3 Chunk::getAdjacentMap(int x, int y, int z, int adjacent_look)
 		break;
 
 		case LOOK_BACK:
-			leftTop 	= glm::vec3(x - 1, y + 1, z - 1);
+			leftTop 	= glm::vec3(x + 1, y + 1, z - 1);
 			top 		= glm::vec3(x, y + 1, z - 1);
-			topRight 	= glm::vec3(x + 1, y + 1, z - 1);
-			right 		= glm::vec3(x + 1, y, z - 1);
-			rightBottom = glm::vec3(x + 1, y - 1, z - 1);
+			topRight 	= glm::vec3(x - 1, y + 1, z - 1);
+			right 		= glm::vec3(x - 1, y, z - 1);
+			rightBottom = glm::vec3(x - 1, y - 1, z - 1);
 			bottom 		= glm::vec3(x, y - 1, z - 1);
-			bottomLeft 	= glm::vec3(x - 1, y - 1, z - 1);
-			left 		= glm::vec3(x - 1, y, z - 1);
+			bottomLeft 	= glm::vec3(x + 1, y - 1, z - 1);
+			left 		= glm::vec3(x + 1, y, z - 1);
 		break;
 
 		case LOOK_RIGHT:
@@ -167,24 +173,33 @@ glm::mat3 Chunk::getAdjacentMap(int x, int y, int z, int adjacent_look)
 		break;
 
 		case LOOK_LEFT:
-			leftTop 	= glm::vec3(x - 1, y + 1, z + 1);
+			// leftTop 	= glm::vec3(x - 1, y + 1, z + 1);
+			// top 		= glm::vec3(x - 1, y + 1, z);
+			// topRight	= glm::vec3(x - 1, y + 1, z - 1);
+			// right 		= glm::vec3(x - 1, y, z + 1);
+			// rightBottom = glm::vec3(x - 1, y - 1, z - 1);
+			// bottom 		= glm::vec3(x - 1, y - 1, z);
+			// bottomLeft 	= glm::vec3(x - 1, y - 1, z + 1);
+			// left 		= glm::vec3(x - 1, y, z - 1);
+
+			leftTop 	= glm::vec3(x - 1, y + 1, z - 1);
 			top 		= glm::vec3(x - 1, y + 1, z);
-			topRight	= glm::vec3(x - 1, y + 1, z - 1);
-			right 		= glm::vec3(x - 1, y, z - 1);
-			rightBottom = glm::vec3(x - 1, y - 1, z - 1);
+			topRight	= glm::vec3(x - 1, y + 1, z + 1);
+			right 		= glm::vec3(x - 1, y, z + 1);
+			rightBottom = glm::vec3(x - 1, y - 1, z + 1);
 			bottom 		= glm::vec3(x - 1, y - 1, z);
-			bottomLeft 	= glm::vec3(x - 1, y - 1, z + 1);
-			left 		= glm::vec3(x - 1, y, z + 1);
+			bottomLeft 	= glm::vec3(x - 1, y - 1, z - 1);
+			left 		= glm::vec3(x - 1, y, z - 1);
 		break;
 
 		case LOOK_BOTTOM:
-			leftTop 	= glm::vec3(x - 1,	y - 1,	z - 1 	);
-			top 		= glm::vec3(x,		y - 1,	z - 1 	);
-			topRight 	= glm::vec3(x + 1, 	y - 1, 	z - 1 	);
+			leftTop 	= glm::vec3(x - 1, 	y - 1, 	z + 1 	);
+			top 		= glm::vec3(x, 		y - 1,	z + 1 	);
+			topRight 	= glm::vec3(x + 1, 	y - 1, 	z + 1 	);
 			right 		= glm::vec3(x + 1, 	y - 1, 	z 		);
-			rightBottom = glm::vec3(x + 1, 	y - 1, 	z + 1 	);
-			bottom 		= glm::vec3(x, 		y - 1,	z + 1 	);
-			bottomLeft 	= glm::vec3(x - 1, 	y - 1, 	z + 1 	);
+			rightBottom = glm::vec3(x + 1, 	y - 1, 	z - 1 	);
+			bottom 		= glm::vec3(x,		y - 1,	z - 1 	);
+			bottomLeft 	= glm::vec3(x - 1,	y - 1,	z - 1 	);
 			left 		= glm::vec3(x - 1, 	y - 1, 	z 		);
 		break;
 
@@ -434,8 +449,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	glm::vec3 n1;
 
 	glm::vec2 textCoord_up = computeCoordText(0, 16);
-	// glm::vec2 textCoord_side = computeCoordText(1, 16);
-	glm::vec2 textCoord_side = computeCoordText(0, 0);
+	glm::vec2 textCoord_side = computeCoordText(1, 16);
 
 	glm::vec2 occluDefault = computeCoordText(0,0);
 
