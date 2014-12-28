@@ -18,7 +18,7 @@ class OpenGLRenderer
 
     std::vector<glm::vec3> m_vertices;
     std::vector<glm::vec3> m_normals;
-    std::vector<glm::vec2> m_textures;
+    std::vector<glm::vec4> m_textures;
 
     const static GLuint VERTEX_ATTR_POSITION = 0;
 	const static GLuint VERTEX_ATTR_NORMAL = 1;
@@ -34,7 +34,7 @@ public:
 
 	// Setters
 	void addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3);
-	void addTexture(glm::vec2 texPos_1, glm::vec2 texPos_2, glm::vec2 texPos_3);
+	void addTexture(glm::vec4 texPos_1, glm::vec4 texPos_2, glm::vec4 texPos_3);
 	void addNormal(glm::vec3 n);
 
 	// Fill the buffer data

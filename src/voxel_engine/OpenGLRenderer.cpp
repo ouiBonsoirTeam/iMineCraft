@@ -21,7 +21,7 @@ void OpenGLRenderer::addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm
 	m_vertices.push_back(position_3);
 }
 
-void OpenGLRenderer::addTexture(glm::vec2 texPos_1, glm::vec2 texPos_2, glm::vec2 texPos_3){
+void OpenGLRenderer::addTexture(glm::vec4 texPos_1, glm::vec4 texPos_2, glm::vec4 texPos_3){
 	m_textures.push_back(texPos_1);
 	m_textures.push_back(texPos_2);
 	m_textures.push_back(texPos_3);
@@ -48,7 +48,7 @@ void OpenGLRenderer::finishVboPosition(){
 void OpenGLRenderer::finishVboTexture(){
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[TEXTURE]);
 
-	glBufferData(GL_ARRAY_BUFFER, m_textures.size() * sizeof(glm::vec2), m_textures.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_textures.size() * sizeof(glm::vec4), m_textures.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -81,7 +81,7 @@ void OpenGLRenderer::setVao(){
 	{
 		glEnableVertexAttribArray(VERTEX_ATTR_TEXTCOORD);
 		glBindBuffer(GL_ARRAY_BUFFER, m_buffer[TEXTURE]);
-		glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (const GLvoid*)(0));
+		glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (const GLvoid*)(0));
 	}
 	
 	glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);

@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <iostream>
+#include <unistd.h>
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/Program.hpp>
 #include <glimac/Image.hpp>
@@ -10,6 +11,7 @@
 #include <glimac/Torch.hpp>
 
 #include "voxel_engine/Chunk.hpp"
+#include "physics/Event_manager.hpp"
 
 using namespace glimac;
 
@@ -42,7 +44,7 @@ struct Vertex {
 
 int main(int argc, char** argv) {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -69,7 +71,7 @@ int main(int argc, char** argv) {
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
-	texturePointer = loadImage("../iMineCraft/assets/textures/caisse.jpg");
+	texturePointer = loadImage("../iMineCraft/assets/textures/occlu_grass_1024.png");
 	if(texturePointer == NULL)
 	{
 		std::cerr << "Error while charging texture." << std::endl;
@@ -99,54 +101,39 @@ int main(int argc, char** argv) {
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
 
+	int max_fps = 60;
+	float lastTime = windowManager.getTime();
+	float lastTime2 = windowManager.getTime();
+	int nbFrames = 0;
+
 	// Application loop:
 	bool done = false;
 	while(!done) {
 		// Event loop:
-		SDL_Event e;
-		while(windowManager.pollEvent(e)) {
-			if(e.type == SDL_QUIT) {
-				done = true; // Leave the loop after this iteration
-			}
-			if (e.type == SDL_KEYDOWN)
-			{
-				if (e.key.keysym.sym == SDLK_ESCAPE)
-				{
-					done = true; // Leave the loop after this iteration
-				}
-			}
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunk);
 
-			//souris
-			if (e.type == SDL_MOUSEMOTION)
-			{
-				angleX -= e.motion.xrel * CAMERA_ROT_FACTOR;
-				angleY -= e.motion.yrel * CAMERA_ROT_FACTOR;
-				angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
-				angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
-			}
+				
+
+		// Measure speed
+		float currentTime = windowManager.getTime();
+		nbFrames++;
+		if ( currentTime - lastTime >= 1.0 )
+		{ 
+		    std::cout << "fps : " << nbFrames << std::endl;
+		    nbFrames = 0;
+		    lastTime += 1.0;
 		}
-		ffCam.rotateLeft(angleX);
-		if (angleYfinal != 90 && angleYfinal !=-90) ffCam.rotateUp(angleY);
-		angleY = 0;
-		angleX = 0;
-		
-		//touche clavier
-		if(windowManager.isKeyPressed(SDLK_z)) 
+
+		//std::cout<<"currentTime - lastTime2 : "<< (currentTime - lastTime2) << std::endl;
+		//std::cout<<"1/max_fps : "<< (1.f/max_fps) << std::endl;
+		//std::cout<<"diff : "<< (1.f/max_fps) - (currentTime - lastTime2) << std::endl;
+		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
 		{
-			ffCam.moveFront(0.1f);
+			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
+			//std::cout<<"zizi"<<std::endl;
 		}
-		else if(windowManager.isKeyPressed(SDLK_s)) 
-		{
-			ffCam.moveFront(-0.1f);
-		}
-		else if(windowManager.isKeyPressed(SDLK_q)) 
-		{
-			ffCam.moveLeft(0.1f);
-		}
-		else if(windowManager.isKeyPressed(SDLK_d)) 
-		{
-			ffCam.moveLeft(-0.1f);
-		}
+		lastTime2 = currentTime;
+
 
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
