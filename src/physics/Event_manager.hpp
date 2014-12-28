@@ -16,8 +16,10 @@ void event_manager(SDLWindowManager& windowManager,
 	// INIT
 
 	Block*** blocks = chunk.getBlocks();
-	const float INERTIA_FACTOR = 1.0001;
-	float gravityFactor = 0.008f;
+	const float INERTIA_FACTOR = 1.0005;
+	const float INERTIA_JUMP_FACTOR = 1.0005;
+
+	float gravityFactor = 0.004f;
 	float playerSpeed = 0.005f;
 
 	glm::vec3 velocity=glm::vec3(0,0,0);
@@ -87,6 +89,7 @@ void event_manager(SDLWindowManager& windowManager,
 	if(windowManager.isKeyPressed(SDLK_SPACE)) 
 	{
 		velocity+=glm::vec3(0,1,0)*(2*playerSpeed);
+		ffCam.setJumpInertia(glm::vec3(0,0.008,0));
 	}
 	else if(windowManager.isKeyPressed(SDLK_b)) 
 	{
@@ -106,6 +109,7 @@ void event_manager(SDLWindowManager& windowManager,
 		     .isActive())
 	{
 		gravityFactor = 0.00f;
+		ffCam.setInertia(glm::vec3(0,0,0));
 	}
 
 	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
@@ -177,12 +181,23 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 
-
 	// MOUVEMENT
 
+	// mouvements
 	ffCam.slide(velocity);
+	// gravity
 	ffCam.moveUp(-gravityFactor);
-	if (sqrt(ffCam.getInertia().x*ffCam.getInertia().x + ffCam.getInertia().z*ffCam.getInertia().z) > 0.001
+	// y inertia
+	if (ffCam.getJumpInertia().y > 0.001
+		&& !windowManager.isKeyPressed(SDLK_SPACE)
+		)
+	{
+		ffCam.divideJumpInertia(INERTIA_JUMP_FACTOR);
+
+		ffCam.moveUp(ffCam.getJumpInertia().y);
+	}
+	// x/z inertia
+	if (sqrt(ffCam.getInertia().x*ffCam.getInertia().x + ffCam.getInertia().z*ffCam.getInertia().z) > 0.0005
 		&& !windowManager.isKeyPressed(SDLK_z)
 		&& !windowManager.isKeyPressed(SDLK_s)
 		&& !windowManager.isKeyPressed(SDLK_q)

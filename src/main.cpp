@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <iostream>
+#include <unistd.h>
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/Program.hpp>
 #include <glimac/Image.hpp>
@@ -100,8 +101,9 @@ int main(int argc, char** argv) {
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
 
-
+	int max_fps = 60;
 	float lastTime = windowManager.getTime();
+	float lastTime2 = windowManager.getTime();
 	int nbFrames = 0;
 
 	// Application loop:
@@ -115,12 +117,22 @@ int main(int argc, char** argv) {
 		// Measure speed
 		float currentTime = windowManager.getTime();
 		nbFrames++;
-		if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
-		    // printf and reset timer
+		if ( currentTime - lastTime >= 1.0 )
+		{ 
 		    std::cout << "fps : " << nbFrames << std::endl;
 		    nbFrames = 0;
 		    lastTime += 1.0;
-		    }
+		}
+
+		//std::cout<<"currentTime - lastTime2 : "<< (currentTime - lastTime2) << std::endl;
+		//std::cout<<"1/max_fps : "<< (1.f/max_fps) << std::endl;
+		//std::cout<<"diff : "<< (1.f/max_fps) - (currentTime - lastTime2) << std::endl;
+		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
+		{
+			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
+			//std::cout<<"zizi"<<std::endl;
+		}
+		lastTime2 = currentTime;
 
 
 		/*********************************
