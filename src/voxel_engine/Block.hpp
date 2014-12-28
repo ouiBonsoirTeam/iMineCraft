@@ -26,5 +26,5 @@ public:
 	void setActive();
 	void setInactive();
 	BlockType getType() const;
-	void setType(BlockType blockType);
+	void setType(int blockType);
 };

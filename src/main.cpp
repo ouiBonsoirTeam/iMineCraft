@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 
 	// TEST
 	ChunkManager chunkmanager;
-	chunkmanager.loadAndParseJsonFile("bin/assets/saves/test.json");
+	chunkmanager.initialize("bin/assets/saves/test.json");
 
 	//initialisation angle
 	float angleX = 0;

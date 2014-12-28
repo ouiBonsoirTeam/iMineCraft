@@ -28,6 +28,6 @@ BlockType Block::getType() const{
 	return m_blockType;
 }
 
-void Block::setType(BlockType blockType){
-	m_blockType = blockType;
+void Block::setType(int blockType){
+	m_blockType = (BlockType)blockType;
 }

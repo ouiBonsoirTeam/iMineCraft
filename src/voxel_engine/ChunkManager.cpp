@@ -2,6 +2,25 @@
 #include <iostream>
 #include <fstream>
 
+
+void ChunkManager::initialize(const std::string& saveFolder)
+{
+    m_pathJson = saveFolder;
+    int chunkLimit = 3;
+
+    for (int i = 0; i < chunkLimit; ++i)
+    {
+        for (int j = 0; j < chunkLimit; ++j)
+        {
+            for (int k = 0; k < chunkLimit; ++k)
+            {
+                m_vpGlobalChunkList.push_back(new Chunk(glm::vec3(i, j, k)));
+                m_vpChunkLoadList.push_back(m_vpGlobalChunkList.at(i));
+            }
+        }
+    }
+}
+
 void ChunkManager::updateLoadList()
 {
     int lNumOfChunksLoaded = 0;
@@ -16,8 +35,16 @@ void ChunkManager::updateLoadList()
         {
             if(lNumOfChunksLoaded != NUM_CHUNKS_PER_FRAME)
             {
-                pChunk->load(m_chunksData);
+                
+                glm::vec3 p = pChunk->getPosition();
+                std::string filePath = m_pathJson + "/chunk_" + (char)p[0] + "_" + (char)p[1] + "_" + (char)p[2] + ".json";
 
+                if(jsonChunkExist(filePath))
+                {
+                    Json::Value data = loadAndParseJsonFile(filePath);
+                    pChunk->load(data);
+                }
+                    
                 // Increase the chunks loaded count
                 lNumOfChunksLoaded++;
 
@@ -68,11 +95,13 @@ void ChunkManager::updateSetupList()
     {
         Chunk* pChunk = (*iterator);
 
-        if(pChunk->isLoaded() && pChunk->isSetup() == false)
+        if(pChunk->isSetup() == false)
         {
             pChunk->setup();
             // Only force the visibility update if we actually setup the chunk, some chunks wait in the pre-setup stage...
             m_forceVisibilityUpdate = true;
+
+            m_vpChunkRebuildList.push_back(pChunk);
         }
     }
 
@@ -163,11 +192,25 @@ void ChunkManager::updateRenderList()
                 m_vpChunkRenderList.push_back(pChunk);
             }
         }
-    }
-        
+    }       
 }
 
-void ChunkManager::loadAndParseJsonFile(const std::string& fileName){
+bool ChunkManager::jsonChunkExist(const std::string &fileName)
+{
+    std::ifstream file;
+    file.open(fileName);
+
+    if (file.is_open())
+    {
+        file.close();
+        return true;
+    }    
+    else
+        return false;
+}
+
+
+Json::Value ChunkManager::loadAndParseJsonFile(const std::string& fileName){
     std::ifstream file;
     file.open(fileName);
     std::string str, contents;
@@ -179,25 +222,24 @@ void ChunkManager::loadAndParseJsonFile(const std::string& fileName){
             contents += str;
         }  
         file.close();
-    }
-    else std::cout << "Unable to open file";
 
-    Json::Value root;
-    Json::Reader reader;
+        Json::Value root;
+        Json::Reader reader;
 
-    bool parsingSuccessful = reader.parse(contents, root);
-    if ( !parsingSuccessful )
-    {
-        // report to the user the failure and their locations in the document.
-        std::cout  << "Failed to parse configuration\n"
-                   << reader.getFormattedErrorMessages();
-        return;
-    }
-    else
-        std::cout << "Fichier chargé" << std::endl;
+        bool parsingSuccessful = reader.parse(contents, root);
+        if ( !parsingSuccessful )
+        {
+            // report to the user the failure and their locations in the document.
+            std::cerr  << "Failed to parse configuration\n"
+                       << reader.getFormattedErrorMessages();
+            exit(1);
+        }
+        else{
+            std::cout << "Fichier chargé" << std::endl;
+            return root;
+        }
 
-    for (unsigned int i = 0; i < root.size(); ++i)
-    {
-        m_chunksData.push_back(root[i]);
     }
+    else std::cerr << "Unable to open file";
+    exit(1);  
 }

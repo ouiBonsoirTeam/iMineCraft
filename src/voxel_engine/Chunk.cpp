@@ -4,15 +4,10 @@
 
 // Constructor
 Chunk::Chunk()
-{
-    m_setup = false;
-    m_loaded = -1;
-}
+{}
 
 Chunk::Chunk(glm::vec3 position)
 {
-    m_setup = false;
-    m_loaded = -1;
     m_position = position;
 }
 
@@ -139,7 +134,7 @@ Block*** Chunk::getBlocks()
 
 bool Chunk::isLoaded()
 {
-    return (m_loaded >= 0);
+    return m_loaded;
 }
 
 bool Chunk::isSetup()
@@ -147,41 +142,44 @@ bool Chunk::isSetup()
     return m_setup;
 }
 
-void Chunk::load(const std::vector <Json::Value> &chunksData)
+void Chunk::load(const Json::Value &chunkData)
 {
-    for (unsigned int i = 0; i < chunksData.size() || m_loaded < 0; ++i)
-    {
-        if (chunksData.at(i)["position"]['x'] == m_position[0] &&
-            chunksData.at(i)["position"]['y'] == m_position[1] &&
-            chunksData.at(i)["position"]['z'] == m_position[2])
-        {
-            m_loaded = i;
-        }
-    }
+    m_blocksData = chunkData;
+    m_loaded = true;
 }
 
-void Chunk::setup(Json::Value data)
+void Chunk::setup()
 {
     // Create the blocks
-    m_pBlocks = new Block**[CHUNK_SIZE];
-
-    for(int i = 0; i < CHUNK_SIZE; ++i)
+    if (!m_blocksData.empty())
     {
-        m_pBlocks[i] = new Block*[CHUNK_SIZE];
+        m_pBlocks = new Block**[CHUNK_SIZE];
 
-        for(int j = 0; j < CHUNK_SIZE; ++j)
+        for(int i = 0; i < CHUNK_SIZE; ++i)
         {
-            m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+            m_pBlocks[i] = new Block*[CHUNK_SIZE];
 
-            for (int k = 0; k < CHUNK_SIZE; ++k)
+            for(int j = 0; j < CHUNK_SIZE; ++j)
             {
-                if (data[i][j][k]["active"] == true)
-                    m_pBlocks[i][j][k]->setActive();
+                m_pBlocks[i][j] = new Block[CHUNK_SIZE];
 
-                m_pBlocks[i][j][k]->setType(data[i][j][k]["type"]);
+                for (int k = 0; k < CHUNK_SIZE; ++k)
+                {
+                    if (m_blocksData["block"][i][j][k]["active"] == true)
+                        m_pBlocks[i][j][k].setActive();
+
+                    m_pBlocks[i][j][k].setType(m_blocksData["block"][i][j][k]["type"].asInt());
+                }
             }
         }
+
+        m_blocksData.clear();
     }
+    else
+    {
+        createMesh();
+    }
+    
 
     m_pRenderer = new OpenGLRenderer;
 
