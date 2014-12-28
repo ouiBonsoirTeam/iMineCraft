@@ -12,8 +12,8 @@ enum BlockType {
 class Block{
 
 private:
-	bool m_active=false;
-	BlockType m_blockType;
+	bool m_active = false;
+	BlockType m_blockType = BlockType_Default;
 
 public:
 	Block();
@@ -22,7 +22,9 @@ public:
 
 	static const int BLOCK_RENDER_SIZE = 1;
 
-	bool isActive();
+	bool isActive() const;
 	void setActive();
 	void setInactive();
+	BlockType getType() const;
+	void setType(BlockType blockType);
 };

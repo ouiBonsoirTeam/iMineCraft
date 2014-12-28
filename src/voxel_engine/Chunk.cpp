@@ -6,14 +6,13 @@
 Chunk::Chunk()
 {
     m_setup = false;
-    m_loaded = true;
-
+    m_loaded = -1;
 }
 
 Chunk::Chunk(glm::vec3 position)
 {
     m_setup = false;
-    m_loaded = true;
+    m_loaded = -1;
     m_position = position;
 }
 
@@ -54,7 +53,7 @@ void Chunk::createMesh()
             {
                 if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2)
                     {
-                        createCube(x, y, z);
+                        createCube(x, y, z, m_pBlocks[x][y][z].getType());
                         m_pBlocks[x][y][z].setActive();
                     }
                 else
@@ -75,7 +74,7 @@ void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix)
 
 void Chunk::update(){}
 
-void Chunk::createCube(const int &x, const int &y, const int &z)
+void Chunk::createCube(const int &x, const int &y, const int &z, const BlockType &blockType)
 {
     glm::vec3 v1(x-Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
     glm::vec3 v2(x+Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
@@ -140,7 +139,7 @@ Block*** Chunk::getBlocks()
 
 bool Chunk::isLoaded()
 {
-    return m_loaded;
+    return (m_loaded >= 0);
 }
 
 bool Chunk::isSetup()
@@ -148,21 +147,39 @@ bool Chunk::isSetup()
     return m_setup;
 }
 
-void Chunk::load()    //a coder
-{}
+void Chunk::load(const std::vector <Json::Value> &chunksData)
+{
+    for (unsigned int i = 0; i < chunksData.size() || m_loaded < 0; ++i)
+    {
+        if (chunksData.at(i)["position"]['x'] == m_position[0] &&
+            chunksData.at(i)["position"]['y'] == m_position[1] &&
+            chunksData.at(i)["position"]['z'] == m_position[2])
+        {
+            m_loaded = i;
+        }
+    }
+}
 
-void Chunk::setup()
+void Chunk::setup(Json::Value data)
 {
     // Create the blocks
     m_pBlocks = new Block**[CHUNK_SIZE];
 
-    for(int i = 0; i < CHUNK_SIZE; i++)
+    for(int i = 0; i < CHUNK_SIZE; ++i)
     {
         m_pBlocks[i] = new Block*[CHUNK_SIZE];
 
-        for(int j = 0; j < CHUNK_SIZE; j++)
+        for(int j = 0; j < CHUNK_SIZE; ++j)
         {
             m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+
+            for (int k = 0; k < CHUNK_SIZE; ++k)
+            {
+                if (data[i][j][k]["active"] == true)
+                    m_pBlocks[i][j][k]->setActive();
+
+                m_pBlocks[i][j][k]->setType(data[i][j][k]["type"]);
+            }
         }
     }
 
@@ -171,7 +188,7 @@ void Chunk::setup()
     m_setup = true; 
 }
 
-void Chunk::rebuildMesh()
+void Chunk::buildMesh()
 {
     for (int x = 0; x < CHUNK_SIZE; x++)
     {
@@ -183,7 +200,7 @@ void Chunk::rebuildMesh()
                 if(m_pBlocks[x][y][z].isActive() == false)
                     continue;
 
-                createCube(x, y, z);
+                createCube(x, y, z, m_pBlocks[x][y][z].getType());
             }
             
         }
@@ -202,5 +219,11 @@ void Chunk::constructBlock(const int &x, const int &y, const int &z)
     m_pBlocks[x][y][z].setActive();
 }
 
+void Chunk::unload()
+{
+    // Save à faire
+
+    delete this;
+}
 
 

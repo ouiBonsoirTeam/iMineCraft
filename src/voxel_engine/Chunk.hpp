@@ -3,6 +3,7 @@
 #include "Block.hpp"
 #include "OpenGLRenderer.hpp"
 #include <glimac/glm.hpp>
+#include <jsoncpp/json/json.h>
 
 
 class Chunk{
@@ -10,7 +11,7 @@ class Chunk{
 private:
 	Block*** m_pBlocks;
 	OpenGLRenderer *m_pRenderer;
-	bool m_loaded = true;		//a modifier quand on fera la sauvegarde
+	int m_loaded = -1;
 	bool m_setup = true;
 
 	//postition
@@ -30,24 +31,25 @@ public:
 
 	void update();
 
-	void createCube(const int &x, const int &y, const int &z);
+	void createCube(const int &x, const int &y, const int &z, const BlockType &blockType);
 
 	bool isLoaded();
 
 	bool isSetup();
 
-	void rebuildMesh(); //a coder
+	void buildMesh(); 
 
 	void destructBlock(const int &x, const int &y, const int &z);
 
 	void constructBlock(const int &x, const int &y, const int &z);
 
-	void setup();
+	void setup(Json::Value data);
 
 	glm::vec3 getPosition(){ return m_position; }
 
-
-	void load();	//a coder
+	void load(const std::vector <Json::Value> &chunksData);
 
 	Block*** getBlocks();
+
+	void unload();
 };
