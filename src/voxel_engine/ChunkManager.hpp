@@ -4,6 +4,7 @@
 
 #include "Chunk.hpp"
 #include <glimac/glm.hpp>
+#include <jsoncpp/json/json.h>
 
 typedef std::vector<Chunk *> ChunkList;
 
@@ -20,21 +21,23 @@ class ChunkManager
 	glm::vec3 m_cameraView;
 	bool m_forceVisibilityUpdate;
 
+	std::vector <Json::Value> m_chunksData;
+
 	const static int NUM_CHUNKS_PER_FRAME = 3;
 
 public:
-	ChunkManager();
-	~ChunkManager();
+	ChunkManager(){};
+	~ChunkManager(){};
 
+	// Update fonctions
 	void update(float dt, glm::vec3 cameraPosition, glm::vec3 cameraView);
 	void updateLoadList();
-	void updateunLoadList();
+	void updateUnLoadList();
 	void updateSetupList();
 	void updateRebuildList();
-
 	void updateVisibilityList();
 	void updateUnloadList();
-
-
 	void updateRenderList();
+
+	void loadAndParseJsonFile(const std::string& fileName);
 };

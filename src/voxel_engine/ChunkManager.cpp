@@ -1,5 +1,6 @@
 #include "ChunkManager.hpp"
-
+#include <iostream>
+#include <fstream>
 
 void ChunkManager::updateLoadList()
 {
@@ -15,10 +16,13 @@ void ChunkManager::updateLoadList()
         {
             if(lNumOfChunksLoaded != NUM_CHUNKS_PER_FRAME)
             {
-                pChunk->load();
+                pChunk->load(m_chunksData);
 
                 // Increase the chunks loaded count
                 lNumOfChunksLoaded++;
+
+                // Ajouter un test de distance pour juger la nécessité du setup dans l'immédiat
+                m_vpChunkSetupList.push_back(pChunk);
 
                 m_forceVisibilityUpdate = true;
             }
@@ -90,7 +94,7 @@ void ChunkManager::updateRebuildList()
         {
             if(lNumRebuiltChunkThisFrame != NUM_CHUNKS_PER_FRAME)
             {
-                pChunk->rebuildMesh();
+                pChunk->buildMesh();
 
                 // Only rebuild a certain number of chunks per frame
                 lNumRebuiltChunkThisFrame++;
@@ -106,7 +110,24 @@ void ChunkManager::updateRebuildList()
 
 
 void ChunkManager::updateUnloadList()
-{}
+{
+    // Unload any chunks
+    ChunkList::iterator iterator;
+    for(iterator = m_vpChunkUnloadList.begin(); iterator != m_vpChunkUnloadList.end(); ++iterator)
+    {
+        Chunk* pChunk = (*iterator);
+
+        if(pChunk->isLoaded())
+        {
+            pChunk->unload();
+
+            m_forceVisibilityUpdate = true;
+        }
+    }
+
+    // Clear the unload list (every frame)
+    m_vpChunkUnloadList.clear();
+}
 
 void ChunkManager::updateVisibilityList()
 {
@@ -130,7 +151,7 @@ void ChunkManager::updateRenderList()
                 // if(pChunk->ShouldRender()) // Early flags check so we don't always have to do the frustum check...
                 // {
                 //     // Check if this chunk is inside the camera frustum
-                //     float c_offset = (Chunk::CHUNK_SIZE * Block::BLOCK_RENDER_SIZE)-Block::BLOCK_RENDER_SIZE;
+                //     float c_offset = (Chunk::CHUNK_SIZE * Block::BLOCK_RENDER_SIZE) - Block::BLOCK_RENDER_SIZE;
                 //     glm::vec3 chunkCenter = pChunk->getPosition() + glm::vec3(c_offset, c_offset, c_offset);
 
                 //     float c_size = Chunk::CHUNK_SIZE * Block::BLOCK_RENDER_SIZE;
@@ -139,11 +160,44 @@ void ChunkManager::updateRenderList()
                 //         m_vpChunkRenderList.push_back(pChunk);
                 //     }
                 // }
+                m_vpChunkRenderList.push_back(pChunk);
             }
         }
     }
         
 }
 
+void ChunkManager::loadAndParseJsonFile(const std::string& fileName){
+    std::ifstream file;
+    file.open(fileName);
+    std::string str, contents;
 
+    if (file.is_open())
+    {
+        while (std::getline(file, str))
+        {
+            contents += str;
+        }  
+        file.close();
+    }
+    else std::cout << "Unable to open file";
 
+    Json::Value root;
+    Json::Reader reader;
+
+    bool parsingSuccessful = reader.parse(contents, root);
+    if ( !parsingSuccessful )
+    {
+        // report to the user the failure and their locations in the document.
+        std::cout  << "Failed to parse configuration\n"
+                   << reader.getFormattedErrorMessages();
+        return;
+    }
+    else
+        std::cout << "Fichier chargé" << std::endl;
+
+    for (unsigned int i = 0; i < root.size(); ++i)
+    {
+        m_chunksData.push_back(root[i]);
+    }
+}

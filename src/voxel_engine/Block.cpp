@@ -11,7 +11,7 @@ Block::Block(BlockType blockType){
 Block::~Block(){}
 
 // Getter
-bool Block::isActive(){
+bool Block::isActive() const{
 	return m_active;
 }
 
@@ -22,4 +22,12 @@ void Block::setActive(){
 
 void Block::setInactive(){
 	m_active = false;
+}
+
+BlockType Block::getType() const{
+	return m_blockType;
+}
+
+void Block::setType(BlockType blockType){
+	m_blockType = blockType;
 }
