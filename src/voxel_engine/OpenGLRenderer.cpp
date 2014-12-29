@@ -1,4 +1,5 @@
 #include "OpenGLRenderer.hpp"
+#include <iostream>
 
 // Constructor
 OpenGLRenderer::OpenGLRenderer(){
@@ -70,7 +71,7 @@ void OpenGLRenderer::finishVbo()
 
 void OpenGLRenderer::setVao(){
 	glGenVertexArrays(1, &m_vao);
-
+	
 	glBindVertexArray(m_vao);
 
 	glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
@@ -92,30 +93,20 @@ void OpenGLRenderer::setVao(){
 	glBindVertexArray(0);
 }
 
-void OpenGLRenderer::draw(GeneralProgram &program, const glm::mat4 &viewMatrix, GLuint idTexture){
-	glm::mat4 modelMatrix = glm::mat4(1.f);
-	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+void OpenGLRenderer::renderMesh(GLuint idTexture){
 
-	// A sortir de la classe : Identique dans tout le programme
-	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
-	glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
-
-	// Normale
-	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
-
-	glUniformMatrix4fv(program.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-	glUniformMatrix4fv(program.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
-	glUniformMatrix4fv(program.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-
+	
 	glBindVertexArray(m_vao);
 
 	glBindTexture(GL_TEXTURE_2D, idTexture);
-	glUniform1i(program.uTexture, 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBindVertexArray(0);
+}
+
+void OpenGLRenderer::getMeshInformation(int &numVerts){
+	numVerts = m_vertices.size();
 }
