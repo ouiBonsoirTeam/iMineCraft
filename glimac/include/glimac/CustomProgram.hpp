@@ -67,5 +67,25 @@ namespace glimac
 
 		}
 	};
+
+	struct GeometryProgram
+	{
+		Program m_Program;
+
+		GLint uMVPMatrix;
+		GLint uMVMatrix;
+		GLint uNormalMatrix;
+		GLint uTexture;
+
+		GeometryProgram(const FilePath& applicationPath):
+			m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/normals.fs.glsl"))
+		{
+			uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
+			uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
+			uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
+			uTexture = glGetUniformLocation(m_Program.getGLId(), "uTexture");
+
+		}
+	};
 	
 }

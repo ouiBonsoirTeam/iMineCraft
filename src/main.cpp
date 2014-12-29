@@ -65,8 +65,6 @@ int main(int argc, char** argv) {
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 
-	glEnable(GL_DEPTH_TEST);
-
 	//Chargement des shaders
     FilePath applicationPath(argv[0]);
 
@@ -75,11 +73,12 @@ int main(int argc, char** argv) {
 
 	GeneralProgram gProgram(applicationPath);
 	pointLightProgram lProgram(applicationPath);
-	SkyboxProgram skyProg(applicationPath);
+	SkyboxProgram skyProgram(applicationPath);
+	GeometryProgram geoProgram(applicationPath);
 
 	// gProgram.m_Program.use();
 	// lProgram.m_Program.use();
-	// skyProg.m_Program.use();
+	// skyProgram.m_Program.use();
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
@@ -120,95 +119,10 @@ int main(int argc, char** argv) {
 	
 	//make me a skybox
 	Skybox skybox;
-	skybox.init(skyProg);
+	skybox.init(skyProgram);
 
-	Geometry geo;
-
-	//load obj
-	if (!geo.loadOBJ("bin/assets/obj/mitsuba.obj", "bin/assets/obj/mitsuba.mtl", true))
-		std::cerr << "Impossible de charger l'objet" << std::endl;
-
-	std::cerr << "tortue" << std::endl;
-
-	//load texture
-	std::unique_ptr<Image> texturePointer2;
-	texturePointer2 = loadImage("../iMineCraft/assets/textures/default.png");
-	if(texturePointer2 == NULL)
-	{
-		std::cerr << "Error while charging texture." << std::endl;
-	}
-
-	std::cerr << "dindon" << std::endl;
-
-	GLuint idTexture2;
-	glGenTextures(1, &idTexture2);
-	glBindTexture(GL_TEXTURE_2D,  idTexture2);
-	glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer2->getWidth(),  
-					texturePointer2->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer2->getPixels());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D,  0);
-
-	std::cerr << "koala" << std::endl;
-
-
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-	glBufferData(GL_ARRAY_BUFFER, geo.getVertexCount() * sizeof(glm::vec3), geo.getVertexBuffer(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	std::cerr << "bison" << std::endl;
-
-	GLuint ibo;
-    glGenBuffers(1, &ibo);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, geo.getIndexCount() * sizeof(uint32_t), geo.getIndexBuffer(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-
-
-
-	const static GLuint VERTEX_ATTR_POSITION = 0;
-	const static GLuint VERTEX_ATTR_NORMAL = 1;
-	const static GLuint VERTEX_ATTR_TEXTCOORD = 2;
-
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-
-	glBindVertexArray(vao);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-
-		glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-		glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-		glEnableVertexAttribArray(VERTEX_ATTR_TEXTCOORD);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(0* sizeof(GLfloat)));
-			glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(3 * sizeof(GLfloat)));
-			glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(6 * sizeof(GLfloat)));
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
-
-	std::cerr << "lapin" << std::endl;
-
-
-
-
-
+	Geometry mitsuba;
+	mitsuba.init(geoProgram, mitsuba, "bin/assets/obj/Hand_01.obj", "bin/assets/obj/", true);
 
 	// // make me a torch
 	// Torch torch;
@@ -250,47 +164,17 @@ int main(int argc, char** argv) {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		skyProg.m_Program.use();
-			skybox.draw(skyProg, viewMatrix);
+		skyProgram.m_Program.use();
+			skybox.draw(skyProgram, viewMatrix);
 
-		gProgram.m_Program.use();
+		// lProgram.m_Program.use();
 			// torch.draw(lProgram, viewMatrix);
 
-		chunk.render(gProgram, viewMatrix, idTexture);
+		gProgram.m_Program.use();
+			chunk.render(gProgram, viewMatrix, idTexture);
 
-
-		//render pour l'obj
-			glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(12,3,12));
-			glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
-
-			// A sortir de la classe : Identique dans tout le programme
-			glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
-			glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
-
-			// Normale
-			glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
-
-			glUniformMatrix4fv(gProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-			glUniformMatrix4fv(gProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
-			glUniformMatrix4fv(gProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-
-			glBindVertexArray(vao);
-
-			glBindTexture(GL_TEXTURE_2D, idTexture2);
-			glUniform1i(gProgram.uTexture, 0);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-
-			glDrawElements(GL_TRIANGLES, geo.getIndexCount(), GL_UNSIGNED_INT, 0);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-			glBindVertexArray(0);
+		geoProgram.m_Program.use();
+			mitsuba.draw(geoProgram, mitsuba, viewMatrix);
 
 
 		// Update the display
@@ -299,8 +183,7 @@ int main(int argc, char** argv) {
 	}
 
 	skybox.destruct();
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
+	mitsuba.destruct();
 
 	return EXIT_SUCCESS;
 }

@@ -64,7 +64,7 @@ void Skybox::create_cube_map (
 	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void Skybox::init(SkyboxProgram &skyProg)
+void Skybox::init(SkyboxProgram &skyProgram)
 {
 	create_cube_map ( "bin/assets/skybox/v1/zneg.png",
 					  "bin/assets/skybox/v1/zpos.png",
@@ -130,12 +130,12 @@ void Skybox::init(SkyboxProgram &skyProg)
 	
 }
 
-void Skybox::draw(SkyboxProgram &skyProg, const glm::mat4 &viewMatrix)
+void Skybox::draw(SkyboxProgram &skyProgram, const glm::mat4 &viewMatrix)
 {
 	//cste dans le programme, a degager de la classe
-	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 1000.f);
 
-	glm::mat4 modelMatrix =  glm::scale(glm::mat4(1.0), glm::vec3(200, 200, 200)); 
+	glm::mat4 modelMatrix =  glm::scale(glm::mat4(1.0), glm::vec3(1000, 1000, 1000));
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 	//calcul de la matrixViewProjetée
 	glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
@@ -146,7 +146,7 @@ void Skybox::draw(SkyboxProgram &skyProg, const glm::mat4 &viewMatrix)
 	rotateCamMat[3][2] = 0;
 	rotateCamMat[3][3] = 1;
 
-	glUniformMatrix4fv(skyProg.PVM, 1, GL_FALSE, glm::value_ptr(rotateCamMat));
+	glUniformMatrix4fv(skyProgram.PVM, 1, GL_FALSE, glm::value_ptr(rotateCamMat));
 
 	glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_CUBE_MAP, m_texture);

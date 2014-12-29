@@ -16,11 +16,11 @@ void event_manager(SDLWindowManager& windowManager,
 	// INIT
 
 	Block*** blocks = chunk.getBlocks();
-	const float INERTIA_FACTOR = 1.0005;
-	const float INERTIA_JUMP_FACTOR = 1.0005;
+	const float INERTIA_FACTOR = 10.0005;
+	const float INERTIA_JUMP_FACTOR = 10.0005;
 
-	float gravityFactor = 0.004f;
-	float playerSpeed = 0.005f;
+	float gravityFactor = 0.000f;
+	float playerSpeed = 0.100f;
 
 	glm::vec3 velocity=glm::vec3(0,0,0);
 

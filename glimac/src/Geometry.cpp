@@ -170,4 +170,120 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
     return true;
 }
 
+void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures)
+{
+    //load obj
+    if (!obj.loadOBJ(filepath, mtlBasePath, loadTextures))
+        std::cerr << "Impossible de charger l'objet" << std::endl;
+
+    //load texture
+    std::unique_ptr<Image> texturePointer;
+    texturePointer = loadImage("../iMineCraft/assets/textures/skintexture_05.png");
+    if(texturePointer == NULL)
+    {
+        std::cerr << "Error while charging texture." << std::endl;
+    }
+
+    glGenTextures(1, &m_texture);
+    glBindTexture(GL_TEXTURE_2D,  m_texture);
+    glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
+                    texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D,  0);
+
+    glGenBuffers(1, &m_vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+
+    glBufferData(GL_ARRAY_BUFFER, obj.getVertexCount() * sizeof(glm::vec3), obj.getVertexBuffer(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+    glGenBuffers(1, &m_ibo);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj.getIndexCount() * sizeof(uint32_t), obj.getIndexBuffer(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+    const static GLuint VERTEX_ATTR_POSITION = 0;
+    const static GLuint VERTEX_ATTR_NORMAL = 1;
+    const static GLuint VERTEX_ATTR_TEXTCOORD = 2;
+
+    glGenVertexArrays(1, &m_vao);
+
+    glBindVertexArray(m_vao);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+
+
+        glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+        glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+        glEnableVertexAttribArray(VERTEX_ATTR_TEXTCOORD);
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+            glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(0* sizeof(GLfloat)));
+            glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(3 * sizeof(GLfloat)));
+            glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(6 * sizeof(GLfloat)));
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+}
+
+void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix)
+{
+    //render pour l'obj
+    //glm::mat4 modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(0.1, 0.1, 0.1));
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(50,5,50));
+    glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+
+    // A sortir de la classe : Identique dans tout le programme
+    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+
+    glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
+
+    // Normale
+    glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
+
+    glUniformMatrix4fv(geoProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+    glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+    glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+    glBindVertexArray(m_vao);
+
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+    glUniform1i(geoProgram.uTexture, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+
+
+    glDrawElements(GL_TRIANGLES, obj.getIndexCount(), GL_UNSIGNED_INT, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glBindVertexArray(0);
+}
+
+void Geometry::destruct()
+{
+    // release vertex and index buffer object
+    glDeleteVertexArrays(1, &m_vao);
+    glDeleteBuffers(1, &m_vbo);
+    glDeleteBuffers(1, &m_ibo);
+
+    // release texture
+    glDeleteTextures(1, &m_texture);
+}
+
 }

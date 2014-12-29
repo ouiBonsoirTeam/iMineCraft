@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <string>
+#include <glimac/CustomProgram.hpp>
 #include "Image.hpp"
 #include "FilePath.hpp"
 #include "BBox.hpp"
@@ -50,6 +51,11 @@ private:
     std::vector<Material> m_Materials;
     BBox3f m_BBox;
 
+    GLuint m_texture;
+    GLuint m_vao;
+    GLuint m_vbo;
+    GLuint m_ibo;
+
     void generateNormals(unsigned int meshIndex);
 
 public:
@@ -78,6 +84,12 @@ public:
     }
 
     bool loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures = true);
+
+    void init(GeometryProgram &geoProgram, Geometry &obj, const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures);
+
+    void draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix);
+
+    void destruct();
 
     const BBox3f& getBoundingBox() const {
         return m_BBox;
