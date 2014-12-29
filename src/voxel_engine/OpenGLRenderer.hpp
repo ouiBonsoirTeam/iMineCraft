@@ -41,6 +41,7 @@ public:
 	void addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3);
 	void finishVbo();
 	void setVao();
-	void renderMesh(GeneralProgram &program, const glm::mat4 &viewMatrix);
+	void renderMesh();
+	void getMeshInformation(int &numVerts);
 	
 };

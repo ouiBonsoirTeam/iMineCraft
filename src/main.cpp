@@ -68,13 +68,9 @@ int main(int argc, char** argv) {
 	//Initialisation camera freefly
 	FreeFlyCamera ffCam;
 
-	Chunk chunk;
-	chunk.setup();
-	chunk.createMesh();
-
 	// TEST
 	ChunkManager chunkmanager;
-	chunkmanager.initialize("bin/assets/saves/test.json");
+	chunkmanager.initialize("bin/assets/saves");
 
 	//initialisation angle
 	float angleX = 0;
@@ -170,22 +166,18 @@ int main(int argc, char** argv) {
 		    lastTime += 1.0;
 		    }
 
-
-
-
-
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
 		 *********************************/
-
-		glm::mat4 matrixV = ffCam.getViewMatrix();
 		
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		chunk.render(gProgram, matrixV);
+		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+		chunkmanager.render(gProgram, ffCam.getViewMatrix());
 
 		// Update the display
 		windowManager.swapBuffers();
+
 	}
 
 	return EXIT_SUCCESS;

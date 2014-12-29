@@ -1,5 +1,6 @@
 #include "Chunk.hpp"
 #include <glimac/glm.hpp>
+#include <iostream>
 
 
 // Constructor
@@ -48,7 +49,6 @@ void Chunk::createMesh()
             {
                 if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2)
                     {
-                        createCube(x, y, z, m_pBlocks[x][y][z].getType());
                         m_pBlocks[x][y][z].setActive();
                     }
                 else
@@ -56,15 +56,24 @@ void Chunk::createMesh()
             }
         }
     }
-
-    m_pRenderer->finishVbo();
 }
 
 void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix)
 {
 	m_pRenderer->setVao();
 
-	m_pRenderer->renderMesh(program, viewMatrix);
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
+    glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+
+    // A sortir de la classe : Identique dans tout le programme
+    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+
+    glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
+
+    glUniformMatrix4fv(program.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+    glUniformMatrix4fv(program.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+
+	m_pRenderer->renderMesh();
 }
 
 void Chunk::update(){}
@@ -151,7 +160,7 @@ void Chunk::load(const Json::Value &chunkData)
 void Chunk::setup()
 {
     // Create the blocks
-    if (!m_blocksData.empty())
+    if (m_loaded)
     {
         m_pBlocks = new Block**[CHUNK_SIZE];
 
@@ -165,6 +174,8 @@ void Chunk::setup()
 
                 for (int k = 0; k < CHUNK_SIZE; ++k)
                 {
+                    // std::cerr << m_blocksData["block"][i][j][k]["active"].asInt() << std::endl;
+
                     if (m_blocksData["block"][i][j][k]["active"] == true)
                         m_pBlocks[i][j][k].setActive();
 
@@ -177,9 +188,21 @@ void Chunk::setup()
     }
     else
     {
+         // Create the blocks
+        m_pBlocks = new Block**[CHUNK_SIZE];
+        for(int i = 0; i < CHUNK_SIZE; i++)
+        {
+            m_pBlocks[i] = new Block*[CHUNK_SIZE];
+
+            for(int j = 0; j < CHUNK_SIZE; j++)
+            {
+                m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+            }
+        }
+
         createMesh();
+        m_loaded = true;
     }
-    
 
     m_pRenderer = new OpenGLRenderer;
 
@@ -192,15 +215,13 @@ void Chunk::buildMesh()
     {
         for (int y = 0; y < CHUNK_SIZE; y++)
         {
-            // CUBE
             for (int z = 0; z < CHUNK_SIZE; z++)
             {
                 if(m_pBlocks[x][y][z].isActive() == false)
                     continue;
 
                 createCube(x, y, z, m_pBlocks[x][y][z].getType());
-            }
-            
+            }   
         }
     }
 
@@ -224,4 +245,13 @@ void Chunk::unload()
     delete this;
 }
 
+void Chunk::updateShouldRenderFlags()
+{
+    int numVerts;
+    m_pRenderer->getMeshInformation(numVerts);
 
+    if(numVerts == 0)
+    {
+        m_emptyChunk = true;
+    }
+}

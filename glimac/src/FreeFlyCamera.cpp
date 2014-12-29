@@ -43,6 +43,31 @@ namespace glimac
 		m_Position += vec;
 	}
 
+	void FreeFlyCamera::setInertia(glm::vec3 vec)
+	{
+		m_Inertia = vec;
+	}
+
+	void FreeFlyCamera::setJumpInertia(glm::vec3 vec)
+	{
+		m_JumpInertia = vec;
+	}
+
+	void FreeFlyCamera::updateInertia(glm::vec3 vec)
+	{
+		m_Inertia += vec;
+	}
+
+	void FreeFlyCamera::divideInertia(float t)
+	{
+		m_Inertia = glm::vec3(m_Inertia.x/t,0,m_Inertia.z/t);
+	}
+
+	void FreeFlyCamera::divideJumpInertia(float t)
+	{
+		m_JumpInertia = glm::vec3(0,m_JumpInertia.y/t,0);
+	}
+
 	void FreeFlyCamera::rotateLeft(float degrees)
 	{
 		m_fPhi += glm::radians(degrees);
@@ -55,6 +80,12 @@ namespace glimac
 		computeDirectionVectors();
 	}
 
+	void FreeFlyCamera::setPosition(glm::vec3 vec)
+	{
+		m_Position = vec;
+	}
+
+
 	glm::mat4 FreeFlyCamera::getViewMatrix() const
 	{
 		return glm::lookAt(m_Position, m_Position + m_FrontVector, m_UpVector);
@@ -65,5 +96,29 @@ namespace glimac
 		return m_Position;
 	}
 
+	glm::vec3 FreeFlyCamera::getFrontVector() const
+	{
+		return glm::vec3(m_FrontVector.x,0,m_FrontVector.z);
+	}
+
+	glm::vec3 FreeFlyCamera::getLeftVector() const
+	{
+		return m_LeftVector;
+	}
+
+	glm::vec3 FreeFlyCamera::getUpVector() const
+	{
+		return m_UpVector;
+	}
+
+	glm::vec3 FreeFlyCamera::getInertia() const
+	{
+		return m_Inertia;
+	}
+
+	glm::vec3 FreeFlyCamera::getJumpInertia() const
+	{
+		return m_JumpInertia;
+	}
 
 }

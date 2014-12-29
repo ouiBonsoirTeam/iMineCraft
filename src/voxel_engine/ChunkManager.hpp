@@ -15,12 +15,15 @@ class ChunkManager
 	ChunkList m_vpChunkLoadList;
 	ChunkList m_vpChunkSetupList;
 	ChunkList m_vpChunkRebuildList;
+	ChunkList m_vpChunkUpdateFlagsList;
 	ChunkList m_vpChunkUnloadList;
 	ChunkList m_vpChunkVisibilityList;
 	ChunkList m_vpChunkRenderList;
 
+
 	glm::vec3 m_cameraPosition;
 	glm::vec3 m_cameraView;
+
 	bool m_forceVisibilityUpdate;
 
 	std::string m_pathJson;
@@ -33,15 +36,20 @@ public:
 
 	// Update fonctions
 	void initialize(const std::string& saveFolder);
-	void update(float dt, glm::vec3 cameraPosition, glm::vec3 cameraView);
+	void update(/*float dt, */glm::vec3 cameraPosition, glm::vec3 cameraView);
 	void updateLoadList();
 	void updateUnLoadList();
 	void updateSetupList();
 	void updateRebuildList();
-	void updateVisibilityList();
+	void updateFlagsList();
+	void updateVisibilityList(glm::vec3 cameraPosition);
 	void updateUnloadList();
 	void updateRenderList();
+	void render(GeneralProgram &program, const glm::mat4 viewMatrix);
+
 
 	bool jsonChunkExist(const std::string &fileName);
 	Json::Value loadAndParseJsonFile(const std::string& fileName);
+
+	Chunk* getChunk(const int &x, const int &y, const int &z);
 };

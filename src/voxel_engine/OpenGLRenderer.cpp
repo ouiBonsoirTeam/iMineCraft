@@ -41,23 +41,15 @@ void OpenGLRenderer::setVao(){
 	glBindVertexArray(0);
 }
 
-void OpenGLRenderer::renderMesh(GeneralProgram &program, const glm::mat4 &viewMatrix){
-	glm::mat4 modelMatrix = glm::mat4(1.f);
-	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
-
-	// A sortir de la classe : Identique dans tout le programme
-	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
-	glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
-
-	// Normale à faire
-
-	glUniformMatrix4fv(program.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-	glUniformMatrix4fv(program.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+void OpenGLRenderer::renderMesh(){
 
 	glBindVertexArray(m_vao);
 
 	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
 	glBindVertexArray(0);
+}
+
+void OpenGLRenderer::getMeshInformation(int &numVerts){
+	numVerts = m_vertices.size();
 }

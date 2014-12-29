@@ -12,7 +12,8 @@ private:
 	Block*** m_pBlocks;
 	OpenGLRenderer *m_pRenderer;
 	bool m_loaded = false;
-	bool m_setup = true;
+	bool m_setup = false;
+	bool m_emptyChunk = false;
 
 	//postition
 	glm::vec3 m_position;
@@ -25,7 +26,13 @@ public:
 	Chunk(glm::vec3 position);
 	~Chunk();
 
-	static const int CHUNK_SIZE = 20;																																																																																																																																				;
+	static const int CHUNK_SIZE = 20;	
+
+	glm::vec3 getPosition(){ return m_position; }
+	int getX(){ return m_position[0]; }
+	int getY(){ return m_position[1]; }
+	int getZ(){ return m_position[2]; }
+	bool isEmpty() { return m_emptyChunk; }																																																																																																																																		;
 
 	void createMesh();
 
@@ -47,11 +54,11 @@ public:
 
 	void setup();
 
-	glm::vec3 getPosition(){ return m_position; }
-
 	void load(const Json::Value &chunkData);
 
 	Block*** getBlocks();
 
 	void unload();
+
+	void updateShouldRenderFlags();
 };
