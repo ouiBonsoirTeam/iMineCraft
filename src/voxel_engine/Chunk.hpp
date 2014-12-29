@@ -38,8 +38,6 @@ public:
 	static const int TAILLE_X_TEXTURE = 16;
 
 	static const int TAILLE_Y_TEXTURE = 20;
-	// Construtors
-	Chunk();
 
 	// Getter
 	Block*** getBlocks() const;
