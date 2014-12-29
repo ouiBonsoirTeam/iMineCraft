@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 	Geometry geo;
 
 	//load obj
-	if (!geo.loadOBJ("bin/assets/obj/hairball.obj", "bin/assets/obj/mitsuba.mtl", true))
+	if (!geo.loadOBJ("bin/assets/obj/mitsuba.obj", "bin/assets/obj/mitsuba.mtl", true))
 		std::cerr << "Impossible de charger l'objet" << std::endl;
 
 	std::cerr << "tortue" << std::endl;
