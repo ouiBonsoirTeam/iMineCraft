@@ -6,6 +6,8 @@
 #include <json/json.h>
 
 
+enum ADJACENT_LOOK { LOOK_TOP = 0, LOOK_BACK, LOOK_RIGHT, LOOK_FRONT, LOOK_LEFT, LOOK_BOTTOM };
+
 class Chunk{
 
 private:
@@ -26,21 +28,41 @@ public:
 	Chunk(glm::vec3 position);
 	~Chunk();
 
-	static const int CHUNK_SIZE = 20;	
-
 	glm::vec3 getPosition(){ return m_position; }
 	int getX(){ return m_position[0]; }
 	int getY(){ return m_position[1]; }
 	int getZ(){ return m_position[2]; }
-	bool isEmpty() { return m_emptyChunk; }																																																																																																																																		;
+	bool isEmpty() { return m_emptyChunk; }
 
+	static const int CHUNK_SIZE = 24;
+	static const int TAILLE_X_TEXTURE = 16;
+	static const int TAILLE_Y_TEXTURE = 17;
+
+	// Getter
+	Block*** getBlocks() const;
+	
+	// Create the world chunk model
+	void init();
+
+	// Occlusion management
+	bool blockExist(int x, int y, int z);
+	bool blockExist(glm::vec3 vec);
+	glm::mat3 getAdjacentMap(int x, int y, int z, int adjacent_look);
+	int countAdjacent(glm::mat3 adjacentMap);
+	glm::vec2 computeCoordText(const int & x, const int & y, const int & taille_x = TAILLE_X_TEXTURE, const int & taille_y = TAILLE_Y_TEXTURE);
+	glm::vec2 getOcclusionCoordText(glm::mat3 adjacentMap);
+
+	// Create a cube with position and seen sides
+	void createCube(const int &x, const int &y, const int &z, const bool & lXNegative, const bool &lXPositive,
+					const bool &lYNegative, const bool &lYPositive, const bool &lZNegative, const bool &lZPositive, const BlockType &blockType);
+
+	// Prepare the render of seen Triangles
 	void createMesh();
 
-	void render(GeneralProgram &program, const glm::mat4 viewMatrix);
-
+	// render
+	void render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
+ 
 	void update();
-
-	void createCube(const int &x, const int &y, const int &z, const BlockType &blockType);
 
 	bool isLoaded();
 
