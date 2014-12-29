@@ -173,15 +173,6 @@ glm::mat3 Chunk::getAdjacentMap(int x, int y, int z, int adjacent_look)
 		break;
 
 		case LOOK_LEFT:
-			// leftTop 	= glm::vec3(x - 1, y + 1, z + 1);
-			// top 		= glm::vec3(x - 1, y + 1, z);
-			// topRight	= glm::vec3(x - 1, y + 1, z - 1);
-			// right 		= glm::vec3(x - 1, y, z + 1);
-			// rightBottom = glm::vec3(x - 1, y - 1, z - 1);
-			// bottom 		= glm::vec3(x - 1, y - 1, z);
-			// bottomLeft 	= glm::vec3(x - 1, y - 1, z + 1);
-			// left 		= glm::vec3(x - 1, y, z - 1);
-
 			leftTop 	= glm::vec3(x - 1, y + 1, z - 1);
 			top 		= glm::vec3(x - 1, y + 1, z);
 			topRight	= glm::vec3(x - 1, y + 1, z + 1);
@@ -263,9 +254,32 @@ int Chunk::countAdjacent(glm::mat3 adjacentMap)
 	return sum;
 }
 
-glm::vec2 Chunk::computeCoordText(const int & x, const int & y, const int & taille_x, const int & taille_y)
+float Chunk::computeCropTextX()
 {
-	return	glm::vec2(x * (1.0 / taille_x), y * (1.0 / taille_y));
+	float size_text = 1.0 / TAILLE_X_TEXTURE;
+
+	return	size_text * 0.06;
+}
+float Chunk::computeCropTextY()
+{
+	float size_text = 1.0 / TAILLE_Y_TEXTURE;
+
+	return	size_text * 0.06;
+}
+
+
+glm::vec2 Chunk::computeCoordText(const int & x, const int & y, const float & cropX, const float & cropY)
+{
+	glm::vec2 size_text = glm::vec2((1.0 / TAILLE_X_TEXTURE), (1.0 / TAILLE_Y_TEXTURE));
+
+	return	glm::vec2(x * size_text[0] + cropX, y * size_text[1] + cropY);
+}
+
+glm::vec2 Chunk::computeCoordText(const int & x, const int & y)
+{
+	glm::vec2 size_text = glm::vec2((1.0 / TAILLE_X_TEXTURE), (1.0 / TAILLE_Y_TEXTURE));
+
+	return	glm::vec2(x * size_text[0], y * size_text[1]);
 }
 
 glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
@@ -365,12 +379,6 @@ glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
 		res[1] = 2;
 	else res[1] = 0;
 
-
-	// if (!top && !bottom && !left && !right && !bottomLeft && !bottomRight && !topLeft && !topRight)
-	// {
-	// 	res = computeCoordText(1, 16);
-	// }
-	// else 
 	res = computeCoordText(res[0], res[1]);
 
 	return res;
@@ -448,10 +456,10 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	// Normal
 	glm::vec3 n1;
 
+	float crop_textX = computeCropTextX();
+	float crop_textY = computeCropTextY();
 	glm::vec2 textCoord_up = computeCoordText(0, 16);
 	glm::vec2 textCoord_side = computeCoordText(1, 16);
-
-	glm::vec2 occluDefault = computeCoordText(0,0);
 
 	// Front
 	if(lZPositive)
@@ -463,15 +471,21 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v1, v2, v3);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1), text_occlu + computeCoordText(1,1)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,1, -crop_textX, -crop_textY), 
+								 			text_occlu + computeCoordText(1,1, -crop_textX, -crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)));
 		
 		m_pRenderer->addTriangle(v1, v3, v4);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0), text_occlu + computeCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								 			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(0,0, crop_textX, crop_textY),
+								  			text_occlu + computeCoordText(0,0, crop_textX, crop_textY)));
 	}
 
 
@@ -485,15 +499,21 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v5, v6, v7);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1), text_occlu + computeCoordText(1,1)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,1, -crop_textX, -crop_textY), 
+								 			text_occlu + computeCoordText(1,1, -crop_textX, -crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)));
 		
 		m_pRenderer->addTriangle(v5, v7, v8);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0), text_occlu + computeCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								 			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(0,0, crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(0,0, crop_textX, crop_textY)));
 	}
 
 	// Right
@@ -506,15 +526,21 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v2, v5, v8);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1), text_occlu + computeCoordText(1,1)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,1, -crop_textX, -crop_textY), 
+								 			text_occlu + computeCoordText(1,1, -crop_textX, -crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)));
 		
 		m_pRenderer->addTriangle(v2, v8, v3);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0), text_occlu + computeCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								 			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(0,0, crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(0,0, crop_textX, crop_textY)));
 	}
 
 
@@ -528,15 +554,21 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v6, v1, v4);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1), text_occlu + computeCoordText(1,1)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,1, -crop_textX, -crop_textY), 
+								 			text_occlu + computeCoordText(1,1, -crop_textX, -crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)));
 		
 		m_pRenderer->addTriangle(v6, v4, v7);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0), text_occlu + computeCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								 			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(0,0, crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(0,0, crop_textX, crop_textY)));
 	}
 
 
@@ -551,15 +583,21 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 		m_pRenderer->addTriangle(v4, v3, v8);
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_up + computeCoordText(1,1),  text_occlu + computeCoordText(1,1)),
-								  glm::vec4(textCoord_up + computeCoordText(1,0), text_occlu + computeCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_up + computeCoordText(1,1, -crop_textX, -crop_textY), 
+								 			text_occlu + computeCoordText(1,1, -crop_textX, -crop_textY)),
+								  glm::vec4(textCoord_up + computeCoordText(1,0, -crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)));
 		
 		m_pRenderer->addTriangle(v4, v8, v7);
 		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_up + computeCoordText(1,0), text_occlu + computeCoordText(1,0)),
-								  glm::vec4(textCoord_up + computeCoordText(0,0), text_occlu + computeCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_up + computeCoordText(1,0, -crop_textX, crop_textY), 
+								 			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)),
+								  glm::vec4(textCoord_up + computeCoordText(0,0, crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(0,0, crop_textX, crop_textY)));
 
 	}
 
@@ -574,15 +612,21 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		m_pRenderer->addNormal(n1);
 
 		m_pRenderer->addTriangle(v6, v5, v2);
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1), text_occlu + computeCoordText(1,1)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,1, -crop_textX, -crop_textY), 
+								 			text_occlu + computeCoordText(1,1, -crop_textX, -crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)));
 		
 		m_pRenderer->addTriangle(v6, v2, v1);
 		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1), text_occlu + computeCoordText(0,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0), text_occlu + computeCoordText(1,0)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0), text_occlu + computeCoordText(0,0)));
+		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1, crop_textX, -crop_textY), 
+											text_occlu + computeCoordText(0,1, crop_textX, -crop_textY)),
+								 glm::vec4(textCoord_side + computeCoordText(1,0, -crop_textX, crop_textY), 
+								 			text_occlu + computeCoordText(1,0, -crop_textX, crop_textY)),
+								  glm::vec4(textCoord_side + computeCoordText(0,0, crop_textX, crop_textY), 
+								  			text_occlu + computeCoordText(0,0, crop_textX, crop_textY)));
 	}
 
 }
