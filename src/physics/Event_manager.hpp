@@ -123,11 +123,11 @@ void event_manager(SDLWindowManager& windowManager,
 
 	int countCollision =0;
 
-	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
 			 .isActive() ||
-	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
+	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
 			 .isActive())
@@ -141,11 +141,11 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.setInertia(glm::vec3(0,0,0));
 	}
 
-	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.2)]
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
 			 .isActive() ||
-	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.2)]
+	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.1)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
 			 .isActive())
@@ -161,11 +161,11 @@ void event_manager(SDLWindowManager& windowManager,
 
 	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.1)]
 			 .isActive() ||
 	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.1)]
 			 .isActive())
 	{
 		countCollision += 1;
@@ -179,11 +179,11 @@ void event_manager(SDLWindowManager& windowManager,
 
 	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.1)]
 			 .isActive() ||
 	   blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
 			 [(int)glm::round((ffCam.getPosition()+velocity).y)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.1)]
 			 .isActive())
 	{
 		countCollision += 1;
