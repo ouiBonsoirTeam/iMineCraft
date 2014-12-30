@@ -5,6 +5,7 @@
 #include "Chunk.hpp"
 #include <glimac/glm.hpp>
 #include <json/json.h>
+#include <glimac/PerlinNoise.hpp>
 
 typedef std::vector<Chunk*> ChunkList;
 
@@ -20,6 +21,7 @@ class ChunkManager
 	ChunkList m_vpChunkVisibilityList;
 	ChunkList m_vpChunkRenderList;
 
+	PerlinNoise m_PerlinNoise;
 
 	glm::vec3 m_cameraPosition;
 	glm::vec3 m_cameraView;
@@ -33,6 +35,9 @@ class ChunkManager
 public:
 	ChunkManager(){};
 	~ChunkManager(){};
+
+	// Getters
+	float getNoiseValue(const int & x, const int & z) { return (float) m_PerlinNoise.GetHeight(x, z); }
 
 	// Update fonctions
 	void initialize(const std::string& saveFolder);

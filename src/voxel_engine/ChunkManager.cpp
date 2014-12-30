@@ -5,17 +5,24 @@
 
 void ChunkManager::initialize(const std::string& saveFolder)
 {
+    double _amplitude = 48;
+    double _persistence = 0.01;
+    double _frequency = 0.06;
+    double _octaves = 1 ;
+    double _randomseed = 3;
+    m_PerlinNoise = PerlinNoise(_persistence, _frequency, _amplitude, _octaves, _randomseed);
+
     m_pathJson = saveFolder;
     int chunkLimit = 2;
     int chunkCount = 0;
 
-    for (int i = 0; i < chunkLimit; ++i)
+    for (int i = -1; i < chunkLimit; ++i)
     {
-        for (int j = 0; j < chunkLimit; ++j)
+        for (int j = -1; j < chunkLimit; ++j)
         {
-            for (int k = 0; k < chunkLimit; ++k)
+            for (int k = -1; k < chunkLimit; ++k)
             {
-                m_vpGlobalChunkList.push_back(new Chunk(glm::vec3(i, j, k)));
+                m_vpGlobalChunkList.push_back(new Chunk(glm::vec3(i, j, k), &m_PerlinNoise));
                 m_vpChunkLoadList.push_back(m_vpGlobalChunkList.at(chunkCount));
 
                 ++chunkCount;

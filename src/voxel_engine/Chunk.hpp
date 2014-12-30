@@ -4,6 +4,7 @@
 #include "OpenGLRenderer.hpp"
 #include <glimac/glm.hpp>
 #include <json/json.h>
+#include <glimac/PerlinNoise.hpp>
 
 
 enum ADJACENT_LOOK { LOOK_TOP = 0, LOOK_BACK, LOOK_RIGHT, LOOK_FRONT, LOOK_LEFT, LOOK_BOTTOM };
@@ -19,13 +20,16 @@ private:
 
 	//postition
 	glm::vec3 m_position;
+	PerlinNoise * m_PerlinNoise;
 
 	Json::Value m_blocksData;
 
 
 public:
 	Chunk();
+	Chunk(PerlinNoise * pn);
 	Chunk(glm::vec3 position);
+	Chunk(glm::vec3 position, PerlinNoise *pn);
 	~Chunk();
 
 	glm::vec3 getPosition(){ return m_position; }
@@ -37,7 +41,7 @@ public:
 	static const int CHUNK_SIZE = 24;
 	static const int TAILLE_X_TEXTURE = 16;
 
-	static const int TAILLE_Y_TEXTURE = 20;
+	static const int TAILLE_Y_TEXTURE = 24;
 
 	// Getter
 	Block*** getBlocks() const;
@@ -61,6 +65,7 @@ public:
 
 	// Prepare the render of seen Triangles
 	void createMesh();
+	void createLandscape();
 
 	// render
 	void render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
@@ -86,4 +91,7 @@ public:
 	void unload();
 
 	void updateShouldRenderFlags();
+
+
+	void createHeightMap();
 };
