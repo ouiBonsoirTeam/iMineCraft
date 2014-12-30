@@ -7,20 +7,9 @@
 Chunk::Chunk()
 {}
 
-Chunk::Chunk(PerlinNoise * pn)
-{
-	m_PerlinNoise = pn;
-}
-
 Chunk::Chunk(glm::vec3 position)
 {
     m_position = position;
-}
-
-Chunk::Chunk(glm::vec3 position, PerlinNoise *pn)
-{
-    m_position = position;
-    m_PerlinNoise = pn;
 }
 
 // Destructor
@@ -397,14 +386,14 @@ void Chunk::createMesh()
 }
 
 
-void Chunk::createLandscape()
+void Chunk::createLandscape(PerlinNoise *pn)
 {
     for(int x = 0; x < CHUNK_SIZE; ++x)
     {
         for(int z = 0; z < CHUNK_SIZE; ++z)
         {
             // Use the noise library to get the height value of x, z
-            float h = m_PerlinNoise->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z);
+            float h = pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z);
             float height;
             
             if(h > CHUNK_SIZE - 1)
@@ -675,7 +664,7 @@ void Chunk::load(const Json::Value &chunkData)
     m_loaded = true;
 }
 
-void Chunk::setup()
+void Chunk::setup(PerlinNoise *pn)
 {
     // Create the blocks
     if (m_loaded)
@@ -718,7 +707,7 @@ void Chunk::setup()
             }
         }
 
-        createLandscape();
+        createLandscape(pn);
         m_loaded = true;
     }
 

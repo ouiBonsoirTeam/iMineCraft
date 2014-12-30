@@ -20,16 +20,13 @@ private:
 
 	//postition
 	glm::vec3 m_position;
-	PerlinNoise * m_PerlinNoise;
 
 	Json::Value m_blocksData;
 
 
 public:
 	Chunk();
-	Chunk(PerlinNoise * pn);
 	Chunk(glm::vec3 position);
-	Chunk(glm::vec3 position, PerlinNoise *pn);
 	~Chunk();
 
 	glm::vec3 getPosition(){ return m_position; }
@@ -65,7 +62,7 @@ public:
 
 	// Prepare the render of seen Triangles
 	void createMesh();
-	void createLandscape();
+	void createLandscape(PerlinNoise *pn);
 
 	// render
 	void render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
@@ -82,7 +79,7 @@ public:
 
 	void constructBlock(const int &x, const int &y, const int &z);
 
-	void setup();
+	void setup(PerlinNoise *pn);
 
 	void load(const Json::Value &chunkData);
 

@@ -22,7 +22,7 @@ void ChunkManager::initialize(const std::string& saveFolder)
         {
             for (int k = -1; k < chunkLimit; ++k)
             {
-                m_vpGlobalChunkList.push_back(new Chunk(glm::vec3(i, j, k), &m_PerlinNoise));
+                m_vpGlobalChunkList.push_back(new Chunk(glm::vec3(i, j, k)));
                 m_vpChunkLoadList.push_back(m_vpGlobalChunkList.at(chunkCount));
 
                 ++chunkCount;
@@ -109,7 +109,7 @@ void ChunkManager::updateSetupList()
 
         if(pChunk->isSetup() == false)
         {
-            pChunk->setup();
+            pChunk->setup(&m_PerlinNoise);
             // Only force the visibility update if we actually setup the chunk, some chunks wait in the pre-setup stage...
             m_forceVisibilityUpdate = true;
 
