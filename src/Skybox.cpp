@@ -66,12 +66,12 @@ void Skybox::create_cube_map (
 
 void Skybox::init(SkyboxProgram &skyProgram)
 {
-	create_cube_map ( "bin/assets/skybox/v1/zneg.png",
-					  "bin/assets/skybox/v1/zpos.png",
-					  "bin/assets/skybox/v1/ypos.png",
-					  "bin/assets/skybox/v1/yneg.png",
-					  "bin/assets/skybox/v1/xneg.png",
-					  "bin/assets/skybox/v1/xpos.png"
+	create_cube_map ( "bin/assets/skybox/v2/zneg.png",
+					  "bin/assets/skybox/v2/zpos.png",
+					  "bin/assets/skybox/v2/ypos.png",
+					  "bin/assets/skybox/v2/yneg.png",
+					  "bin/assets/skybox/v2/xneg.png",
+					  "bin/assets/skybox/v2/xpos.png"
 					);
 
 	float vertices[] = {
