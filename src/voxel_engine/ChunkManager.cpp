@@ -5,6 +5,13 @@
 
 void ChunkManager::initialize(const std::string& saveFolder)
 {
+    double _amplitude = 48;
+    double _persistence = 0.01;
+    double _frequency = 0.06;
+    double _octaves = 1 ;
+    double _randomseed = 3;
+    m_PerlinNoise = PerlinNoise(_persistence, _frequency, _amplitude, _octaves, _randomseed);
+
     m_pathJson = saveFolder;
 }
 
@@ -118,7 +125,7 @@ void ChunkManager::updateSetupList()
 
         if(pChunk->isSetup() == false)
         {
-            pChunk->setup();
+            pChunk->setup(&m_PerlinNoise);
             // Only force the visibility update if we actually setup the chunk, some chunks wait in the pre-setup stage...
             m_forceVisibilityUpdate = true;
 

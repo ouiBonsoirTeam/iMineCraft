@@ -1,6 +1,7 @@
 #include "Chunk.hpp"
 #include <glimac/glm.hpp>
 #include <iostream>
+#include <glimac/PerlinNoise.hpp>
 
 // Constructor
 Chunk::Chunk()
@@ -247,8 +248,8 @@ glm::vec2 Chunk::computeCoordText(const int & x, const int & y, const bool crop)
 
 	if(crop)
 	{
-		float cropX = size_text[0] * 0.05;
-		float cropY = size_text[1] * 0.05;
+		float cropX = size_text[0] * 0.015;
+		float cropY = size_text[1] * 0.015;
 
 		float signeX, signeY;
 		if (x == 0)
@@ -370,15 +371,6 @@ void Chunk::createMesh()
     {
         for (int y = 0; y < CHUNK_SIZE; y++)
         {
-            /* CUBE
-            for (int z = 0; z < CHUNK_SIZE; z++)
-            {
-                if(m_pBlocks[x][y][z].isActive() == false)
-                    continue;
-
-                createCube(x, y, z);
-            }
-            */
             // SPHERE
             for (int z = 0; z < CHUNK_SIZE; z++)
             {
@@ -389,6 +381,53 @@ void Chunk::createMesh()
                 else
                     continue;
             }
+        }
+    }
+}
+
+
+void Chunk::createLandscape(PerlinNoise *pn)
+{
+    for(int x = 0; x < CHUNK_SIZE; ++x)
+    {
+        for(int z = 0; z < CHUNK_SIZE; ++z)
+        {
+            // Use the noise library to get the height value of x, z
+            float h = pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z);
+            float height;
+            
+            if(h > CHUNK_SIZE - 1)
+            	height = CHUNK_SIZE - 1;
+            else
+            	height = (int) h;
+
+            if(height >= m_position[1] * CHUNK_SIZE && height < m_position[1] * CHUNK_SIZE + CHUNK_SIZE)
+            {
+	            for (int y = 0; y <= height; ++y)
+	            {
+	                m_pBlocks[x][y][z].setActive();
+
+	                // A FAIRE : Type de block en fonction de l'altitude
+
+	                if(height == 0)
+	               		m_pBlocks[x][y][z].setType(BlockType_Lava);
+	               	else if(y < 3)
+	               		m_pBlocks[x][y][z].setType(BlockType_Rock);
+	               	else if(y < 15)
+	               	{
+	               		if(y == height)
+	               			m_pBlocks[x][y][z].setType(BlockType_Grass);
+	               		else
+	               			m_pBlocks[x][y][z].setType(BlockType_Earth);
+	               	}
+	               	else if(y == 15)
+	               		m_pBlocks[x][y][z].setType(BlockType_1st_Snow);
+	               	else if(y <	 19)
+	               		m_pBlocks[x][y][z].setType(BlockType_Snow);
+	               	else
+	               		m_pBlocks[x][y][z].setType(BlockType_Ice);
+	            }
+	        }
         }
     }
 }
@@ -434,10 +473,9 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	// Normal
 	glm::vec3 n1;
 
-	glm::vec2 textCoord_up = computeCoordText(0, 16);
-	glm::vec2 textCoord_side = computeCoordText(1, 16);
-	glm::vec2 textCoord_bottom = computeCoordText(2, 16);
-
+	glm::vec2 textCoord_up = computeCoordText(0, 16 + blockType);
+	glm::vec2 textCoord_side = computeCoordText(1, 16 + blockType);
+	glm::vec2 textCoord_bottom = computeCoordText(2, 16 + blockType);
 
 	// Front
 	if(lZPositive)
@@ -626,7 +664,7 @@ void Chunk::load(const Json::Value &chunkData)
     m_loaded = true;
 }
 
-void Chunk::setup()
+void Chunk::setup(PerlinNoise *pn)
 {
     // Create the blocks
     if (m_loaded)
@@ -669,7 +707,8 @@ void Chunk::setup()
             }
         }
 
-        init();
+        createLandscape(pn);
+
         m_loaded = true;
     }
 

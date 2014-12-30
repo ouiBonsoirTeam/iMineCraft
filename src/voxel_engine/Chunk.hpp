@@ -4,6 +4,7 @@
 #include "OpenGLRenderer.hpp"
 #include <glimac/glm.hpp>
 #include <json/json.h>
+#include <glimac/PerlinNoise.hpp>
 
 
 enum ADJACENT_LOOK { LOOK_TOP = 0, LOOK_BACK, LOOK_RIGHT, LOOK_FRONT, LOOK_LEFT, LOOK_BOTTOM };
@@ -37,7 +38,7 @@ public:
 	static const int CHUNK_SIZE = 24;
 	static const int TAILLE_X_TEXTURE = 16;
 
-	static const int TAILLE_Y_TEXTURE = 20;
+	static const int TAILLE_Y_TEXTURE = 24;
 
 	// Getter
 	Block*** getBlocks() const;
@@ -61,6 +62,7 @@ public:
 
 	// Prepare the render of seen Triangles
 	void createMesh();
+	void createLandscape(PerlinNoise *pn);
 
 	// render
 	void render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
@@ -77,7 +79,7 @@ public:
 
 	void constructBlock(const int &x, const int &y, const int &z);
 
-	void setup();
+	void setup(PerlinNoise *pn);
 
 	void load(const Json::Value &chunkData);
 
@@ -86,4 +88,7 @@ public:
 	void unload();
 
 	void updateShouldRenderFlags();
+
+
+	void createHeightMap();
 };
