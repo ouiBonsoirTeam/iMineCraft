@@ -669,7 +669,7 @@ void Chunk::setup()
             }
         }
 
-        createMesh();
+        init();
         m_loaded = true;
     }
 
