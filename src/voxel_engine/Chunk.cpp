@@ -393,39 +393,40 @@ void Chunk::createLandscape(PerlinNoise *pn)
         for(int z = 0; z < CHUNK_SIZE; ++z)
         {
             // Use the noise library to get the height value of x, z
-            float h = pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z);
-            float height;
-            
-            if(h > CHUNK_SIZE - 1)
-            	height = CHUNK_SIZE - 1;
-            else
-            	height = (int) h;
+            int height = (int) pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z);
+            int min_chunk_y = m_position[1] * CHUNK_SIZE;
 
-            if(height >= m_position[1] * CHUNK_SIZE && height < m_position[1] * CHUNK_SIZE + CHUNK_SIZE)
+            if(height < -24)
+            	height = -24;
+
+            if(height >= min_chunk_y && height < min_chunk_y + CHUNK_SIZE)
             {
-	            for (int y = 0; y <= height; ++y)
+            	std::cerr << min_chunk_y << " < " << height << " < " << min_chunk_y + CHUNK_SIZE << std::endl;
+
+	            for (int y = min_chunk_y; y <= height; ++y)
 	            {
-	                m_pBlocks[x][y][z].setActive();
+	            	int y_bis = y - min_chunk_y;
+	                m_pBlocks[x][y_bis][z].setActive();
 
 	                // A FAIRE : Type de block en fonction de l'altitude
 
-	                if(height == 0)
-	               		m_pBlocks[x][y][z].setType(BlockType_Lava);
-	               	else if(y < 3)
-	               		m_pBlocks[x][y][z].setType(BlockType_Rock);
+	                if(height <= -24)
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_Lava);
+	               	else if(y < -15)
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_Rock);
 	               	else if(y < 15)
 	               	{
 	               		if(y == height)
-	               			m_pBlocks[x][y][z].setType(BlockType_Grass);
+	               			m_pBlocks[x][y_bis][z].setType(BlockType_Grass);
 	               		else
-	               			m_pBlocks[x][y][z].setType(BlockType_Earth);
+	               			m_pBlocks[x][y_bis][z].setType(BlockType_Earth);
 	               	}
 	               	else if(y == 15)
-	               		m_pBlocks[x][y][z].setType(BlockType_1st_Snow);
-	               	else if(y <	 19)
-	               		m_pBlocks[x][y][z].setType(BlockType_Snow);
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_1st_Snow);
+	               	else if(y <	 36)
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_Snow);
 	               	else
-	               		m_pBlocks[x][y][z].setType(BlockType_Ice);
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_Ice);
 	            }
 	        }
         }

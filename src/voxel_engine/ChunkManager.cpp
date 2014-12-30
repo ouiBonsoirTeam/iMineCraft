@@ -5,11 +5,13 @@
 
 void ChunkManager::initialize(const std::string& saveFolder)
 {
-    double _amplitude = 48;
+    double _amplitude = 64;
     double _persistence = 0.01;
-    double _frequency = 0.06;
+    double _frequency = 0.05;
     double _octaves = 1 ;
-    double _randomseed = 3;
+
+    srand(time(NULL));
+    double _randomseed = rand() % 1990;
     m_PerlinNoise = PerlinNoise(_persistence, _frequency, _amplitude, _octaves, _randomseed);
 
     m_pathJson = saveFolder;
@@ -28,7 +30,7 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
 
     for (int i = -chunkAreaLimit; i <= chunkAreaLimit; ++i)
     {
-        for (int j = -chunkAreaLimit; j <= chunkAreaLimit; ++j)
+        for (int j = -1; j <= chunkAreaLimit; ++j)
         {
             for (int k = -chunkAreaLimit; k <= chunkAreaLimit; ++k)
             {
