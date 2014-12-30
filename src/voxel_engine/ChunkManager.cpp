@@ -6,28 +6,53 @@
 void ChunkManager::initialize(const std::string& saveFolder)
 {
     m_pathJson = saveFolder;
-    int chunkLimit = 2;
-    int chunkCount = 0;
+}
 
-    for (int i = 0; i < chunkLimit; ++i)
+void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 cameraView)
+{
+    // Transform camera position into relative chunk position
+    glm::vec3 chunkCameraPosition;
+    for (int i = 0; i < 3; ++i)
     {
-        for (int j = 0; j < chunkLimit; ++j)
-        {
-            for (int k = 0; k < chunkLimit; ++k)
-            {
-                m_vpGlobalChunkList.push_back(new Chunk(glm::vec3(i, j, k)));
-                m_vpChunkLoadList.push_back(m_vpGlobalChunkList.at(chunkCount));
+        chunkCameraPosition[i] = (int)cameraPosition[i] / Chunk::CHUNK_SIZE;
+    }
 
-                ++chunkCount;
+    int chunkAreaLimit = 2;
+
+    for (int i = -chunkAreaLimit; i <= chunkAreaLimit; ++i)
+    {
+        for (int j = -chunkAreaLimit; j <= chunkAreaLimit; ++j)
+        {
+            for (int k = -chunkAreaLimit; k <= chunkAreaLimit; ++k)
+            {
+                glm::vec3 position(chunkCameraPosition[0] + i, chunkCameraPosition[1] + j, chunkCameraPosition[2] + k);
+                if(!chunkExist(position))
+                    m_vpChunkLoadList.push_back(new Chunk(position));
             }
         }
     }
+
+    //std::cerr << "Direction caméra : " << cameraView << std::endl;
+
+
+}
+
+bool ChunkManager::chunkExist(const glm::vec3 &position)
+{
+    ChunkList::iterator iterator;   
+
+    for(iterator = m_vpGlobalChunkList.begin(); iterator != m_vpGlobalChunkList.end(); ++iterator)
+    {
+        Chunk* pChunk = (*iterator);
+        if(pChunk->getPosition() == position)
+            return true;
+    }
+
+    return false;
 }
 
 void ChunkManager::updateLoadList()
 {
-    int lNumOfChunksLoaded = 0;
-
     ChunkList::iterator iterator;   
 
     for(iterator = m_vpChunkLoadList.begin(); iterator != m_vpChunkLoadList.end(); ++iterator)
@@ -35,10 +60,7 @@ void ChunkManager::updateLoadList()
         Chunk* pChunk = (*iterator);
 
         if(pChunk->isLoaded() == false)
-        {
-            // if(lNumOfChunksLoaded != NUM_CHUNKS_PER_FRAME)
-            // {
-                
+        {                
                 glm::vec3 p = pChunk->getPosition();
                 std::string filePath = m_pathJson + "/chunk_" + std::to_string((int)p[0]) + "_" + std::to_string((int)p[1]) + "_" + std::to_string((int)p[2]) + ".json";
 
@@ -47,15 +69,10 @@ void ChunkManager::updateLoadList()
                     Json::Value data = loadAndParseJsonFile(filePath);
                     pChunk->load(data);
                 }
-                    
-                // Increase the chunks loaded count
-                lNumOfChunksLoaded++;
-
-                // Ajouter un test de distance pour juger la nécessité du setup dans l'immédiat
+                m_vpGlobalChunkList.push_back(pChunk);
                 m_vpChunkSetupList.push_back(pChunk);
 
                 m_forceVisibilityUpdate = true;
-            // }
         }
     }
 
@@ -63,10 +80,9 @@ void ChunkManager::updateLoadList()
     m_vpChunkLoadList.clear();
 }
 
-
 void ChunkManager::update(/*float dt, */glm::vec3 cameraPosition, glm::vec3 cameraView)
 {
-    // updateAsyncChunker();
+    updateAsyncChunker(cameraPosition, cameraView);
 
     updateLoadList();
 

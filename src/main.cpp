@@ -106,6 +106,9 @@ int main(int argc, char** argv) {
 	// Application loop:
 	bool done = false;
 	while(!done) {
+
+		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+		
 		// Event loop:
 		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,*chunkmanager.getChunk(0,0,0));			
 
@@ -146,7 +149,7 @@ int main(int argc, char** argv) {
 		gProgram.m_Program.use();
 			// torch.draw(lProgram, viewMatrix);
 
-		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+		
 		chunkmanager.render(gProgram, ffCam.getViewMatrix());
 
 
