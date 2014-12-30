@@ -15,6 +15,8 @@
 #include "physics/Event_manager.hpp"
 #include "Skybox.hpp"
 
+#include "../glimac/src/tiny_obj_loader.h"
+
 using namespace glimac;
 
 /*********************************
@@ -122,7 +124,7 @@ int main(int argc, char** argv) {
 	skybox.init(skyProgram);
 
 	Geometry mitsuba;
-	mitsuba.init(geoProgram, mitsuba, "bin/assets/obj/Hand_01.obj", "bin/assets/obj/", true);
+	mitsuba.init(geoProgram, mitsuba, "bin/assets/obj/TheRock2.obj", "bin/assets/obj/mtl/", true);
 
 	// // make me a torch
 	// Torch torch;

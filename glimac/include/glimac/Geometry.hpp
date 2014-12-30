@@ -83,9 +83,9 @@ public:
         return m_MeshBuffer.size();
     }
 
-    bool loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures = true);
+    bool loadOBJ(const std::string& filepath, const std::string& mtlBasePath, bool loadTextures = true);
 
-    void init(GeometryProgram &geoProgram, Geometry &obj, const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures);
+    void init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, const std::string& mtlBasePath, bool loadTextures);
 
     void draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix);
 

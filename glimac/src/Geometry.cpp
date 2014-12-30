@@ -21,13 +21,13 @@ void Geometry::generateNormals(unsigned int meshIndex) {
     }
 }
 
-bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures) {
+bool Geometry::loadOBJ(const std::string& filepath, const std::string& mtlBasePath, bool loadTextures) {
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
 
+    std::cout << "" << std::endl;
     std::clog << "Load OBJ " << filepath << std::endl;
-    std::string objErr = tinyobj::LoadObj(shapes, materials,
-        filepath.c_str(), mtlBasePath.c_str());
+    std::string objErr = tinyobj::LoadObj(shapes, materials, filepath.c_str(), mtlBasePath.c_str());
 
     std::clog << "done." << std::endl;
 
@@ -42,6 +42,8 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
         m_Materials.emplace_back();
         auto& m = m_Materials.back();
 
+        std::cout << "Material name : " << material.name.c_str() << std::endl;
+
         m.m_Ka = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]);
         m.m_Kd = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
         m.m_Ks = glm::vec3(material.specular[0], material.specular[1], material.specular[2]);
@@ -51,12 +53,17 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
         m.m_RefractionIndex = material.ior;
         m.m_Dissolve = material.dissolve;
 
+        std::cout << "m_Ka bien loadé : " << m.m_Ka << std::endl;
+        std::cout << "m_Kd bien loadé : " << m.m_Kd << std::endl;
+        std::cout << "m_Ks bien loadé : " << m.m_Ks << std::endl;
+
         if(loadTextures) {
             if(!material.ambient_texname.empty()) {
                 //std::replace(material.ambient_texname.begin(), material.ambient_texname.end(), '\\', '/');
                 FilePath texturePath = mtlBasePath + material.ambient_texname;
                 std::clog << "load " << texturePath << std::endl;
                 m.m_pKaMap = ImageManager::loadImage(texturePath);
+                std::cout << "load map_Ka ---> OK" << std::endl;
             }
 
             if(!material.diffuse_texname.empty()) {
@@ -64,6 +71,7 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
                 FilePath texturePath = mtlBasePath + material.diffuse_texname;
                 std::clog << "load " << texturePath << std::endl;
                 m.m_pKdMap = ImageManager::loadImage(texturePath);
+                std::cout << "load map_Kd ---> OK" << std::endl;
             }
 
             if(!material.specular_texname.empty()) {
@@ -71,6 +79,7 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
                 FilePath texturePath = mtlBasePath + material.specular_texname;
                 std::clog << "load " << texturePath << std::endl;
                 m.m_pKsMap = ImageManager::loadImage(texturePath);
+                std::cout << "load map_Kd ---> OK" << std::endl;
             }
 
             if(!material.normal_texname.empty()) {
@@ -78,8 +87,10 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
                 FilePath texturePath = mtlBasePath + material.normal_texname;
                 std::clog << "load " << texturePath << std::endl;
                 m.m_pNormalMap = ImageManager::loadImage(texturePath);
+                std::cout << "load map_N ---> OK" << std::endl;
             }
         }
+        std::cout << "" << std::endl;
     }
     std::clog << "done." << std::endl;
 
@@ -170,27 +181,27 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
     return true;
 }
 
-void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures)
+void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, const std::string& mtlBasePath, bool loadTextures)
 {
     //load obj
     if (!obj.loadOBJ(filepath, mtlBasePath, loadTextures))
         std::cerr << "Impossible de charger l'objet" << std::endl;
 
-    //load texture
-    std::unique_ptr<Image> texturePointer;
-    texturePointer = loadImage("../iMineCraft/assets/textures/skintexture_05.png");
-    if(texturePointer == NULL)
-    {
-        std::cerr << "Error while charging texture." << std::endl;
-    }
+    // //load texture
+    // std::unique_ptr<Image> texturePointer;
+    // texturePointer = loadImage("../iMineCraft/assets/textures/spongebob.png");
+    // if(texturePointer == NULL)
+    // {
+    //     std::cerr << "Error while charging texture." << std::endl;
+    // }
 
-    glGenTextures(1, &m_texture);
-    glBindTexture(GL_TEXTURE_2D,  m_texture);
-    glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
-                    texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D,  0);
+    // glGenTextures(1, &m_texture);
+    // glBindTexture(GL_TEXTURE_2D,  m_texture);
+    // glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
+    //                 texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glBindTexture(GL_TEXTURE_2D,  0);
 
     glGenBuffers(1, &m_vbo);
 
@@ -241,8 +252,8 @@ void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const FilePath& 
 void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix)
 {
     //render pour l'obj
-    //glm::mat4 modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(0.1, 0.1, 0.1));
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(50,5,50));
+    glm::mat4 modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(0.1, 0.1, 0.1));
+    //glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(50,5,50));
     glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
     // A sortir de la classe : Identique dans tout le programme
@@ -259,8 +270,8 @@ void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 
 
     glBindVertexArray(m_vao);
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    glUniform1i(geoProgram.uTexture, 0);
+    // glBindTexture(GL_TEXTURE_2D, m_texture);
+    // glUniform1i(geoProgram.uTexture, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
