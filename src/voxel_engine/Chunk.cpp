@@ -773,13 +773,10 @@ bool Chunk::destructBlock(const int &x, const int &y, const int &z, BlockType & 
 
 bool Chunk::constructBlock(const int &x, const int &y, const int &z, BlockType type)
 {
-	if (!m_pBlocks[x][y][z].isActive() && y!=0 && m_pBlocks[x][y-1][z].isActive())
-	{
-		m_pBlocks[x][y][z].setActive();
-    	m_pBlocks[x][y][z].setType(type);
-    	return true;
-	}
-	return false;
+	
+	m_pBlocks[x][y][z].setActive();
+	m_pBlocks[x][y][z].setType(type);
+	return true;
 }
 
 void Chunk::unload()

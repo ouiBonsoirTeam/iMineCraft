@@ -276,8 +276,8 @@ void event_manager(SDLWindowManager& windowManager,
 	int blockZ = (int)glm::round(ffCam.getPosition().z) - Chunk::CHUNK_SIZE * chunkZ;
 		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
 
-	std::cout << "chunk : " << chunkX << "," << chunkY << "," << chunkZ << std::endl;
-	std::cout << "chuck.block : " << blockX << "," << blockY << "," << blockZ << std::endl;
+	// std::cout << "chunk : " << chunkX << "," << chunkY << "," << chunkZ << std::endl;
+	// std::cout << "chuck.block : " << blockX << "," << blockY << "," << blockZ << std::endl;
 
 
 
@@ -318,37 +318,47 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 
-	// CONSTRUCT CUBE
+	// CREATE CUBE
 	if (rightClick)
 	{
-		int chunkX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) / Chunk::CHUNK_SIZE;
-			if (ffCam.getPosition().x < 0) chunkX += -1;
+		chunkX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().x + ffCam.getFrontVector().x < 0) chunkX += -1;
 
-		int chunkY = (int) glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) / Chunk::CHUNK_SIZE;
-			if (ffCam.getPosition().y < 0) chunkX += -1;
+		chunkY = (int) glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().y + ffCam.getFrontVector().y < 0) chunkY += -1;
 
-		int chunkZ = (int) glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) / Chunk::CHUNK_SIZE;
-			if (ffCam.getPosition().z < 0) chunkX += -1;
+		chunkZ = (int) glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().z + ffCam.getFrontVector().z < 0) chunkZ += -1;
 
 
-		int blockX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) - Chunk::CHUNK_SIZE * chunkX;
+		blockX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) - Chunk::CHUNK_SIZE * chunkX;
 			if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
 
-		int blockY = (int)glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) - Chunk::CHUNK_SIZE * chunkY;
+		blockY = (int)glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) - Chunk::CHUNK_SIZE * chunkY;
 			if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
 
-		int blockZ = (int)glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) - Chunk::CHUNK_SIZE * chunkZ;
+		blockZ = (int)glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) - Chunk::CHUNK_SIZE * chunkZ;
 			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
 
 		//Faire une fonction qui récupère le choix du bloc type
-		BlockType bt = BlockType_Lava;
+		BlockType bt = BlockType_Earth;
 
 		if (inventory.getNbBlock(bt) > 0)
 		{
-			if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,blockY,blockZ, bt) )
+			if (!getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->isActive() && 
+				(	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(1,0,0))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(-1,0,0))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,1,0))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,-1,0))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,0,1))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,0,-1))->isActive()
+				 ))
 			{
-				inventory.deleteBlock(bt);
-				chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+				if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,blockY,blockZ, bt) )
+				{
+					inventory.deleteBlock(bt);
+					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+				}
 			}
 		}
 
