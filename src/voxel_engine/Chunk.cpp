@@ -401,14 +401,10 @@ void Chunk::createLandscape(PerlinNoise *pn)
 
             if(height >= min_chunk_y && height < min_chunk_y + CHUNK_SIZE)
             {
-            	std::cerr << min_chunk_y << " < " << height << " < " << min_chunk_y + CHUNK_SIZE << std::endl;
-
 	            for (int y = min_chunk_y; y <= height; ++y)
 	            {
 	            	int y_bis = y - min_chunk_y;
 	                m_pBlocks[x][y_bis][z].setActive();
-
-	                // A FAIRE : Type de block en fonction de l'altitude
 
 	                if(height <= -24)
 	               		m_pBlocks[x][y_bis][z].setType(BlockType_Lava);
@@ -682,8 +678,6 @@ void Chunk::setup(PerlinNoise *pn)
 
                 for (int k = 0; k < CHUNK_SIZE; ++k)
                 {
-                    // std::cerr << m_blocksData["block"][i][j][k]["active"].asInt() << std::endl;
-
                     if (m_blocksData["block"][i][j][k]["active"] == true)
                         m_pBlocks[i][j][k].setActive();
 
