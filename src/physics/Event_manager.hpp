@@ -5,13 +5,19 @@
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/FreeFlyCamera.hpp>
 #include "../voxel_engine/Chunk.hpp"
+#include "../voxel_engine/ChunkManager.hpp"
+#include "../voxel_engine/Block.hpp"
+#include "../inventory.hpp"
+
 
 void event_manager(SDLWindowManager& windowManager,
 				   FreeFlyCamera& ffCam,
 				   float& angleX,float& angleY,float& angleYfinal,
 				   float CAMERA_ROT_FACTOR,
 				   bool& done,
-				   Chunk& chunk){
+				   Chunk& chunk,
+				   ChunkManager& chunkmanager,
+				   Inventory& inventory){
 
 	// INIT
 
@@ -23,6 +29,10 @@ void event_manager(SDLWindowManager& windowManager,
 	float playerSpeed = 0.05f;
 
 	glm::vec3 velocity=glm::vec3(0,0,0);
+
+	bool leftClick = false;
+	bool rightClick = false;
+
 
 	// EVENTS
 	SDL_Event e;
@@ -45,6 +55,18 @@ void event_manager(SDLWindowManager& windowManager,
 			angleY -= e.motion.yrel * CAMERA_ROT_FACTOR;
 			angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
 			angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
+		}
+
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			if (e.button.button == SDL_BUTTON_LEFT)
+			{
+				leftClick = true;
+			}
+			if (e.button.button == SDL_BUTTON_RIGHT)
+			{
+				rightClick = true;
+			}
 		}
 	}
 	ffCam.rotateLeft(angleX);
@@ -235,6 +257,57 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.divideInertia(INERTIA_FACTOR);
 
 		ffCam.slide(ffCam.getInertia());
+	}
+
+
+
+	// DESTRUCT CUBE
+	if (leftClick)
+	{
+		glm::vec3 lookCube = ffCam.getPosition() + ffCam.getFrontVector(); //+ glm::vec3(0,1,0);
+
+		std::cout << (int)glm::round(lookCube.x) << ", " << (int)glm::round(lookCube.y) << ", " << 
+		     (int)glm::round(lookCube.z) <<std::endl;
+
+		BlockType bt;
+		if (chunk.destructBlock((int)glm::round(lookCube.x),
+	     					(int)glm::round(lookCube.y),
+	     					(int)glm::round(lookCube.z), bt) )
+		{
+			std::cout << "type : " << bt << std::endl;
+			inventory.addBlock(bt);
+			chunkmanager.addChunkToRebuildList(&chunk);
+		}
+
+	}
+
+
+	// CONSTRUCT CUBE
+	if (rightClick)
+	{
+		glm::vec3 lookCube = ffCam.getPosition() + ffCam.getFrontVector();
+
+		std::cout << (int)glm::round(lookCube.x) << ", " << (int)glm::round(lookCube.y) << ", " << 
+		     (int)glm::round(lookCube.z) <<std::endl;
+		
+		//std::cout << "construct" << std::endl;
+
+		//Faire une fonction qui récupère le choix du bloc type
+		BlockType bt = BlockType_Lava;
+
+		if (inventory.getNbBlock(bt) > 0)
+		{
+			if (chunk.constructBlock((int)glm::round(lookCube.x),
+		     					(int)glm::round(lookCube.y),
+		     					(int)glm::round(lookCube.z), bt) )
+			{
+				inventory.deleteBlock(bt);
+				chunkmanager.addChunkToRebuildList(&chunk);
+			}
+		}
+
+		
+
 	}
 
 };
