@@ -1,6 +1,10 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <unistd.h>
+
+#include <stdlib.h>
+#include <time.h>
+
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/Program.hpp>
 #include <glimac/Image.hpp>
@@ -123,12 +127,20 @@ int main(int argc, char** argv) {
 	Skybox skybox;
 	skybox.init(skyProgram);
 
-	Geometry mitsuba;
-	mitsuba.init(geoProgram, mitsuba, "bin/assets/obj/TheRock2.obj", "bin/assets/obj/mtl/", true);
+	Geometry veget1;
+	Geometry lander;
+	Geometry crowbar;
+	Geometry engineblock;
+	Geometry screws;
+	veget1.init(geoProgram, veget1, "Hyophorbe_lagenicaulis.obj", true, "Hyophorbe_lagenicaulis_dif.jpg");
+	lander.init(geoProgram, lander, "Lander.obj", true, "Lander.png");
+	crowbar.init(geoProgram, crowbar, "crowbar.obj", true, "metal01.jpg");
+	engineblock.init(geoProgram, engineblock, "Engine_Block.obj", true, "Engine_Block.tga");
+	screws.init(geoProgram, screws, "screw.obj", true, "screws.jpg");
 
 	// // make me a torch
 	// Torch torch;
-
+	srand(time(NULL));
 	// Application loop:
 	bool done = false;
 	while(!done) {
@@ -172,12 +184,28 @@ int main(int argc, char** argv) {
 		// lProgram.m_Program.use();
 			// torch.draw(lProgram, viewMatrix);
 
+		geoProgram.m_Program.use();
+			//veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(10, 0, 5), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			// for (int i = 0; i < 20; ++i)
+			// {
+			// 	veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3((std::rand() % 100) + 1, 0, (std::rand() % 100) + 1), glm::vec3(0.01, 0.01, 0.01));
+			// }
+			//lander.draw(geoProgram, lander, viewMatrix, glm::vec3(20, 0, 20), glm::vec3(1, 1, 1));
+			
+
+			// crowbar.draw(geoProgram, crowbar, viewMatrix, ffCam.getPosition(), glm::vec3(-0.3, -0.3, 0.5), glm::vec3(0.06, 0.06, 0.06), 44.4, glm::vec3(0.2, 1.0, 0.0));
+			// crowbar.draw(geoProgram, crowbar, viewMatrix, glm::vec3(ffCam.getPosition()+glm::vec3(-0.3, -0.3, 0.5)), glm::vec3(0.06, 0.06, 0.06), 1, glm::vec3(ffCam.getFrontVector()+glm::vec3(0.2, 1.0, 0.0)));
+			crowbar.draw(geoProgram, crowbar, viewMatrix, glm::vec3(ffCam.getPosition()), glm::vec3(-1, -1, 5), glm::vec3(0.06, 0.06, 0.06), 1, glm::vec3(ffCam.getFrontVector()));
+			//crowbar.draw(geoProgram, crowbar, viewMatrix, glm::vec3(ffCam.getPosition()), glm::vec3(-1, -1, 5), glm::vec3(0.06, 0.06, 0.06), ffCam.getFrontVector().x, glm::vec3(ffCam.getFrontVector().x, ffCam.getLeftVector().y, ffCam.getUpVector().z));
+			// crowbar.draw(geoProgram, crowbar, viewMatrix, ffCam.getFrontVector(), glm::vec3(0, 0, 1), glm::vec3(0.06, 0.06, 0.06), 44.4, glm::vec3(0.2, 1.0, 0.0));
+			
+
+			// engineblock.draw(geoProgram, engineblock, viewMatrix, glm::vec3(50, 0, 50), glm::vec3(1, 1, 1));
+			//screws.draw(geoProgram, screws, viewMatrix, glm::vec3(5, 5, 5), glm::vec3(0.001, 0.001, 0.001), windowManager.getTime(), glm::vec3(0.0, 1.0, 0.0));
+
+
 		gProgram.m_Program.use();
 			chunk.render(gProgram, viewMatrix, idTexture);
-
-		geoProgram.m_Program.use();
-			mitsuba.draw(geoProgram, mitsuba, viewMatrix);
-
 
 		// Update the display
 		windowManager.swapBuffers();
@@ -185,7 +213,7 @@ int main(int argc, char** argv) {
 	}
 
 	skybox.destruct();
-	mitsuba.destruct();
+	crowbar.destruct();
 
 	return EXIT_SUCCESS;
 }

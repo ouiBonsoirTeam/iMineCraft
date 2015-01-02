@@ -78,7 +78,7 @@ namespace glimac
 		GLint uTexture;
 
 		GeometryProgram(const FilePath& applicationPath):
-			m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/normals.fs.glsl"))
+			m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/obj.fs.glsl"))
 		{
 			uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
 			uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");

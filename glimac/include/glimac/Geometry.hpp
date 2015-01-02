@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <glimac/CustomProgram.hpp>
+#include <glimac/FreeFlyCamera.hpp>
 #include "Image.hpp"
 #include "FilePath.hpp"
 #include "BBox.hpp"
@@ -85,9 +86,9 @@ public:
 
     bool loadOBJ(const std::string& filepath, const std::string& mtlBasePath, bool loadTextures = true);
 
-    void init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, const std::string& mtlBasePath, bool loadTextures);
+    void init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, bool loadTextures, const std::string& texture);
 
-    void draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix);
+    void draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix, const glm::vec3 &transCAM, const glm::vec3 &trans, const glm::vec3 &scal, const float &angleR, const glm::vec3 &rot);
 
     void destruct();
 
