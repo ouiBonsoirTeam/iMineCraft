@@ -21,7 +21,7 @@ private:
 	//postition
 	glm::vec3 m_position;
 
-	Json::Value m_blocksData;
+	Json::Value m_Added_Deleted_Blocks;
 
 
 public:
@@ -85,7 +85,8 @@ public:
 
 	Block*** getBlocks();
 
-	void unload();
+	void save(const std::string &jsonFolderPath);
+	void unload(const std::string &jsonFolderPath);
 
 	void updateShouldRenderFlags();
 

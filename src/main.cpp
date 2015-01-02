@@ -76,8 +76,9 @@ int main(int argc, char** argv) {
 	FreeFlyCamera ffCam;
 
 	// // TEST
+	std::string savesFolder = "bin/assets/saves/";
 	ChunkManager chunkmanager;
-	chunkmanager.initialize("bin/assets/saves");
+	chunkmanager.initialize(savesFolder);
 
 	// Chunk chunk;
 	// chunk.init();

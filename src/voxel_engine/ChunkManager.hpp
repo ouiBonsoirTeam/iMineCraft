@@ -55,8 +55,12 @@ public:
 	void render(GeneralProgram &program, const glm::mat4 viewMatrix);
 
 
+	void saveTerrain(const unsigned int & perlin_seed);
+	int loadTerrain(const std::string & saveFolder);
+	void unloadWorld();
 	bool jsonChunkExist(const std::string &fileName);
 	Json::Value loadAndParseJsonFile(const std::string& fileName);
 
 	Chunk* getChunk(const int &x, const int &y, const int &z);
+	Chunk* getChunk(const glm::vec3 &pos);
 };

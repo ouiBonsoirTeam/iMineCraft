@@ -5,16 +5,22 @@
 
 void ChunkManager::initialize(const std::string& saveFolder)
 {
-    double _amplitude = 64;
-    double _persistence = 0.01;
-    double _frequency = 0.05;
-    double _octaves = 1 ;
+    double amplitude = 64;
+    double persistence = 0.01;
+    double frequency = 0.05;
+    double octaves = 1 ;
 
     srand(time(NULL));
-    double _randomseed = rand() % 1990;
-    m_PerlinNoise = PerlinNoise(_persistence, _frequency, _amplitude, _octaves, _randomseed);
+    double randomseed = rand() % 1990;
+
+    if(jsonChunkExist(saveFolder + "terrain.json"))
+        randomseed = loadTerrain(saveFolder);
+
+    m_PerlinNoise = PerlinNoise(persistence, frequency, amplitude, octaves, randomseed);
 
     m_pathJson = saveFolder;
+
+    saveTerrain(randomseed);
 }
 
 void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 cameraView)
@@ -27,23 +33,30 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
     }
 
     int chunkAreaLimit = 2;
+    int unloadLimit = chunkAreaLimit + 1;
 
-    for (int i = -chunkAreaLimit; i <= chunkAreaLimit; ++i)
+    for (int i = -unloadLimit; i <= unloadLimit; ++i)
     {
-        for (int j = -1; j <= chunkAreaLimit; ++j)
+        for (int j = -1; j <= unloadLimit; ++j)
         {
-            for (int k = -chunkAreaLimit; k <= chunkAreaLimit; ++k)
+            for (int k = -unloadLimit; k <= unloadLimit; ++k)
             {
                 glm::vec3 position(chunkCameraPosition[0] + i, chunkCameraPosition[1] + j, chunkCameraPosition[2] + k);
-                if(!chunkExist(position))
-                    m_vpChunkLoadList.push_back(new Chunk(position));
+
+                if(i <= chunkAreaLimit && j <= chunkAreaLimit && k <= chunkAreaLimit)
+                {
+                    
+                    if(!chunkExist(position))
+                        m_vpChunkLoadList.push_back(new Chunk(position));
+                }
+                else
+                {
+                    if(chunkExist(position))
+                        m_vpChunkUnloadList.push_back(getChunk(position));
+                }
             }
         }
     }
-
-    //std::cerr << "Direction caméra : " << cameraView << std::endl;
-
-
 }
 
 bool ChunkManager::chunkExist(const glm::vec3 &position)
@@ -71,7 +84,7 @@ void ChunkManager::updateLoadList()
         if(pChunk->isLoaded() == false)
         {                
                 glm::vec3 p = pChunk->getPosition();
-                std::string filePath = m_pathJson + "/chunk_" + std::to_string((int)p[0]) + "_" + std::to_string((int)p[1]) + "_" + std::to_string((int)p[2]) + ".json";
+                std::string filePath = m_pathJson + "chunk_" + std::to_string((int)p[0]) + "_" + std::to_string((int)p[1]) + "_" + std::to_string((int)p[2]) + ".json";
 
                 if(jsonChunkExist(filePath))
                 {
@@ -101,7 +114,7 @@ void ChunkManager::update(/*float dt, */glm::vec3 cameraPosition, glm::vec3 came
 
     updateFlagsList();
 
-    // updateUnloadList();
+    updateUnloadList();
 
     updateVisibilityList(cameraPosition);
 	
@@ -231,13 +244,77 @@ void ChunkManager::updateUnloadList()
 
         if(pChunk->isLoaded())
         {
-            pChunk->unload();
+            pChunk->unload("bin/assets/saves/");
 
             m_forceVisibilityUpdate = true;
         }
     }
     // Clear the unload list (every frame)
     m_vpChunkUnloadList.clear();
+}
+
+int ChunkManager::loadTerrain(const std::string & saveFolder)
+{
+    std::ifstream file;
+    file.open(saveFolder + "terrain.json");
+    std::string str, contents;
+
+    if (file.is_open())
+    {
+        while (std::getline(file, str))
+        {
+            contents += str;
+        }  
+        file.close();
+
+        Json::Value root;
+        Json::Reader reader;
+
+        bool parsingSuccessful = reader.parse(contents, root);
+        if ( !parsingSuccessful )
+        {
+            // report to the user the failure and their locations in the document.
+            std::cerr  << "Failed to parse configuration\n"
+                       << reader.getFormattedErrorMessages();
+            exit(1);
+        }
+        else
+        {
+            std::cout << "Fichier chargé" << std::endl;
+            return root["perlin_seed"].asInt();
+        }
+
+    }
+    else std::cerr << "Unable to open file";
+    exit(1);
+}
+
+void ChunkManager::saveTerrain(const unsigned int & perlin_seed)
+{
+    std::ofstream file;
+    file.open(m_pathJson + "terrain.json");
+
+    if (file.is_open())
+    {
+        Json::FastWriter l_writer;
+
+        Json::Value l_val;
+        l_val["perlin_seed"] = perlin_seed;
+        file << l_writer.write(l_val);
+
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Unable to open file" << std::endl;
+        exit(1);
+    }
+}
+
+void ChunkManager::unloadWorld()
+{
+    m_vpChunkUnloadList = m_vpGlobalChunkList;
+    updateUnloadList();
 }
 
 void ChunkManager::updateVisibilityList(glm::vec3 cameraPosition)
@@ -362,6 +439,17 @@ Chunk* ChunkManager::getChunk(const int &x, const int &y, const int &z){
             m_vpGlobalChunkList.at(i)->getY() == y &&
             m_vpGlobalChunkList.at(i)->getZ() == z)
 
+            return m_vpGlobalChunkList.at(i);
+    }
+
+    return NULL;
+}
+
+Chunk* ChunkManager::getChunk(const glm::vec3 &pos)
+{
+    for (unsigned int i = 0; i < m_vpGlobalChunkList.size(); ++i)
+    {
+        if (m_vpGlobalChunkList.at(i)->getPosition() == pos)
             return m_vpGlobalChunkList.at(i);
     }
 

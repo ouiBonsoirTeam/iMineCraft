@@ -2,6 +2,8 @@
 #include <glimac/glm.hpp>
 #include <iostream>
 #include <glimac/PerlinNoise.hpp>
+#include <json/json.h>
+#include <fstream>
 
 // Constructor
 Chunk::Chunk()
@@ -657,57 +659,46 @@ bool Chunk::isSetup()
 
 void Chunk::load(const Json::Value &chunkData)
 {
-    m_blocksData = chunkData;
+    m_Added_Deleted_Blocks = chunkData;
     m_loaded = true;
 }
 
 void Chunk::setup(PerlinNoise *pn)
 {
     // Create the blocks
+    
+    // Create the blocks
+    m_pBlocks = new Block**[CHUNK_SIZE];
+    for(int i = 0; i < CHUNK_SIZE; i++)
+    {
+        m_pBlocks[i] = new Block*[CHUNK_SIZE];
+
+        for(int j = 0; j < CHUNK_SIZE; j++)
+        {
+            m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+        }
+    }
+
+    createLandscape(pn);
+
     if (m_loaded)
     {
-        m_pBlocks = new Block**[CHUNK_SIZE];
-
-        for(int i = 0; i < CHUNK_SIZE; ++i)
+        for(unsigned int cpt = 0; cpt < m_Added_Deleted_Blocks["block"].size(); ++cpt)
         {
-            m_pBlocks[i] = new Block*[CHUNK_SIZE];
+        	int i = m_Added_Deleted_Blocks["block"][cpt]["x"].asInt();
+        	int j = m_Added_Deleted_Blocks["block"][cpt]["y"].asInt();
+        	int k = m_Added_Deleted_Blocks["block"][cpt]["z"].asInt();
 
-            for(int j = 0; j < CHUNK_SIZE; ++j)
-            {
-                m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+            if (m_Added_Deleted_Blocks["block"][cpt]["active"] == true)
+                m_pBlocks[i][j][k].setActive();
+            else
+            	m_pBlocks[i][j][k].setInactive();
 
-                for (int k = 0; k < CHUNK_SIZE; ++k)
-                {
-                    // std::cerr << m_blocksData["block"][i][j][k]["active"].asInt() << std::endl;
-
-                    if (m_blocksData["block"][i][j][k]["active"] == true)
-                        m_pBlocks[i][j][k].setActive();
-
-                    m_pBlocks[i][j][k].setType(m_blocksData["block"][i][j][k]["type"].asInt());
-                }
-            }
+            m_pBlocks[i][j][k].setType(m_Added_Deleted_Blocks["block"][cpt]["type"].asInt());
         }
-
-        m_blocksData.clear();
     }
-    else
-    {
-         // Create the blocks
-        m_pBlocks = new Block**[CHUNK_SIZE];
-        for(int i = 0; i < CHUNK_SIZE; i++)
-        {
-            m_pBlocks[i] = new Block*[CHUNK_SIZE];
 
-            for(int j = 0; j < CHUNK_SIZE; j++)
-            {
-                m_pBlocks[i][j] = new Block[CHUNK_SIZE];
-            }
-        }
-
-        createLandscape(pn);
-
-        m_loaded = true;
-    }
+    m_loaded = true;
 
     m_pRenderer = new OpenGLRenderer;
 
@@ -769,10 +760,27 @@ void Chunk::constructBlock(const int &x, const int &y, const int &z)
     m_pBlocks[x][y][z].setActive();
 }
 
-void Chunk::unload()
+void Chunk::save(const std::string &jsonFolderPath)
 {
-    // Save à faire
+	std::ofstream file;
+    file.open(jsonFolderPath + "chunk_" + std::to_string((int) m_position[0]) + "_" + std::to_string((int) m_position[1]) + "_" + std::to_string((int) m_position[2]) + ".json");
 
+    if (file.is_open())
+    {
+        Json::FastWriter l_writer;
+
+		file << l_writer.write(m_Added_Deleted_Blocks);
+
+	    file.close();
+
+	}
+    else std::cerr << "Unable to open file" << std::endl;
+    exit(1);  
+}
+
+void Chunk::unload(const std::string &jsonFolderPath)
+{
+    save(jsonFolderPath);
     delete this;
 }
 
