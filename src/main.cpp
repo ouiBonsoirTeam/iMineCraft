@@ -11,41 +11,18 @@
 #include <glimac/Torch.hpp>
 
 #include "voxel_engine/Chunk.hpp"
+#include "voxel_engine/ChunkManager.hpp"
 #include "physics/Event_manager.hpp"
 #include "Skybox.hpp"
 
+
 using namespace glimac;
 
-/*********************************
- *
- * Ce fichier est un exemple d'application minimale utilisant shaders et textures
- * Le but est pour vous de comprendre quel chemin de fichier utiliser pour charger vos shaders et assets
- *
- * Au moment de la compilation, tous les shaders (.glsl) du repertoire du même nom sont copiés dans le repertoire
- * "shaders" à coté de l'executable. Ainsi pour obtenir le chemin vers le shader "tex2D.vs.glsl", on utilise
- * le chemin vers notre executable, contenu dans argv[0]:
- *
- * FilePath applicationPath(argv[0]);
- *
- * Le chemin du shader à charger est alors: applicationPath.dirPath() + "/shaders/tex2D.vs.glsl"
- *
- * De la même manière, tous les fichiers (sans contrainte d'extension) du repertoire assets sont copiés dans
- * le repertoire "assets" à coté de l'executable. Pour obtenir le chemin vers la texture "textures/triforce.png" on fait:
- *
- * applicationPath.dirPath() + "/assets/textures/triforce.png"
- *
- * easy peasy.
- *
- *********************************/
 
-struct Vertex {
-	glm::vec2 position;
-	glm::vec2 texCoords;
-};
 
 int main(int argc, char** argv) {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -57,8 +34,6 @@ int main(int argc, char** argv) {
 
 	std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
-
-	glEnable(GL_DEPTH_TEST);
 
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
@@ -82,7 +57,7 @@ int main(int argc, char** argv) {
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
-	texturePointer = loadImage("../iMineCraft/assets/textures/occlu_grass_1024.png");
+	texturePointer = loadImage("../iMineCraft/assets/textures/glass_1024.png");
 	if(texturePointer == NULL)
 	{
 		std::cerr << "Error while charging texture." << std::endl;
@@ -100,10 +75,14 @@ int main(int argc, char** argv) {
 	//Initialisation camera freefly
 	FreeFlyCamera ffCam;
 
-	Chunk chunk;
-	chunk.init();
+	// // TEST
+	ChunkManager chunkmanager;
+	chunkmanager.initialize("bin/assets/saves");
 
-	chunk.createMesh();
+	// Chunk chunk;
+	// chunk.init();
+
+	// chunk.buildMesh();
 
 	//initialisation angle
 	float angleX = 0;
@@ -121,17 +100,17 @@ int main(int argc, char** argv) {
 	Skybox skybox;
 	skybox.init(skyProg);
 
-
 	// // make me a torch
 	// Torch torch;
 
 	// Application loop:
 	bool done = false;
 	while(!done) {
-		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunk);
 
-				
+		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+		
+		// Event loop:
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,*chunkmanager.getChunk(0,0,0));			
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
@@ -149,18 +128,20 @@ int main(int argc, char** argv) {
 		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
 		{
 			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
-			//std::cout<<"zizi"<<std::endl;
 		}
-		lastTime2 = currentTime;
 
+		lastTime2 = currentTime;
 
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
 		 *********************************/
+		
+		// glClear(GL_COLOR_BUFFER_BIT);
 
 		glm::mat4 viewMatrix = ffCam.getViewMatrix();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
 		skyProg.m_Program.use();
 			skybox.draw(skyProg, viewMatrix);
@@ -168,8 +149,11 @@ int main(int argc, char** argv) {
 		gProgram.m_Program.use();
 			// torch.draw(lProgram, viewMatrix);
 
-		chunk.render(gProgram, viewMatrix, idTexture);
+		
+		chunkmanager.render(gProgram, ffCam.getViewMatrix());
 
+
+		// chunk.render(gProgram, viewMatrix, idTexture);
 
 		// Update the display
 		windowManager.swapBuffers();
