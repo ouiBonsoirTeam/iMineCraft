@@ -5,13 +5,46 @@
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/FreeFlyCamera.hpp>
 #include "../voxel_engine/Chunk.hpp"
+#include "../voxel_engine/ChunkManager.hpp"
+#include "../voxel_engine/Block.hpp"
+#include "../inventory.hpp"
+
+
+Block* getBlockFromChunk(ChunkManager& chunkmanager, glm::vec3 position, glm::vec3 direction)
+{
+	int chunkX = (int) glm::round(position.x + direction.x) / Chunk::CHUNK_SIZE;
+		if (position.x < 0) chunkX += -1;
+
+	int chunkY = (int) glm::round(position.y + direction.y) / Chunk::CHUNK_SIZE;
+		if (position.y < 0) chunkX += -1;
+
+	int chunkZ = (int) glm::round(position.z + direction.z) / Chunk::CHUNK_SIZE;
+		if (position.z < 0) chunkZ += -1;
+
+
+	int blockX = (int) glm::round(position.x + direction.x) - Chunk::CHUNK_SIZE * chunkX;
+		if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+
+	int blockY = (int)glm::round(position.y + direction.y) - Chunk::CHUNK_SIZE * chunkY;
+		if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+
+	int blockZ = (int)glm::round(position.z + direction.z) - Chunk::CHUNK_SIZE * chunkZ;
+		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+
+	std::cout << "chunk : " << chunkX << "," << chunkY << "," << chunkZ << std::endl;
+	std::cout << "chuck.block : " << blockX << "," << blockY << "," << blockZ << std::endl;
+
+	return &chunkmanager.getChunk(chunkX, chunkY, chunkZ)->getBlocks()[blockX][blockY][blockZ];
+}
+
 
 void event_manager(SDLWindowManager& windowManager,
 				   FreeFlyCamera& ffCam,
 				   float& angleX,float& angleY,float& angleYfinal,
 				   float CAMERA_ROT_FACTOR,
 				   bool& done,
-				   ChunkManager& chunkmanager){
+				   ChunkManager& chunkmanager,
+				   Inventory& inventory){
 
 	// INIT
 
@@ -22,6 +55,10 @@ void event_manager(SDLWindowManager& windowManager,
 	float playerSpeed = 0.05f;
 
 	glm::vec3 velocity=glm::vec3(0,0,0);
+
+	bool leftClick = false;
+	bool rightClick = false;
+
 
 	// EVENTS
 	SDL_Event e;
@@ -45,6 +82,18 @@ void event_manager(SDLWindowManager& windowManager,
 			angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
 			angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
 		}
+
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			if (e.button.button == SDL_BUTTON_LEFT)
+			{
+				leftClick = true;
+			}
+			if (e.button.button == SDL_BUTTON_RIGHT)
+			{
+				rightClick = true;
+			}
+		}
 	}
 	ffCam.rotateLeft(angleX);
 	if (angleYfinal != 90 && angleYfinal !=-90) ffCam.rotateUp(angleY);
@@ -56,7 +105,7 @@ void event_manager(SDLWindowManager& windowManager,
 			
 	if(windowManager.isKeyPressed(SDLK_z)) 
 	{
-		velocity+=ffCam.getFrontVector()*playerSpeed;
+		velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,ffCam.getFrontVector().z*playerSpeed);
 		ffCam.setInertia(ffCam.getFrontVector()*playerSpeed);
 
 		if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
@@ -67,7 +116,7 @@ void event_manager(SDLWindowManager& windowManager,
 	
 	else if(windowManager.isKeyPressed(SDLK_s)) 
 	{
-		velocity+=ffCam.getFrontVector()*(-playerSpeed);
+		velocity+=glm::vec3(ffCam.getFrontVector().x*(-playerSpeed),0,ffCam.getFrontVector().z*(-playerSpeed));
 		ffCam.setInertia(ffCam.getFrontVector()*(-playerSpeed));
 	}
 
@@ -98,56 +147,12 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 	// PHYSICS
-	static const int CHUNK_SIZE = Chunk::CHUNK_SIZE;
-
-	/*Block*** blocks = chunkmanager.getChunk((int)ffCam.getPosition().x/CHUNK_SIZE,
-											(int)ffCam.getPosition().y/CHUNK_SIZE,
-											(int)ffCam.getPosition().z/CHUNK_SIZE)->getBlocks();
-*/
-	
 
 	// COLLISION
-	
-	int chunkX = (int)glm::round(ffCam.getPosition().x)/CHUNK_SIZE;
-		if (ffCam.getPosition().x < 0) chunkX += -1;
-	int chunkY = (int)glm::round(ffCam.getPosition().y)/CHUNK_SIZE;
-		if (ffCam.getPosition().y < 0) chunkY += -1;
-	int chunkZ = (int)glm::round(ffCam.getPosition().z)/CHUNK_SIZE;
-		if (ffCam.getPosition().z < 0) chunkZ += -1;
-
-	int blockX = (int)glm::round(ffCam.getPosition().x)-CHUNK_SIZE*chunkX;
-		if (blockX == CHUNK_SIZE) blockX = CHUNK_SIZE -1;
-	int blockY = (int)glm::round(ffCam.getPosition().y)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-	int blockZ = (int)glm::round(ffCam.getPosition().z)-CHUNK_SIZE*chunkZ;
-		if (blockZ == CHUNK_SIZE) blockZ = CHUNK_SIZE -1;
-
-	std::cout << "chunk : " << chunkX << "," << chunkY << "," << chunkZ << std::endl;
-	std::cout << "chuck.block : " << blockX << "," << blockY << "," << blockZ << std::endl;
 
 
-	// sol
-	chunkY = (int)glm::round(ffCam.getPosition().y+velocity.y-1.5)/CHUNK_SIZE;
-		if (ffCam.getPosition().y+velocity.y-1.5 < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y+velocity.y-1.5)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
-	{
-		gravityFactor = 0.00f;
-		ffCam.setInertia(glm::vec3(0,0,0));
-	}
-
-
-	// plafon
-	chunkY = (int)glm::round(ffCam.getPosition().y+velocity.y+0.5)/CHUNK_SIZE;
-		if (ffCam.getPosition().y+velocity.y+0.5 < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y+velocity.y+0.5)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-	
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
+	// plafond
+	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0,0.5,0))->isActive())
 	{
 		velocity=glm::vec3(velocity.x,0,velocity.z);
 		ffCam.setJumpInertia(glm::vec3(0,0,0));
@@ -155,18 +160,9 @@ void event_manager(SDLWindowManager& windowManager,
 
 	int countCollision =0;
 
-	// +x genou
-	chunkX = (int)glm::round(ffCam.getPosition().x+velocity.x+0.1)/CHUNK_SIZE;
-		if (ffCam.getPosition().x+velocity.x+0.1 < 0) chunkX += -1;
-	blockX = (int)glm::round(ffCam.getPosition().x+velocity.x+0.1)-CHUNK_SIZE*chunkX;
-		if (blockX == CHUNK_SIZE) blockX = CHUNK_SIZE -1;
-	chunkY = (int)glm::round(ffCam.getPosition().y-1)/CHUNK_SIZE;
-		if (ffCam.getPosition().y-1 < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y-1)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
+	// +x
+	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, -1.0, 0))->isActive()
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, 0, 0))->isActive() )
 	{
 		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
@@ -178,14 +174,9 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 
-	// +x tete
-	chunkY = (int)glm::round(ffCam.getPosition().y)/CHUNK_SIZE;
-		if (ffCam.getPosition().y < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
+	// -x
+	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, -1.0, 0))->isActive()
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, 0, 0))->isActive() )
 	{
 		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
@@ -196,66 +187,10 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.setInertia(glm::vec3(0,0,0));
 	}
 
+	// +z
 
-	// -x genou
-	chunkX = (int)glm::round(ffCam.getPosition().x+velocity.x-0.1)/CHUNK_SIZE;
-		if (ffCam.getPosition().x+velocity.x-0.1 < 0) chunkX += -1;
-	blockX = (int)glm::round(ffCam.getPosition().x+velocity.x-0.1)-CHUNK_SIZE*chunkX;
-		if (blockX == CHUNK_SIZE) blockX = CHUNK_SIZE -1;
-	chunkY = (int)glm::round(ffCam.getPosition().y-1)/CHUNK_SIZE;
-		if (ffCam.getPosition().y-1 < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y-1)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
-	{
-		countCollision += 1;
-		if(windowManager.isKeyPressed(SDLK_z))
-		{
-			velocity=glm::vec3(0,velocity.y,ffCam.getFrontVector().z*playerSpeed);
-		}
-		else velocity=glm::vec3(0,velocity.y,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
-	}
-
-
-	// -x tete
-	chunkY = (int)glm::round(ffCam.getPosition().y)/CHUNK_SIZE;
-		if (ffCam.getPosition().y < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
-	{
-		countCollision += 1;
-		if(windowManager.isKeyPressed(SDLK_z))
-		{
-			velocity=glm::vec3(0,velocity.y,ffCam.getFrontVector().z*playerSpeed);
-		}
-		else velocity=glm::vec3(0,velocity.y,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
-	}
-
-
-	chunkX = (int)glm::round(ffCam.getPosition().x)/CHUNK_SIZE;
-		if (ffCam.getPosition().x < 0) chunkX += -1;
-	blockX = (int)glm::round(ffCam.getPosition().x)-CHUNK_SIZE*chunkX;
-		if (blockX == CHUNK_SIZE) blockX = CHUNK_SIZE -1;
-
-		// +z genou
-	chunkZ = (int)glm::round(ffCam.getPosition().z+velocity.z+0.1)/CHUNK_SIZE;
-		if (ffCam.getPosition().z+velocity.z+0.1 < 0) chunkZ += -1;
-	blockZ = (int)glm::round(ffCam.getPosition().z+velocity.z+0.1)-CHUNK_SIZE*chunkZ;
-		if (blockZ == CHUNK_SIZE) blockZ = CHUNK_SIZE -1;
-	chunkY = (int)glm::round(ffCam.getPosition().y+-1)/CHUNK_SIZE;
-		if (ffCam.getPosition().y-1 < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y-1)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
+	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z + 0.1))->isActive()
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z + 0.1))->isActive())
 	{
 		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
@@ -266,57 +201,10 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.setInertia(glm::vec3(0,0,0));
 	}
 
+	// -z
 
-	// +z tete
-	chunkY = (int)glm::round(ffCam.getPosition().y)/CHUNK_SIZE;
-		if (ffCam.getPosition().y < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
-	{
-		countCollision += 1;
-		if(windowManager.isKeyPressed(SDLK_z))
-		{
-			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,velocity.y,0);
-		}
-		else velocity=glm::vec3(0,velocity.y,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
-	}
-
-
-	// -z genou
-	chunkZ = (int)glm::round(ffCam.getPosition().z+velocity.z-0.1)/CHUNK_SIZE;
-		if (ffCam.getPosition().z+velocity.z-0.1 < 0) chunkZ += -1;
-	blockZ = (int)glm::round(ffCam.getPosition().z+velocity.z-0.1)-CHUNK_SIZE*chunkZ;
-		if (blockZ == CHUNK_SIZE) blockZ = CHUNK_SIZE -1;
-	chunkY = (int)glm::round(ffCam.getPosition().y-1)/CHUNK_SIZE;
-		if (ffCam.getPosition().y-1 < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y-1)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
-	{
-		countCollision += 1;
-		if(windowManager.isKeyPressed(SDLK_z))
-		{
-			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,velocity.y,0);
-		}
-		else velocity=glm::vec3(0,velocity.y,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
-	}
-
-
-	// -z tete
-	chunkY = (int)glm::round(ffCam.getPosition().y)/CHUNK_SIZE;
-		if (ffCam.getPosition().y < 0) chunkY += -1;
-	blockY = (int)glm::round(ffCam.getPosition().y)-CHUNK_SIZE*chunkY;
-		if (blockY == CHUNK_SIZE) blockY = CHUNK_SIZE -1;
-
-	if(chunkmanager.getChunk(chunkX,chunkY,chunkZ)->getBlocks()
-	   [blockX][blockY][blockZ].isActive())
+	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z - 0.1))->isActive()
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z - 0.1))->isActive())
 	{
 		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
@@ -330,15 +218,13 @@ void event_manager(SDLWindowManager& windowManager,
 	if(countCollision > 1) velocity=glm::vec3(0,velocity.y,0);
 
 
-
-
-
-
-
-
-
-
-
+	// sol
+	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive())
+	{
+		gravityFactor = 0.00f;
+		velocity.y=0;
+		ffCam.setInertia(glm::vec3(0,0,0));
+	}
 
 
 
@@ -367,6 +253,83 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.divideInertia(INERTIA_FACTOR);
 
 		ffCam.slide(ffCam.getInertia());
+	}
+
+
+
+	// DESTRUCT CUBE
+	if (leftClick)
+	{
+		//Block* lookCube = getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector());
+
+		int chunkX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().x < 0) chunkX += -1;
+
+		int chunkY = (int) glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().y < 0) chunkX += -1;
+
+		int chunkZ = (int) glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().z < 0) chunkZ += -1;
+
+
+		int blockX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) - Chunk::CHUNK_SIZE * chunkX;
+			if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+
+		int blockY = (int)glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) - Chunk::CHUNK_SIZE * chunkY;
+			if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+
+		int blockZ = (int)glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) - Chunk::CHUNK_SIZE * chunkZ;
+			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+
+
+
+		BlockType bt;
+		if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->destructBlock(blockX,blockY,blockZ, bt) )
+		{
+			std::cout << "type : " << bt << std::endl;
+			inventory.addBlock(bt);
+			chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+		}
+
+	}
+
+
+	// CONSTRUCT CUBE
+	if (rightClick)
+	{
+		int chunkX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().x < 0) chunkX += -1;
+
+		int chunkY = (int) glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().y < 0) chunkX += -1;
+
+		int chunkZ = (int) glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().z < 0) chunkX += -1;
+
+
+		int blockX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) - Chunk::CHUNK_SIZE * chunkX;
+			if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+
+		int blockY = (int)glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) - Chunk::CHUNK_SIZE * chunkY;
+			if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+
+		int blockZ = (int)glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) - Chunk::CHUNK_SIZE * chunkZ;
+			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+
+		//Faire une fonction qui récupère le choix du bloc type
+		BlockType bt = BlockType_Lava;
+
+		if (inventory.getNbBlock(bt) > 0)
+		{
+			if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,blockY,blockZ, bt) )
+			{
+				inventory.deleteBlock(bt);
+				chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+			}
+		}
+
+		
+
 	}
 
 };

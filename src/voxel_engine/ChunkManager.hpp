@@ -54,6 +54,8 @@ public:
 	void updateRenderList();
 	void render(GeneralProgram &program, const glm::mat4 viewMatrix);
 
+	void addChunkToRebuildList(Chunk * chunk);
+
 
 	bool jsonChunkExist(const std::string &fileName);
 	Json::Value loadAndParseJsonFile(const std::string& fileName);

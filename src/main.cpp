@@ -103,6 +103,8 @@ int main(int argc, char** argv) {
 	// // make me a torch
 	// Torch torch;
 
+	Inventory invent;
+
 	// Application loop:
 	bool done = false;
 	while(!done) {
@@ -110,7 +112,7 @@ int main(int argc, char** argv) {
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager);			
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent);
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
@@ -118,6 +120,8 @@ int main(int argc, char** argv) {
 		if ( currentTime - lastTime >= 1.0 )
 		{ 
 		    std::cout << "fps : " << nbFrames << std::endl;
+		    std::cout << "invent : " << std::endl;
+		    invent.affiche();
 		    nbFrames = 0;
 		    lastTime += 1.0;
 		}

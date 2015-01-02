@@ -75,15 +75,13 @@ public:
 
 	void buildMesh(); 
 
-	void destructBlock(const int &x, const int &y, const int &z);
+	bool destructBlock(const int &x, const int &y, const int &z, BlockType& type);
 
-	void constructBlock(const int &x, const int &y, const int &z);
+	bool constructBlock(const int &x, const int &y, const int &z, BlockType type);
 
 	void setup(PerlinNoise *pn);
 
 	void load(const Json::Value &chunkData);
-
-	Block*** getBlocks();
 
 	void unload();
 

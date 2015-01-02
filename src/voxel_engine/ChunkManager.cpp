@@ -367,3 +367,8 @@ Chunk* ChunkManager::getChunk(const int &x, const int &y, const int &z){
 
     return NULL;
 }
+
+void ChunkManager::addChunkToRebuildList(Chunk * chunk)
+{
+    m_vpChunkRebuildList.push_back(chunk);
+}

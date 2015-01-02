@@ -393,15 +393,22 @@ void Chunk::createLandscape(PerlinNoise *pn)
         for(int z = 0; z < CHUNK_SIZE; ++z)
         {
             // Use the noise library to get the height value of x, z
-            int height = (int) pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z);
+            int height = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
+
             int min_chunk_y = m_position[1] * CHUNK_SIZE;
 
             if(height < -24)
             	height = -24;
 
-            if(height >= min_chunk_y && height < min_chunk_y + CHUNK_SIZE)
+            if(height >= min_chunk_y)
             {
-	            for (int y = min_chunk_y; y <= height; ++y)
+            	int end;
+            	if(height < min_chunk_y + CHUNK_SIZE)
+            		end = height;
+            	else
+            		end = min_chunk_y + CHUNK_SIZE - 1;
+
+	            for (int y = min_chunk_y; y <= end; ++y)
 	            {
 	            	int y_bis = y - min_chunk_y;
 	                m_pBlocks[x][y_bis][z].setActive();
@@ -640,11 +647,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 }
 
-Block*** Chunk::getBlocks()
-{
-    return m_pBlocks;
-}
-
 bool Chunk::isLoaded()
 {
     return m_loaded;
@@ -715,6 +717,7 @@ void Chunk::setup(PerlinNoise *pn)
 void Chunk::buildMesh()
 {
     bool lDefault = true;
+    m_pRenderer->clean();
 
     for (int x = 0; x < CHUNK_SIZE; x++)
     {
@@ -723,7 +726,7 @@ void Chunk::buildMesh()
             for (int z = 0; z < CHUNK_SIZE; z++)
             {
                 if(m_pBlocks[x][y][z].isActive() == false)
-                    continue;
+                	continue;
 
                 bool lXNegative = lDefault;
                 if(x > 0)
@@ -757,14 +760,26 @@ void Chunk::buildMesh()
     m_pRenderer->finishVbo();
 }
 
-void Chunk::destructBlock(const int &x, const int &y, const int &z)
+bool Chunk::destructBlock(const int &x, const int &y, const int &z, BlockType & bt)
 {
-    m_pBlocks[x][y][z].setInactive();
+	if (m_pBlocks[x][y][z].isActive()){
+		bt = m_pBlocks[x][y][z].getType();
+		m_pBlocks[x][y][z].setInactive();
+		return true;
+	}
+	return false;
+
 }
 
-void Chunk::constructBlock(const int &x, const int &y, const int &z)
+bool Chunk::constructBlock(const int &x, const int &y, const int &z, BlockType type)
 {
-    m_pBlocks[x][y][z].setActive();
+	if (!m_pBlocks[x][y][z].isActive() && y!=0 && m_pBlocks[x][y-1][z].isActive())
+	{
+		m_pBlocks[x][y][z].setActive();
+    	m_pBlocks[x][y][z].setType(type);
+    	return true;
+	}
+	return false;
 }
 
 void Chunk::unload()

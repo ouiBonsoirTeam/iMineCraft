@@ -110,3 +110,10 @@ void OpenGLRenderer::renderMesh(GLuint idTexture){
 void OpenGLRenderer::getMeshInformation(int &numVerts){
 	numVerts = m_vertices.size();
 }
+
+void OpenGLRenderer::clean()
+{
+	m_vertices.clear();
+	m_normals.clear();
+	m_textures.clear();
+}
