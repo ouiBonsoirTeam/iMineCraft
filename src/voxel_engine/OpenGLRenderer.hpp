@@ -5,13 +5,12 @@
 #include <GL/glew.h>
 #include <glimac/CustomProgram.hpp>
 
-enum VBO { POSITION, NORMAL, TEXTURE};
-
 using namespace glimac;
 
 enum bufferType { 
 	INDEX_BUFFER = 0,
 
+	CUBE_VERT_VB,
 	POS_VB,
 	NORMAL_VB,
 	TEXT_COORDS_VB,
@@ -24,16 +23,21 @@ enum bufferType {
 class OpenGLRenderer
 {
 	GLuint m_vao;
-    // GLuint m_vbo;
-    GLuint m_buffer[3];
 
-    std::vector<glm::vec3> m_vertices;
-    std::vector<glm::vec3> m_normals;
+    GLuint m_buffer[5];
+
+    unsigned int visibleBlockCount = 0;
+
+    std::vector<unsigned int> m_index;
+    std::vector<glm::vec3> m_cube_vertices;
+    std::vector<glm::vec3> m_positions;
+    std::vector<glm::vec3> m_cube_normals;
     std::vector<glm::vec4> m_textures;
 
-    const static GLuint VERTEX_ATTR_POSITION = 0;
+    const static GLuint CUBE_VERTEX = 0;
 	const static GLuint VERTEX_ATTR_NORMAL = 1;
 	const static GLuint VERTEX_ATTR_TEXTCOORD = 2;
+	const static GLuint VERTEX_ATTR_POSITION = 3;
 
 public:
 
@@ -44,11 +48,15 @@ public:
 	~OpenGLRenderer();
 
 	// Setters
-	void addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3);
+	void addTriangle(unsigned int index_1, unsigned int index_2, unsigned int index_3);
+	void addPosition(glm::vec3 position);
 	void addTexture(glm::vec4 texPos_1, glm::vec4 texPos_2, glm::vec4 texPos_3);
 	void addNormal(glm::vec3 n);
+	void incrementBlockCount(){ ++visibleBlockCount; };
 
 	// Fill the buffer data
+	void finishIbo();
+	void finishVboCubeModel();
 	void finishVboPosition();
 	void finishVboTexture();
 	void finishVboNormal();

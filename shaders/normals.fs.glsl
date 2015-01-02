@@ -6,7 +6,7 @@ in vec4 vFragTexture;
 
 out vec3 fFragColor;
 
-// uniform vec3 uColor;
+// // uniform vec3 uColor;
 uniform sampler2D uTexture;
 
 void main() {
@@ -15,3 +15,10 @@ void main() {
 	vec4 textOcclu = vec4(1, 1, 1, 1) - texture(uTexture, vFragTexture.zw);
 	fFragColor = vec3(textCaisse - textOcclu * 0.5);
 }
+
+// out vec4 color;
+
+// void main()
+// {
+//     color = vec4(1,0,0, 1.0f);
+// }

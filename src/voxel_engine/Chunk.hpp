@@ -42,6 +42,7 @@ public:
 
 	// Getter
 	Block*** getBlocks() const;
+	Block* getBlock(const int &x, const int &y, const int &z) const;
 	
 	// Create the world chunk model
 	void init();
@@ -57,8 +58,7 @@ public:
 	glm::vec2 getOcclusionCoordText(glm::mat3 adjacentMap);
 
 	// Create a cube with position and seen sides
-	void createCube(const int &x, const int &y, const int &z, const bool & lXNegative, const bool &lXPositive,
-					const bool &lYNegative, const bool &lYPositive, const bool &lZNegative, const bool &lZPositive, const BlockType &blockType);
+	void createCube(const int &x, const int &y, const int &z, const BlockType &blockType);
 
 	// Prepare the render of seen Triangles
 	void createMesh();
@@ -68,6 +68,8 @@ public:
 	void render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
  
 	void update();
+
+	bool isBlockVisible(const int &x, const int &y, const int &z);
 
 	bool isLoaded();
 
@@ -83,12 +85,9 @@ public:
 
 	void load(const Json::Value &chunkData);
 
-	Block*** getBlocks();
-
 	void unload();
 
 	void updateShouldRenderFlags();
-
 
 	void createHeightMap();
 };

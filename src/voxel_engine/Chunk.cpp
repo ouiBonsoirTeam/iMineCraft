@@ -35,6 +35,11 @@ Block*** Chunk::getBlocks() const
 	return m_pBlocks;
 }
 
+Block* Chunk::getBlock(const int &x, const int &y, const int &z) const
+{
+	return (&m_pBlocks[x][y][z]);
+}
+
 void Chunk::init()
 {
     // Create the blocks A MODIFIER CAR DEJA FAIT DANS LE SETUP
@@ -454,195 +459,171 @@ void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint i
 
 void Chunk::update(){}
 
-void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & lXNegative, const bool &lXPositive,
-						const bool &lYNegative, const bool &lYPositive, const bool &lZNegative, const bool &lZPositive, const BlockType &blockType)
+bool Chunk::isBlockVisible(const int &x, const int &y, const int &z){
+	// A FAIRE : Gestion frontière Chunk
+	if (x == 0 || x == CHUNK_SIZE - 1 ||
+		y == 0 || y == CHUNK_SIZE - 1 ||
+		z == 0 || z == CHUNK_SIZE - 1)
+		return true;
+
+	const int x_a = x - 1;
+	const int x_b = x + 1;
+	const int y_a = y - 1;
+	const int y_b = y + 1;
+	const int z_a = z - 1;
+	const int z_b = z + 1;
+
+
+	return !(	getBlock(x_a, y, z)->isActive() &&
+				getBlock(x_b, y, z)->isActive() &&
+				getBlock(x, y_a, z)->isActive() &&
+				getBlock(x, y_b, z)->isActive() &&
+				getBlock(x, y, z_a)->isActive() &&
+				getBlock(x, y, z_b)->isActive()
+			);
+}
+
+
+void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockType &blockType)
 {
-	glm::vec3 v1(x-Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
-	glm::vec3 v2(x+Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
-	glm::vec3 v3(x+Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
-	glm::vec3 v4(x-Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
-	glm::vec3 v5(x+Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
-	glm::vec3 v6(x-Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
-	glm::vec3 v7(x-Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
-	glm::vec3 v8(x+Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
-
-
 	// Normal
 	glm::vec3 n1;
 
-	glm::vec2 textCoord_up = computeCoordText(0, 16 + blockType);
-	glm::vec2 textCoord_side = computeCoordText(1, 16 + blockType);
-	glm::vec2 textCoord_bottom = computeCoordText(2, 16 + blockType);
+	// glm::vec2 textCoord_up = computeCoordText(0, 16 + blockType);
+	// glm::vec2 textCoord_side = computeCoordText(1, 16 + blockType);
+	// glm::vec2 textCoord_bottom = computeCoordText(2, 16 + blockType);
 
-	// Front
-	if(lZPositive)
-	{
-		glm::vec2 text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_FRONT));
+	m_pRenderer->addPosition(glm::vec3(x, y, z));
 
-		n1 = glm::vec3(0.0f, 0.0f, 1.0f);
-		m_pRenderer->addNormal(n1);
+	// glm::vec2 text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_FRONT));
 
-		m_pRenderer->addTriangle(v1, v2, v3);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
-								 			text_occlu + computeCoordText(1,1,true)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
-								  			text_occlu + computeCoordText(1,0,true)));
-		
-		m_pRenderer->addTriangle(v1, v3, v4);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,1), 
-											text_occlu + computeCoordText(0,1,1)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
-								 			text_occlu + computeCoordText(1,0,true)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0,true),
-								  			text_occlu + computeCoordText(0,0,true)));
-	}
+	n1 = glm::vec3(0.0f, 0.0f, 1.0f);
+	m_pRenderer->addNormal(n1);
+
+	m_pRenderer->addTriangle(0, 1, 2);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
+	// 						 			text_occlu + computeCoordText(1,1,true)),
+	// 						  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
+	// 						  			text_occlu + computeCoordText(1,0,true)));
+	
+	m_pRenderer->addTriangle(0, 2, 3);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,1), 
+	// 									text_occlu + computeCoordText(0,1,1)),
+	// 						 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
+	// 						 			text_occlu + computeCoordText(1,0,true)),
+	// 						  glm::vec4(textCoord_side + computeCoordText(0,0,true),
+	// 						  			text_occlu + computeCoordText(0,0,true)));
 
 
-	// Back
-	if(lZNegative)
-	{
-		glm::vec2 text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_BACK));
+	// text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_BACK));
 
-		n1 = glm::vec3(0.0f, 0.0f, -1.0f);
-		m_pRenderer->addNormal(n1);
+	n1 = glm::vec3(0.0f, 0.0f, -1.0f);
+	m_pRenderer->addNormal(n1);
 
-		m_pRenderer->addTriangle(v5, v6, v7);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
-								 			text_occlu + computeCoordText(1,1,true)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
-								  			text_occlu + computeCoordText(1,0,true)));
-		
-		m_pRenderer->addTriangle(v5, v7, v8);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
-								 			text_occlu + computeCoordText(1,0,true)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0,true), 
-								  			text_occlu + computeCoordText(0,0,true)));
-	}
+	m_pRenderer->addTriangle(4, 5, 6);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
+	// 						 			text_occlu + computeCoordText(1,1,true)),
+	// 						  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
+	// 						  			text_occlu + computeCoordText(1,0,true)));
+	
+	m_pRenderer->addTriangle(4, 6, 7);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
+	// 						 			text_occlu + computeCoordText(1,0,true)),
+	// 						  glm::vec4(textCoord_side + computeCoordText(0,0,true), 
+	// 						  			text_occlu + computeCoordText(0,0,true)));
 
-	// Right
-	if(lXPositive)
-	{
-		glm::vec2 text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_RIGHT));
+	// text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_RIGHT));
 
-		n1 = glm::vec3(1.0f, 0.0f, 0.0f);
-		m_pRenderer->addNormal(n1);
+	n1 = glm::vec3(1.0f, 0.0f, 0.0f);
+	m_pRenderer->addNormal(n1);
 
-		m_pRenderer->addTriangle(v2, v5, v8);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
-								 			text_occlu + computeCoordText(1,1,true)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
-								  			text_occlu + computeCoordText(1,0,true)));
-		
-		m_pRenderer->addTriangle(v2, v8, v3);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
-								 			text_occlu + computeCoordText(1,0,true)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0,true), 
-								  			text_occlu + computeCoordText(0,0,true)));
-	}
+	m_pRenderer->addTriangle(1, 4, 7);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
+	// 						 			text_occlu + computeCoordText(1,1,true)),
+	// 						  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
+	// 						  			text_occlu + computeCoordText(1,0,true)));
+	
+	m_pRenderer->addTriangle(1, 7, 2);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
+	// 						 			text_occlu + computeCoordText(1,0,true)),
+	// 						  glm::vec4(textCoord_side + computeCoordText(0,0,true), 
+	// 						  			text_occlu + computeCoordText(0,0,true)));
+
+	// text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_LEFT));
+
+	n1 = glm::vec3(-1.0f, 0.0f, 0.0f);
+	m_pRenderer->addNormal(n1);
+
+	m_pRenderer->addTriangle(5, 0, 3);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
+	// 						 			text_occlu + computeCoordText(1,1,true)),
+	// 						  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
+	// 						  			text_occlu + computeCoordText(1,0,true)));
+	
+	m_pRenderer->addTriangle(5, 3, 6);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
+	// 						 			text_occlu + computeCoordText(1,0, true)),
+	// 						  glm::vec4(textCoord_side + computeCoordText(0,0,true), 
+	// 						  			text_occlu + computeCoordText(0,0,true)));
+
+	// text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_TOP));	
+
+	n1 = glm::vec3(0.0f, 1.0f, 0.0f);
+	m_pRenderer->addNormal(n1);
+
+	m_pRenderer->addTriangle(3, 2, 7);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_up + computeCoordText(1,1,true), 
+	// 						 			text_occlu + computeCoordText(1,1,true)),
+	// 						  glm::vec4(textCoord_up + computeCoordText(1,0,true), 
+	// 						  			text_occlu + computeCoordText(1,0,true)));
+	
+	m_pRenderer->addTriangle(3, 7, 6);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_up + computeCoordText(1,0,true), 
+	// 						 			text_occlu + computeCoordText(1,0,true)),
+	// 						  glm::vec4(textCoord_up + computeCoordText(0,0,true), 
+	// 						  			text_occlu + computeCoordText(0,0,true)));
 
 
-	// left
-	if(lXNegative)
-	{
-		glm::vec2 text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_LEFT));
+	// text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_BOTTOM));
 
-		n1 = glm::vec3(-1.0f, 0.0f, 0.0f);
-		m_pRenderer->addNormal(n1);
+	n1 = glm::vec3(0.0f, -1.0f, 0.0f);
+	m_pRenderer->addNormal(n1);
 
-		m_pRenderer->addTriangle(v6, v1, v4);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
-								 			text_occlu + computeCoordText(1,1,true)),
-								  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
-								  			text_occlu + computeCoordText(1,0,true)));
-		
-		m_pRenderer->addTriangle(v6, v4, v7);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
-								 			text_occlu + computeCoordText(1,0, true)),
-								  glm::vec4(textCoord_side + computeCoordText(0,0,true), 
-								  			text_occlu + computeCoordText(0,0,true)));
-	}
+	m_pRenderer->addTriangle(5, 4, 1);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_bottom + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_bottom + computeCoordText(1,1,true), 
+	// 						 			text_occlu + computeCoordText(1,1,true)),
+	// 						  glm::vec4(textCoord_bottom + computeCoordText(1,0,true), 
+	// 						  			text_occlu + computeCoordText(1,0,true)));
+	
+	m_pRenderer->addTriangle(5, 1, 0);
+	// m_pRenderer->addTexture(glm::vec4(textCoord_bottom + computeCoordText(0,1,true), 
+	// 									text_occlu + computeCoordText(0,1,true)),
+	// 						 glm::vec4(textCoord_bottom + computeCoordText(1,0,true), 
+	// 						 			text_occlu + computeCoordText(1,0,true)),
+	// 						  glm::vec4(textCoord_bottom + computeCoordText(0,0,true), 
+	// 						  			text_occlu + computeCoordText(0,0,true)));
 
-	// Top
-	if(lYPositive)
-	{
-		glm::vec2 text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_TOP));	
-
-		n1 = glm::vec3(0.0f, 1.0f, 0.0f);
-		m_pRenderer->addNormal(n1);
-
-		m_pRenderer->addTriangle(v4, v3, v8);
-		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_up + computeCoordText(1,1,true), 
-								 			text_occlu + computeCoordText(1,1,true)),
-								  glm::vec4(textCoord_up + computeCoordText(1,0,true), 
-								  			text_occlu + computeCoordText(1,0,true)));
-		
-		m_pRenderer->addTriangle(v4, v8, v7);
-		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_up + computeCoordText(1,0,true), 
-								 			text_occlu + computeCoordText(1,0,true)),
-								  glm::vec4(textCoord_up + computeCoordText(0,0,true), 
-								  			text_occlu + computeCoordText(0,0,true)));
-
-	}
-
-	// Bottom
-	if(lYNegative)
-	{
-		glm::vec2 text_occlu = getOcclusionCoordText(getAdjacentMap(x, y, z, LOOK_BOTTOM));
-
-		n1 = glm::vec3(0.0f, -1.0f, 0.0f);
-		m_pRenderer->addNormal(n1);
-
-		m_pRenderer->addTriangle(v6, v5, v2);
-		m_pRenderer->addTexture(glm::vec4(textCoord_bottom + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_bottom + computeCoordText(1,1,true), 
-								 			text_occlu + computeCoordText(1,1,true)),
-								  glm::vec4(textCoord_bottom + computeCoordText(1,0,true), 
-								  			text_occlu + computeCoordText(1,0,true)));
-		
-		m_pRenderer->addTriangle(v6, v2, v1);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
-		m_pRenderer->addTexture(glm::vec4(textCoord_bottom + computeCoordText(0,1,true), 
-											text_occlu + computeCoordText(0,1,true)),
-								 glm::vec4(textCoord_bottom + computeCoordText(1,0,true), 
-								 			text_occlu + computeCoordText(1,0,true)),
-								  glm::vec4(textCoord_bottom + computeCoordText(0,0,true), 
-								  			text_occlu + computeCoordText(0,0,true)));
-	}
-
-}
-
-Block*** Chunk::getBlocks()
-{
-    return m_pBlocks;
+	m_pRenderer->incrementBlockCount();
 }
 
 bool Chunk::isLoaded()
@@ -714,42 +695,14 @@ void Chunk::setup(PerlinNoise *pn)
 
 void Chunk::buildMesh()
 {
-    bool lDefault = true;
-
     for (int x = 0; x < CHUNK_SIZE; x++)
     {
         for (int y = 0; y < CHUNK_SIZE; y++)
         {
             for (int z = 0; z < CHUNK_SIZE; z++)
             {
-                if(m_pBlocks[x][y][z].isActive() == false)
-                    continue;
-
-                bool lXNegative = lDefault;
-                if(x > 0)
-                    lXNegative = !m_pBlocks[x-1][y][z].isActive();
-
-                bool lXPositive = lDefault;
-                if(x < CHUNK_SIZE - 1)
-                    lXPositive = !m_pBlocks[x+1][y][z].isActive();
-
-                bool lYNegative = lDefault;
-                if(y > 0)
-                    lYNegative = !m_pBlocks[x][y-1][z].isActive();
-
-                bool lYPositive = lDefault;
-                if(y < CHUNK_SIZE - 1)
-                    lYPositive = !m_pBlocks[x][y+1][z].isActive();
-
-                bool lZNegative = lDefault;
-                if(z > 0)
-                    lZNegative = !m_pBlocks[x][y][z-1].isActive();
-
-                bool lZPositive = lDefault;
-                if(z < CHUNK_SIZE - 1)
-                    lZPositive = !m_pBlocks[x][y][z+1].isActive();
-
-                createCube(x, y, z, lXNegative, lXPositive, lYNegative, lYPositive, lZNegative, lZPositive, m_pBlocks[x][y][z].getType());
+                if(m_pBlocks[x][y][z].isActive() && isBlockVisible(x, y, z))
+               		createCube(x, y, z, m_pBlocks[x][y][z].getType());
             }
         }
     }
