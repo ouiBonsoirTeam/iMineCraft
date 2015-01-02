@@ -11,11 +11,10 @@ void event_manager(SDLWindowManager& windowManager,
 				   float& angleX,float& angleY,float& angleYfinal,
 				   float CAMERA_ROT_FACTOR,
 				   bool& done,
-				   Chunk& chunk){
+				   ChunkManager& chunkmanager){
 
 	// INIT
 
-	Block*** blocks = chunk.getBlocks();
 	const float INERTIA_FACTOR = 1.01;
 	const float INERTIA_JUMP_FACTOR = 1.05;
 
@@ -99,19 +98,29 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 	// PHYSICS
+	static const int CHUNK_SIZE = 10;
 
+	/*Block*** blocks = chunkmanager.getChunk((int)ffCam.getPosition().x/CHUNK_SIZE,
+											(int)ffCam.getPosition().y/CHUNK_SIZE,
+											(int)ffCam.getPosition().z/CHUNK_SIZE)->getBlocks();
+*/
+	std::cout << "chunk : " << (int)glm::round(ffCam.getPosition().x)/CHUNK_SIZE << "," << (int)glm::round(ffCam.getPosition().y)/CHUNK_SIZE<< "," << (int)glm::round(ffCam.getPosition().z)/CHUNK_SIZE<< std::endl;
+	std::cout << "chuck.block : " << (int)glm::round(ffCam.getPosition().x)-CHUNK_SIZE*((int)glm::round(ffCam.getPosition().x)/CHUNK_SIZE) << "," << (int)glm::round(ffCam.getPosition().y)-CHUNK_SIZE*((int)ffCam.getPosition().y/CHUNK_SIZE) << "," << (int)glm::round(ffCam.getPosition().z)-CHUNK_SIZE*((int)ffCam.getPosition().z/CHUNK_SIZE)<< std::endl;
 
 	// COLLISION
 	
-	if(blocks[(int)glm::round(ffCam.getPosition().x)]
-		     [(int)glm::round(ffCam.getPosition().y-1.5)]
-		     [(int)glm::round(ffCam.getPosition().z)]
-		     .isActive())
+	if(chunkmanager.getChunk((int)glm::round(ffCam.getPosition().x)/CHUNK_SIZE,
+							 (int)glm::round(ffCam.getPosition().y-1.5)/CHUNK_SIZE,
+							 (int)glm::round(ffCam.getPosition().z)/CHUNK_SIZE)->getBlocks()
+		[(int)glm::round(ffCam.getPosition().x)-CHUNK_SIZE*((int)glm::round(ffCam.getPosition().x)/CHUNK_SIZE)]
+		[(int)glm::round(ffCam.getPosition().y-1.5)-CHUNK_SIZE*((int)glm::round(ffCam.getPosition().y-1.5)/CHUNK_SIZE)]
+		[(int)glm::round(ffCam.getPosition().z)-CHUNK_SIZE*((int)glm::round(ffCam.getPosition().z)/CHUNK_SIZE)]
+		.isActive())
 	{
 		gravityFactor = 0.00f;
 		ffCam.setInertia(glm::vec3(0,0,0));
 	}
-
+/*
 	if(blocks[(int)glm::round(ffCam.getPosition().x)]
 		     [(int)glm::round(ffCam.getPosition().y+0.5)]
 		     [(int)glm::round(ffCam.getPosition().z)]
@@ -196,7 +205,7 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 	if(countCollision > 1) velocity=glm::vec3(0,velocity.y,0);
-
+*/
 
 
 
