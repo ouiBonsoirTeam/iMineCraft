@@ -647,11 +647,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 }
 
-Block*** Chunk::getBlocks()
-{
-    return m_pBlocks;
-}
-
 bool Chunk::isLoaded()
 {
     return m_loaded;
