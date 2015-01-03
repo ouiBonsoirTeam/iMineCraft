@@ -6,8 +6,8 @@
 
 std::vector<Mix_Chunk*> initsound(Mix_Music *music)
 {
-    Mix_OpenAudio(44100,AUDIO_S16SYS,2,20000);
-    Mix_AllocateChannels(16);
+    Mix_OpenAudio(44100,AUDIO_S16SYS,1,20000);
+    Mix_AllocateChannels(20);
     Mix_Volume(-1,MIX_MAX_VOLUME/2);
 
     //Mix_Music *music;
@@ -23,7 +23,7 @@ std::vector<Mix_Chunk*> initsound(Mix_Music *music)
     mix_chunk.push_back(Mix_LoadWAV("./bin/assets/sound/add.wav"));
     mix_chunk.push_back(Mix_LoadWAV("./bin/assets/sound/remove.wav"));
 
-    music = Mix_LoadMUS("./bin/assets/sound/ambiancepiupiu.wav");
+    music = Mix_LoadMUS("./bin/assets/sound/ambiance.wav");
     if(!music) {
     std::cout<<"Impossible charger music"<<std::endl;
     }

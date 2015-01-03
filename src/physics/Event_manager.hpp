@@ -83,7 +83,7 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				if(Mix_Playing(0) == 0)
 				{
-					Mix_PlayChannelTimed(0,mix_chunk[6],0, 450);
+					Mix_PlayChannelTimed(17,mix_chunk[6],0, 450);
 				}
 				currentBlockType=BlockType_Lava;
 			}
@@ -309,20 +309,25 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				Mix_PlayChannelTimed(10,mix_chunk[1],0, 450);
 			}
+			//first snow
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_1st_Snow)
+			{
+				Mix_PlayChannelTimed(11,mix_chunk[2],0, 450);
+			}
 			//snow
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow)
 			{
-				Mix_PlayChannelTimed(11,mix_chunk[2],0, 450);
+				Mix_PlayChannelTimed(12,mix_chunk[2],0, 450);
 			}
 			//stone
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Rock)
 			{
-				Mix_PlayChannelTimed(12,mix_chunk[3],0, 450);
+				Mix_PlayChannelTimed(13,mix_chunk[3],0, 450);
 			}
 			//lava
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Lava)
 			{
-				Mix_PlayChannelTimed(13,mix_chunk[4],0, 450);
+				Mix_PlayChannelTimed(14,mix_chunk[4],0, 450);
 			}
 		}
 	}
@@ -415,7 +420,7 @@ void event_manager(SDLWindowManager& windowManager,
 			//delete cube
 			if(Mix_Playing(0) == 0)
 			{
-				Mix_PlayChannelTimed(14,mix_chunk[8],0, 450);
+				Mix_PlayChannelTimed(15,mix_chunk[8],0, 450);
 			}
 			inventory.addBlock(bt);
 			chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
@@ -467,7 +472,7 @@ void event_manager(SDLWindowManager& windowManager,
 					//add cube
 					if(Mix_Playing(0) == 0)
 					{
-						Mix_PlayChannelTimed(15,mix_chunk[7],0, 450);
+						Mix_PlayChannelTimed(16,mix_chunk[7],0, 450);
 					}
 					inventory.deleteBlock(bt);
 					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
