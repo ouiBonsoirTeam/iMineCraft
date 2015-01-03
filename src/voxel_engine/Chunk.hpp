@@ -73,7 +73,7 @@ public:
 
 	bool isSetup();
 
-	void buildMesh(); 
+	void buildMesh(PerlinNoise *pn); 
 
 	void destructBlock(const int &x, const int &y, const int &z);
 

@@ -165,7 +165,7 @@ void ChunkManager::updateRebuildList()
         {
             // if(lNumRebuiltChunkThisFrame != NUM_CHUNKS_PER_FRAME)
             // {
-                pChunk->buildMesh();
+                pChunk->buildMesh(&m_PerlinNoise);
 
                 m_vpChunkUpdateFlagsList.push_back(pChunk);
 
