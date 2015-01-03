@@ -17,7 +17,7 @@ private:
 public:
 	Skybox(){};
 
-	void init(SkyboxProgram &skyProg);
+	void init(SkyboxProgram &skyProgram);
 
 	bool load_cube_map_side (GLenum side_target, const char* file_name);
 
@@ -29,7 +29,7 @@ public:
 		const char* left,
 		const char* right);
 
-	void draw(SkyboxProgram &skyProg, const glm::mat4 &viewMatrix);
+	void draw(SkyboxProgram &skyProgram, const glm::mat4 &viewMatrix);
 
 	void destruct();
 

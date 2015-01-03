@@ -50,6 +50,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 	// INIT
 
+
 	const float INERTIA_FACTOR = 1.01;
 	const float INERTIA_JUMP_FACTOR = 1.05;
 
