@@ -19,8 +19,8 @@ void event_manager(SDLWindowManager& windowManager,
 	const float INERTIA_FACTOR = 1.0005;
 	const float INERTIA_JUMP_FACTOR = 1.0005;
 
-	float gravityFactor = 0.004f;
-	float playerSpeed = 0.005f;
+	float gravityFactor = 0.014f;
+	float playerSpeed = 0.015f;
 
 	glm::vec3 velocity=glm::vec3(0,0,0);
 
