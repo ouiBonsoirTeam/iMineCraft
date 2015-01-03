@@ -28,7 +28,7 @@ void playMusic(FMOD_SYSTEM *systeme, FMOD_SOUND *son, const char *dir)
 		exit(EXIT_FAILURE);
 	}
 
-	FMOD_Sound_SetLoopCount(son, -1);	// Musique en loop
+	FMOD_Sound_SetLoopCount(son, 1);	// Musique en loop
 
 	FMOD_CHANNELGROUP *canal;
 	FMOD_BOOL etat;
