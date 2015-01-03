@@ -45,15 +45,18 @@ void event_manager(SDLWindowManager& windowManager,
 				   ChunkManager& chunkmanager,
 				   Inventory& inventory,
 				   int& crouch,
-				   BlockType& currentBlockType){
+				   BlockType& currentBlockType,
+				   std::vector<Mix_Chunk*> mix_chunk){
 
 	// INIT
 
 	const float INERTIA_FACTOR = 1.01;
 	const float INERTIA_JUMP_FACTOR = 1.05;
 
+
 	float gravityFactor = 0.03f;
 	float playerSpeed = 0.05f;
+
 
 	glm::vec3 velocity=glm::vec3(0,0,0);
 
@@ -84,34 +87,63 @@ void event_manager(SDLWindowManager& windowManager,
 			}
 
 		}
+		//std::cerr << e.key.keysym.sym << std::endl;
 		if (e.type == SDL_KEYUP)
 		{
 			if (e.key.keysym.sym == SDLK_AMPERSAND)
 			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(17,mix_chunk[6],0, 450);
+				}
 				currentBlockType=BlockType_Lava;
 			}
 			if (e.key.keysym.sym == 233) //é
 			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(1,mix_chunk[6],0, 450);
+				}
 				currentBlockType=BlockType_Rock;
 			}
 			if (e.key.keysym.sym == SDLK_QUOTEDBL)
 			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(2,mix_chunk[6],0, 450);
+				}
 				currentBlockType=BlockType_Earth;
 			}
 			if (e.key.keysym.sym == SDLK_QUOTE)
 			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(3,mix_chunk[6],0, 450);
+				}
 				currentBlockType=BlockType_Grass;
 			}
 			if (e.key.keysym.sym == SDLK_LEFTPAREN)
 			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(4,mix_chunk[6],0, 450);
+				}
 				currentBlockType=BlockType_1st_Snow;
 			}
-			if (e.key.keysym.sym == SDLK_MINUS)
+			if (e.key.keysym.sym == SDLK_MINUS || e.key.keysym.sym == 167)
 			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(5,mix_chunk[6],0, 450);
+				}
 				currentBlockType=BlockType_Snow;
 			}
 			if (e.key.keysym.sym == 232) //è
 			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(6,mix_chunk[6],0, 450);
+				}
 				currentBlockType=BlockType_Ice;
 			}	
 
@@ -156,7 +188,13 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.setInertia(ffCam.getFrontVector()*playerSpeed);
 		if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
 		{
+			//run
+			if(Mix_Playing(0) == 0 && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() == 1)
+			{
+				Mix_PlayChannelTimed(7,mix_chunk[0],0, 450);
+			}
 			velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed*3.f,0,ffCam.getFrontVector().z*playerSpeed*3.f);
+
 		}
 		if(windowManager.isKeyPressed(SDLK_LCTRL)) 
 		{
@@ -187,6 +225,11 @@ void event_manager(SDLWindowManager& windowManager,
 
 	if(windowManager.isKeyPressed(SDLK_SPACE)) 
 	{
+		//jetpack
+		if(Mix_Playing(0) == 0)
+		{
+			Mix_PlayChannelTimed(8,mix_chunk[5],0, 450);
+		}
 		velocity+=glm::vec3(0,1,0)*(1.5f*playerSpeed);
 		ffCam.setJumpInertia(glm::vec3(0,1,0)*(1.5f*playerSpeed));
 	}
@@ -272,6 +315,39 @@ void event_manager(SDLWindowManager& windowManager,
 		gravityFactor = 0.00f;
 		velocity.y=0;
 		ffCam.setInertia(glm::vec3(0,0,0));
+		if(Mix_Playing(0) == 0)
+		{
+			//grass
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Grass)
+			{
+				Mix_PlayChannelTimed(9,mix_chunk[1],0, 450);
+			}
+			//earth
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Earth)
+			{
+				Mix_PlayChannelTimed(10,mix_chunk[1],0, 450);
+			}
+			//first snow
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_1st_Snow)
+			{
+				Mix_PlayChannelTimed(11,mix_chunk[2],0, 450);
+			}
+			//snow
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow)
+			{
+				Mix_PlayChannelTimed(12,mix_chunk[2],0, 450);
+			}
+			//stone
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Rock)
+			{
+				Mix_PlayChannelTimed(13,mix_chunk[3],0, 450);
+			}
+			//lava
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Lava)
+			{
+				Mix_PlayChannelTimed(14,mix_chunk[4],0, 450);
+			}
+		}
 	}
 
 
@@ -360,8 +436,14 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				inventory.addBlock(bt);
 				chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+
+				//delete cube
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(15,mix_chunk[8],0, 450);
+				}
 			}
-		}		
+		}
 	}
 
 
@@ -404,6 +486,11 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,blockY,blockZ, bt) )
 				{
+					//add cube
+					if(Mix_Playing(0) == 0)
+					{
+						Mix_PlayChannelTimed(16,mix_chunk[7],0, 450);
+					}
 					inventory.deleteBlock(bt);
 					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
 				}
