@@ -25,14 +25,14 @@ public:
 		_shininess = shininess;
 	}
 
-	void computeLight(DirectionalLightProgram &prog, glm::mat4 viewMatrix)
+	void computeLight(LightsProgram &prog, glm::mat4 viewMatrix)
 	{
         glm::vec3 lightDirTmp = glm::vec3(viewMatrix * glm::vec4(_lightDir, 0));
 
 		glUniform3f(prog.uKd, _Kd.r, _Kd.g, _Kd.b);
         glUniform3f(prog.uKs, _Ks.r, _Ks.g, _Ks.b);
         glUniform1f(prog.uShininess, _shininess);
-        glUniform3f(prog.uLightIntensity, _lightIntensity.r, _lightIntensity.g, _lightIntensity.b);
+        glUniform3f(prog.uLightIntensityDir, _lightIntensity.r, _lightIntensity.g, _lightIntensity.b);
         glUniform3f(prog.uLightDir_vs, lightDirTmp.r, lightDirTmp.g, lightDirTmp.b);
 	}
 

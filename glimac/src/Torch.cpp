@@ -113,13 +113,18 @@ namespace glimac
 	    glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void Torch::computeLight(PointLightProgram & prog, FreeFlyCamera &ffCam)
+	glm::vec3 Torch::translatePos(glm::vec3 position)
 	{
-		glm::vec4 lightPosTmp = glm::mat4(1.f) * glm::vec4(_position - glm::vec3(0,1,0), 1);
+		_position += position;
+	}
+
+	void Torch::computeLight(LightsProgram & prog, FreeFlyCamera &ffCam)
+	{
+		glm::vec4 lightPosTmp = glm::mat4(1.f) * glm::vec4(_position - glm::vec3(0,0.1,0), 1);
 		lightPosTmp = ffCam.getViewMatrix() * lightPosTmp;
 
 		glUniform3f(prog.uLightPos_vs, lightPosTmp.r, lightPosTmp.g, lightPosTmp.b);
-		glUniform3f(prog.uLightIntensity, _intensity.r, _intensity.g, _intensity.b);
+		glUniform3f(prog.uLightIntensityPoint, _intensity.r, _intensity.g, _intensity.b);
 
 		glUniform3f(prog.uKd, 1, 1, 1);
 		glUniform3f(prog.uKs, 1, 1, 1);

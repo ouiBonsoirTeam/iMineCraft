@@ -28,8 +28,10 @@ namespace glimac
 			glm::vec3 getPosition(){ return _position; };
 			glm::vec3 getIntensity(){ return _intensity; };
 
+			glm::vec3 translatePos(glm::vec3 position);
+
 			// Methods
-			void computeLight(PointLightProgram & prog, FreeFlyCamera &ffCam);
+			void computeLight(LightsProgram & prog, FreeFlyCamera &ffCam);
 
 			void drawBillboard(GeneralProgram & prog, FreeFlyCamera &ffCam);
 	};

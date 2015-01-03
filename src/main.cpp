@@ -59,9 +59,10 @@ int main(int argc, char** argv) {
 	//glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
 	GeneralProgram gProgram(applicationPath);
-	PointLightProgram lProgram(applicationPath);
 	SkyboxProgram skyProg(applicationPath);
-	DirectionalLightProgram sunProg(applicationPath);
+	// PointLightProgram lProgram(applicationPath);
+	// DirectionalLightProgram sunProg(applicationPath);
+	LightsProgram lightsProg(applicationPath);
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
@@ -161,14 +162,15 @@ int main(int argc, char** argv) {
 		skyProg.m_Program.use();
 			skybox.draw(skyProg, viewMatrix);
 
-		sunProg.m_Program.use();
+		lightsProg.m_Program.use();
+			//torch.translatePos(glm::sin(windowManager.getTime()) * glm::vec3(0,00000.1,0));
+			torch.computeLight(lightsProg, ffCam);
 			sun.initMaterial(glm::vec3(1,1,1), glm::vec3(1,1,1), 2.f);
-			sun.computeLight(sunProg, ffCam.getViewMatrix());
-			chunkmanager.render(sunProg, ffCam.getViewMatrix());
+			sun.computeLight(lightsProg, ffCam.getViewMatrix());
 
-		// lProgram.m_Program.use();
-		// 	torch.computeLight(lProgram, ffCam);
-		// 	chunkmanager.render(lProgram, ffCam.getViewMatrix());
+			chunkmanager.render(lightsProg, ffCam.getViewMatrix());
+
+		
 
 		gProgram.m_Program.use();
 			torch.drawBillboard(gProgram, ffCam);

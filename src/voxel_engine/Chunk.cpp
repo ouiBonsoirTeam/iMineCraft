@@ -436,30 +436,7 @@ void Chunk::createLandscape(PerlinNoise *pn)
     }
 }
 
-void Chunk::render(PointLightProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
-{
-	m_pRenderer->setVao();
-
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
-    glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
-
-    // A sortir de la classe : Identique dans tout le programme
-    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
-    glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
-
-   // Normale
-    glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
-
-    glUniform1i(program.uTexture, 0);
-    glUniformMatrix4fv(program.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-    glUniformMatrix4fv(program.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
-    glUniformMatrix4fv(program.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-
-	m_pRenderer->renderMesh(idTexture);
-}
-
-void Chunk::render(DirectionalLightProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
+void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
 	m_pRenderer->setVao();
 

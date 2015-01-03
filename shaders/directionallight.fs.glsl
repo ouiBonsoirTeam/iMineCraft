@@ -38,6 +38,5 @@ void main() {
 	vec4 textMain = texture(uTexture, vFragTexture.xy);
 	vec4 textOcclu = vec4(1, 1, 1, 1) - texture(uTexture, vFragTexture.zw);
 	fFragColor = vec4(vec3(textMain - textOcclu * 0.5) - (vec3(1,1,1) - blinnPhong()), 1);
-	//fFragColor = vec4(blinnPhong(), 1);
 
 };
