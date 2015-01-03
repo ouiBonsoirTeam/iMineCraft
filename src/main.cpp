@@ -195,7 +195,23 @@ int main(int argc, char** argv) {
 
 
 		geoProgram.m_Program.use();
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(10, 0, 5), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-4,glm::round(chunkmanager.getNoiseValue(-4,-4))+0.5,-4), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-3,glm::round(chunkmanager.getNoiseValue(-3,-3))+0.5,-3), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-2,glm::round(chunkmanager.getNoiseValue(-2,-2))+0.5,-2), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-1,glm::round(chunkmanager.getNoiseValue(-1,-1))+0.5,-1), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(0,glm::round(chunkmanager.getNoiseValue(0,0))+0.5,0), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(1,glm::round(chunkmanager.getNoiseValue(1,1))+0.5,1), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(2,glm::round(chunkmanager.getNoiseValue(2,2))+0.5,2), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(3,glm::round(chunkmanager.getNoiseValue(3,3))+0.5,3), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,4))+0.5,4), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(5,glm::round(chunkmanager.getNoiseValue(5,5))+0.5,5), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));	
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(6,glm::round(chunkmanager.getNoiseValue(6,6))+0.5,6), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(7,glm::round(chunkmanager.getNoiseValue(7,7))+0.5,7), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(8,glm::round(chunkmanager.getNoiseValue(8,8))+0.5,8), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(9,glm::round(chunkmanager.getNoiseValue(9,9))+0.5,9), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(10,glm::round(chunkmanager.getNoiseValue(10,10))+0.5,10), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(11,glm::round(chunkmanager.getNoiseValue(11,11))+0.5,11), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(12,glm::round(chunkmanager.getNoiseValue(12,12))+0.5,12), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
 			// for (int i = 0; i < 20; ++i)
 			// {
 			// 	veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3((std::rand() % 100) + 1, 0, (std::rand() % 100) + 1), glm::vec3(0.01, 0.01, 0.01));
