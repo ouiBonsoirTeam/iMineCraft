@@ -302,6 +302,7 @@ void ChunkManager::render(GeneralProgram &program, const glm::mat4 viewMatrix){
     {
         Chunk* pChunk = (*iterator);
 
+
         pChunk->render(program, viewMatrix, 1);
     }
 }

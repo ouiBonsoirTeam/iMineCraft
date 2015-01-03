@@ -48,14 +48,14 @@ public:
 	~OpenGLRenderer();
 
 	// Setters
-	void addTriangle(unsigned int index_1, unsigned int index_2, unsigned int index_3);
+	//void addTriangle(unsigned int index_1, unsigned int index_2, unsigned int index_3);
 	void addPosition(glm::vec3 position);
 	void addTexture(glm::vec4 texPos_1, glm::vec4 texPos_2, glm::vec4 texPos_3);
 	void addNormal(glm::vec3 n);
 	void incrementBlockCount(){ ++visibleBlockCount; };
 
 	// Fill the buffer data
-	void finishIbo();
+	//void finishIbo();
 	void finishVboCubeModel();
 	void finishVboPosition();
 	void finishVboTexture();

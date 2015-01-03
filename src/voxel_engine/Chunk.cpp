@@ -500,7 +500,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	n1 = glm::vec3(0.0f, 0.0f, 1.0f);
 	m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(0, 1, 2);
+	//m_pRenderer->addTriangle(0, 1, 2);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
@@ -508,7 +508,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	// 						  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
 	// 						  			text_occlu + computeCoordText(1,0,true)));
 	
-	m_pRenderer->addTriangle(0, 2, 3);
+	//m_pRenderer->addTriangle(0, 2, 3);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,1), 
 	// 									text_occlu + computeCoordText(0,1,1)),
 	// 						 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
@@ -522,7 +522,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	n1 = glm::vec3(0.0f, 0.0f, -1.0f);
 	m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(4, 5, 6);
+	//m_pRenderer->addTriangle(4, 5, 6);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
@@ -530,7 +530,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	// 						  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
 	// 						  			text_occlu + computeCoordText(1,0,true)));
 	
-	m_pRenderer->addTriangle(4, 6, 7);
+	//m_pRenderer->addTriangle(4, 6, 7);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
@@ -543,7 +543,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	n1 = glm::vec3(1.0f, 0.0f, 0.0f);
 	m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(1, 4, 7);
+	//m_pRenderer->addTriangle(1, 4, 7);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
@@ -551,7 +551,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	// 						  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
 	// 						  			text_occlu + computeCoordText(1,0,true)));
 	
-	m_pRenderer->addTriangle(1, 7, 2);
+	//m_pRenderer->addTriangle(1, 7, 2);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
@@ -564,7 +564,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	n1 = glm::vec3(-1.0f, 0.0f, 0.0f);
 	m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(5, 0, 3);
+	//m_pRenderer->addTriangle(5, 0, 3);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
@@ -572,7 +572,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	// 						  glm::vec4(textCoord_side + computeCoordText(1,0,true), 
 	// 						  			text_occlu + computeCoordText(1,0,true)));
 	
-	m_pRenderer->addTriangle(5, 3, 6);
+	//m_pRenderer->addTriangle(5, 3, 6);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
@@ -585,7 +585,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	n1 = glm::vec3(0.0f, 1.0f, 0.0f);
 	m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(3, 2, 7);
+	//m_pRenderer->addTriangle(3, 2, 7);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_up + computeCoordText(1,1,true), 
@@ -593,7 +593,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	// 						  glm::vec4(textCoord_up + computeCoordText(1,0,true), 
 	// 						  			text_occlu + computeCoordText(1,0,true)));
 	
-	m_pRenderer->addTriangle(3, 7, 6);
+	//m_pRenderer->addTriangle(3, 7, 6);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_up + computeCoordText(1,0,true), 
@@ -607,7 +607,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	n1 = glm::vec3(0.0f, -1.0f, 0.0f);
 	m_pRenderer->addNormal(n1);
 
-	m_pRenderer->addTriangle(5, 4, 1);
+	//m_pRenderer->addTriangle(5, 4, 1);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_bottom + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_bottom + computeCoordText(1,1,true), 
@@ -615,7 +615,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const BlockTyp
 	// 						  glm::vec4(textCoord_bottom + computeCoordText(1,0,true), 
 	// 						  			text_occlu + computeCoordText(1,0,true)));
 	
-	m_pRenderer->addTriangle(5, 1, 0);
+	//m_pRenderer->addTriangle(5, 1, 0);
 	// m_pRenderer->addTexture(glm::vec4(textCoord_bottom + computeCoordText(0,1,true), 
 	// 									text_occlu + computeCoordText(0,1,true)),
 	// 						 glm::vec4(textCoord_bottom + computeCoordText(1,0,true), 
