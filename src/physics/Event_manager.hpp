@@ -236,7 +236,6 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 	// +z
-
 	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z + 0.1))->isActive() && crouch == 0)
 		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z + 0.1))->isActive())
 	{
@@ -250,7 +249,6 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 	// -z
-
 	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z - 0.1))->isActive() && crouch == 0)
 		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z - 0.1))->isActive())
 	{
@@ -267,8 +265,6 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 	// sol
-
-	
 	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() && crouch == 0)
 		|| (getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 0.5, 0))->isActive() && crouch == 1))
 	{
@@ -329,15 +325,12 @@ void event_manager(SDLWindowManager& windowManager,
 	int blockZ = (int)glm::round(ffCam.getPosition().z) - Chunk::CHUNK_SIZE * chunkZ;
 		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
 
-	// std::cout << "chunk : " << chunkX << "," << chunkY << "," << chunkZ << std::endl;
-	// std::cout << "chuck.block : " << blockX << "," << blockY << "," << blockZ << std::endl;
 
 
 
 	// DESTRUCT CUBE
 	if (leftClick)
 	{
-		//Block* lookCube = getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector());
 
 		chunkX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) / Chunk::CHUNK_SIZE;
 			if (ffCam.getPosition().x + ffCam.getFrontVector().x < 0) chunkX += -1;
@@ -371,7 +364,6 @@ void event_manager(SDLWindowManager& windowManager,
 		}		
 	}
 
-		std::cout << "currentBlockType : " << currentBlockType << std::endl;
 
 	// CREATE CUBE
 	if (rightClick)
@@ -396,9 +388,8 @@ void event_manager(SDLWindowManager& windowManager,
 			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
 
 
-		//Faire une fonction qui récupère le choix du bloc type
+
 		BlockType bt = currentBlockType;
-		std::cout << "currentBlockType : " << currentBlockType << std::endl;
 
 		if (inventory.getNbBlock(bt) > 0)
 		{
