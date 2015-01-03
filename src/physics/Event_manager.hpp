@@ -153,13 +153,16 @@ void event_manager(SDLWindowManager& windowManager,
 			
 	if(windowManager.isKeyPressed(SDLK_z)) 
 	{
-		velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,ffCam.getFrontVector().z*playerSpeed);
 		ffCam.setInertia(ffCam.getFrontVector()*playerSpeed);
-
 		if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
 		{
-			velocity+=ffCam.getFrontVector()*playerSpeed;
+			velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed*3.f,0,ffCam.getFrontVector().z*playerSpeed*3.f);
 		}
+		if(windowManager.isKeyPressed(SDLK_LCTRL)) 
+		{
+			velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed*0.3f,0,ffCam.getFrontVector().z*playerSpeed*0.3f);
+		}
+		else velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,ffCam.getFrontVector().z*playerSpeed);
 	}
 	
 	else if(windowManager.isKeyPressed(SDLK_s)) 
@@ -187,10 +190,7 @@ void event_manager(SDLWindowManager& windowManager,
 		velocity+=glm::vec3(0,1,0)*(1.5f*playerSpeed);
 		ffCam.setJumpInertia(glm::vec3(0,1,0)*(1.5f*playerSpeed));
 	}
-	else if(windowManager.isKeyPressed(SDLK_b)) 
-	{
-		velocity+=glm::vec3(0,1,0)*(-playerSpeed);
-	}
+
 
 
 
@@ -209,7 +209,7 @@ void event_manager(SDLWindowManager& windowManager,
 	int countCollision =0;
 
 	// +x
-	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, -1.0, 0))->isActive()
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, -1.0, 0))->isActive() && crouch == 0)
 		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, 0, 0))->isActive() )
 	{
 		countCollision += 1;
@@ -223,7 +223,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 	// -x
-	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, -1.0, 0))->isActive()
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, -1.0, 0))->isActive() && crouch == 0)
 		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, 0, 0))->isActive() )
 	{
 		countCollision += 1;
@@ -237,7 +237,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 	// +z
 
-	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z + 0.1))->isActive()
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z + 0.1))->isActive() && crouch == 0)
 		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z + 0.1))->isActive())
 	{
 		countCollision += 1;
@@ -251,7 +251,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 	// -z
 
-	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z - 0.1))->isActive()
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z - 0.1))->isActive() && crouch == 0)
 		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z - 0.1))->isActive())
 	{
 		countCollision += 1;
@@ -269,7 +269,8 @@ void event_manager(SDLWindowManager& windowManager,
 	// sol
 
 	
-	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() || crouch == 1)
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() && crouch == 0)
+		|| (getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 0.5, 0))->isActive() && crouch == 1))
 	{
 		
 		gravityFactor = 0.00f;
@@ -360,7 +361,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 		BlockType bt;
-		if (!getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->getType() == BlockType_Lava)
+		if (!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->getType() == BlockType_Lava))
 		{
 			if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->destructBlock(blockX,blockY,blockZ, bt) )
 			{
