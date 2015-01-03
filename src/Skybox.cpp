@@ -29,7 +29,7 @@ bool Skybox::load_cube_map_side (GLenum side_target, const char* file_name)
 	x,
 	y,
 	0,
-	GL_BGRA,
+	GL_RGBA,
 	GL_UNSIGNED_BYTE,
 	image_data
   );
@@ -66,12 +66,14 @@ void Skybox::create_cube_map (
 
 void Skybox::init(SkyboxProgram &skyProgram)
 {
-	create_cube_map ( "bin/assets/skybox/v2/zneg.png",
-					  "bin/assets/skybox/v2/zpos.png",
-					  "bin/assets/skybox/v2/ypos.png",
-					  "bin/assets/skybox/v2/yneg.png",
-					  "bin/assets/skybox/v2/xneg.png",
-					  "bin/assets/skybox/v2/xpos.png"
+
+	create_cube_map ( "bin/assets/skybox/v3/zneg.jpg",
+					  "bin/assets/skybox/v3/zpos.jpg",
+					  "bin/assets/skybox/v3/ypos.jpg",
+					  "bin/assets/skybox/v3/yneg.jpg",
+					  "bin/assets/skybox/v3/xneg.jpg",
+					  "bin/assets/skybox/v3/xpos.jpg"
+
 					);
 
 	float vertices[] = {
@@ -135,7 +137,9 @@ void Skybox::draw(SkyboxProgram &skyProgram, const glm::mat4 &viewMatrix)
 	//cste dans le programme, a degager de la classe
 	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 1000.f);
 
-	glm::mat4 modelMatrix =  glm::scale(glm::mat4(1.0), glm::vec3(1000, 1000, 1000));
+
+	glm::mat4 modelMatrix =  glm::scale(glm::mat4(1.0), glm::vec3(800, 800, 800)); 
+
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 	//calcul de la matrixViewProjetée
 	glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;

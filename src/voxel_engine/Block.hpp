@@ -2,18 +2,24 @@
 
 
 enum BlockType { 
-	BlockType_Default = 0,
 
-	BlockType_Stone,
+	BlockType_Lava,
+	BlockType_Rock,
+	BlockType_Earth,
+	BlockType_Grass,
+	BlockType_1st_Snow,
+	BlockType_Snow,
+	BlockType_Ice,
 
 	BlockType_Count
 };
 
+
 class Block{
 
 private:
-	bool m_active;
-	BlockType m_blockType;
+	bool m_active = false;
+	BlockType m_blockType = BlockType_Grass;
 
 public:
 	static const int BLOCK_RENDER_SIZE = 1;
@@ -22,12 +28,11 @@ public:
 	Block();
 	Block(BlockType blockType);
 
-	// Getters
-	bool isActive();
-
-	// Setters
+	bool isActive() const;
 	void setActive();
 	void setInactive();
+	BlockType getType() const;
+	void setType(int blockType);
 
 	// Destructors
 	~Block();

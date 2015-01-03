@@ -1,24 +1,15 @@
 #include "Chunk.hpp"
-
 #include <glimac/glm.hpp>
 #include <iostream>
+#include <glimac/PerlinNoise.hpp>
 
 // Constructor
-Chunk::Chunk(){
-	// Create the blocks
-	m_pBlocks = new Block**[CHUNK_SIZE];
+Chunk::Chunk()
+{}
 
-	for(int i = 0; i < CHUNK_SIZE; i++)
-	{
-		m_pBlocks[i] = new Block*[CHUNK_SIZE];
-
-		for(int j = 0; j < CHUNK_SIZE; j++)
-		{
-			m_pBlocks[i][j] = new Block[CHUNK_SIZE];
-		}
-	}
-
-	m_pRenderer = new OpenGLRenderer;
+Chunk::Chunk(glm::vec3 position)
+{
+    m_position = position;
 }
 
 // Destructor
@@ -46,22 +37,19 @@ Block*** Chunk::getBlocks() const
 
 void Chunk::init()
 {
-	/*
-	for (int x = 0; x < CHUNK_SIZE; x++)
-	{
-		for (int y = 0; y < CHUNK_SIZE; y++)
-		{
-			for (int z = 0; z < CHUNK_SIZE; z++)
-			{
-				// Init a sphere
-				if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2.0)
-				{
-					// m_pBlocks[x][y][z].setActive();
-				}
-			}
-		}		
-	}
-	*/
+    // Create the blocks A MODIFIER CAR DEJA FAIT DANS LE SETUP
+    m_pBlocks = new Block**[CHUNK_SIZE];
+    for(int i = 0; i < CHUNK_SIZE; i++)
+    {
+        m_pBlocks[i] = new Block*[CHUNK_SIZE];
+
+        for(int j = 0; j < CHUNK_SIZE; j++)
+        {
+            m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+        }
+    }
+
+    m_pRenderer = new OpenGLRenderer;
 
 	int y = 0;
 	for (int x = 0; x < CHUNK_SIZE; x++)
@@ -260,8 +248,8 @@ glm::vec2 Chunk::computeCoordText(const int & x, const int & y, const bool crop)
 
 	if(crop)
 	{
-		float cropX = size_text[0] * 0.05;
-		float cropY = size_text[1] * 0.05;
+		float cropX = size_text[0] * 0.015;
+		float cropY = size_text[1] * 0.015;
 
 		float signeX, signeY;
 		if (x == 0)
@@ -379,62 +367,102 @@ glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
 
 void Chunk::createMesh()
 {
-	bool lDefault = true;
+    for (int x = 0; x < CHUNK_SIZE; x++)
+    {
+        for (int y = 0; y < CHUNK_SIZE; y++)
+        {
+            // SPHERE
+            for (int z = 0; z < CHUNK_SIZE; z++)
+            {
+                if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2)
+                    {
+                        m_pBlocks[x][y][z].setActive();
+                    }
+                else
+                    continue;
+            }
+        }
+    }
+}
 
-	for (int x = 0; x < CHUNK_SIZE; x++)
-	{
-		for (int y = 0; y < CHUNK_SIZE; y++)
-		{
-			for (int z = 0; z < CHUNK_SIZE; z++)
-			{
-				if(m_pBlocks[x][y][z].isActive() == false)
-				{
-					continue;
-				}
 
-				bool lXNegative = lDefault;
-				if(x > 0)
-					lXNegative = !m_pBlocks[x-1][y][z].isActive();
+void Chunk::createLandscape(PerlinNoise *pn)
+{
+    for(int x = 0; x < CHUNK_SIZE; ++x)
+    {
+        for(int z = 0; z < CHUNK_SIZE; ++z)
+        {
+            // Use the noise library to get the height value of x, z
+            int height = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
 
-				bool lXPositive = lDefault;
-				if(x < CHUNK_SIZE - 1)
-					lXPositive = !m_pBlocks[x+1][y][z].isActive();
+            int min_chunk_y = m_position[1] * CHUNK_SIZE;
 
-				bool lYNegative = lDefault;
-				if(y > 0)
-					lYNegative = !m_pBlocks[x][y-1][z].isActive();
+            if(height < -24)
+            	height = -24;
 
-				bool lYPositive = lDefault;
-				if(y < CHUNK_SIZE - 1)
-					lYPositive = !m_pBlocks[x][y+1][z].isActive();
+            if(height >= min_chunk_y)
+            {
+            	int end;
+            	if(height < min_chunk_y + CHUNK_SIZE)
+            		end = height;
+            	else
+            		end = min_chunk_y + CHUNK_SIZE - 1;
 
-				bool lZNegative = lDefault;
-				if(z > 0)
-					lZNegative = !m_pBlocks[x][y][z-1].isActive();
+	            for (int y = min_chunk_y; y <= end; ++y)
+	            {
+	            	int y_bis = y - min_chunk_y;
+	                m_pBlocks[x][y_bis][z].setActive();
 
-				bool lZPositive = lDefault;
-				if(z < CHUNK_SIZE - 1)
-					lZPositive = !m_pBlocks[x][y][z+1].isActive();
-
-				createCube(x, y, z, lXNegative, lXPositive, lYNegative, lYPositive, lZNegative, lZPositive);
-			}
-		}
-	}
-
-	m_pRenderer->finishVbo();
+	                if(height <= -24)
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_Lava);
+	               	else if(y < -15)
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_Rock);
+	               	else if(y < 15)
+	               	{
+	               		if(y == height)
+	               			m_pBlocks[x][y_bis][z].setType(BlockType_Grass);
+	               		else
+	               			m_pBlocks[x][y_bis][z].setType(BlockType_Earth);
+	               	}
+	               	else if(y == 15)
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_1st_Snow);
+	               	else if(y <	 36)
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_Snow);
+	               	else
+	               		m_pBlocks[x][y_bis][z].setType(BlockType_Ice);
+	            }
+	        }
+        }
+    }
 }
 
 void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
 	m_pRenderer->setVao();
 
-	m_pRenderer->draw(program, viewMatrix, idTexture);
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
+    glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+
+    // A sortir de la classe : Identique dans tout le programme
+    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+
+    glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
+
+   // Normale
+    glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
+
+    glUniform1i(program.uTexture, 0);
+    glUniformMatrix4fv(program.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+    glUniformMatrix4fv(program.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+    glUniformMatrix4fv(program.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+	m_pRenderer->renderMesh(idTexture);
 }
 
 void Chunk::update(){}
 
 void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & lXNegative, const bool &lXPositive,
-						const bool &lYNegative, const bool &lYPositive, const bool &lZNegative, const bool &lZPositive)
+						const bool &lYNegative, const bool &lYPositive, const bool &lZNegative, const bool &lZPositive, const BlockType &blockType)
 {
 	glm::vec3 v1(x-Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
 	glm::vec3 v2(x+Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z+Block::BLOCK_RENDER_SIZE * 0.5);
@@ -449,10 +477,9 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	// Normal
 	glm::vec3 n1;
 
-	glm::vec2 textCoord_up = computeCoordText(0, 16);
-	glm::vec2 textCoord_side = computeCoordText(1, 16);
-	glm::vec2 textCoord_bottom = computeCoordText(2, 16);
-
+	glm::vec2 textCoord_up = computeCoordText(0, 16 + blockType);
+	glm::vec2 textCoord_side = computeCoordText(1, 16 + blockType);
+	glm::vec2 textCoord_bottom = computeCoordText(2, 16 + blockType);
 
 	// Front
 	if(lZPositive)
@@ -564,8 +591,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 								  			text_occlu + computeCoordText(0,0,true)));
 	}
 
-
-
 	// Top
 	if(lYPositive)
 	{
@@ -594,8 +619,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 	}
 
-	
-
 	// Bottom
 	if(lYNegative)
 	{
@@ -622,4 +645,154 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 								  			text_occlu + computeCoordText(0,0,true)));
 	}
 
+}
+
+bool Chunk::isLoaded()
+{
+    return m_loaded;
+}
+
+bool Chunk::isSetup()
+{
+    return m_setup;
+}
+
+void Chunk::load(const Json::Value &chunkData)
+{
+    m_blocksData = chunkData;
+    m_loaded = true;
+}
+
+void Chunk::setup(PerlinNoise *pn)
+{
+    // Create the blocks
+    if (m_loaded)
+    {
+        m_pBlocks = new Block**[CHUNK_SIZE];
+
+        for(int i = 0; i < CHUNK_SIZE; ++i)
+        {
+            m_pBlocks[i] = new Block*[CHUNK_SIZE];
+
+            for(int j = 0; j < CHUNK_SIZE; ++j)
+            {
+                m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+
+                for (int k = 0; k < CHUNK_SIZE; ++k)
+                {
+                    if (m_blocksData["block"][i][j][k]["active"] == true)
+                        m_pBlocks[i][j][k].setActive();
+
+                    m_pBlocks[i][j][k].setType(m_blocksData["block"][i][j][k]["type"].asInt());
+                }
+            }
+        }
+
+        m_blocksData.clear();
+    }
+    else
+    {
+         // Create the blocks
+        m_pBlocks = new Block**[CHUNK_SIZE];
+        for(int i = 0; i < CHUNK_SIZE; i++)
+        {
+            m_pBlocks[i] = new Block*[CHUNK_SIZE];
+
+            for(int j = 0; j < CHUNK_SIZE; j++)
+            {
+                m_pBlocks[i][j] = new Block[CHUNK_SIZE];
+            }
+        }
+
+        createLandscape(pn);
+
+        m_loaded = true;
+    }
+
+    m_pRenderer = new OpenGLRenderer;
+
+    m_setup = true; 
+}
+
+void Chunk::buildMesh()
+{
+    bool lDefault = true;
+    m_pRenderer->clean();
+
+    for (int x = 0; x < CHUNK_SIZE; x++)
+    {
+        for (int y = 0; y < CHUNK_SIZE; y++)
+        {
+            for (int z = 0; z < CHUNK_SIZE; z++)
+            {
+                if(m_pBlocks[x][y][z].isActive() == false)
+                	continue;
+
+                bool lXNegative = lDefault;
+                if(x > 0)
+                    lXNegative = !m_pBlocks[x-1][y][z].isActive();
+
+                bool lXPositive = lDefault;
+                if(x < CHUNK_SIZE - 1)
+                    lXPositive = !m_pBlocks[x+1][y][z].isActive();
+
+                bool lYNegative = lDefault;
+                if(y > 0)
+                    lYNegative = !m_pBlocks[x][y-1][z].isActive();
+
+                bool lYPositive = lDefault;
+                if(y < CHUNK_SIZE - 1)
+                    lYPositive = !m_pBlocks[x][y+1][z].isActive();
+
+                bool lZNegative = lDefault;
+                if(z > 0)
+                    lZNegative = !m_pBlocks[x][y][z-1].isActive();
+
+                bool lZPositive = lDefault;
+                if(z < CHUNK_SIZE - 1)
+                    lZPositive = !m_pBlocks[x][y][z+1].isActive();
+
+                createCube(x, y, z, lXNegative, lXPositive, lYNegative, lYPositive, lZNegative, lZPositive, m_pBlocks[x][y][z].getType());
+            }
+        }
+    }
+
+    m_pRenderer->finishVbo();
+}
+
+bool Chunk::destructBlock(const int &x, const int &y, const int &z, BlockType & bt)
+{
+	if (m_pBlocks[x][y][z].isActive()){
+		bt = m_pBlocks[x][y][z].getType();
+		m_pBlocks[x][y][z].setInactive();
+		return true;
+	}
+	return false;
+
+}
+
+bool Chunk::constructBlock(const int &x, const int &y, const int &z, BlockType type)
+{
+	
+	m_pBlocks[x][y][z].setActive();
+	m_pBlocks[x][y][z].setType(type);
+	return true;
+}
+
+void Chunk::unload()
+{
+    // Save à faire
+
+    delete this;
+}
+
+void Chunk::updateShouldRenderFlags()
+{
+    int numVerts;
+    m_pRenderer->getMeshInformation(numVerts);
+
+    if(numVerts == 0)
+    {
+        m_emptyChunk = true;
+    }
 }

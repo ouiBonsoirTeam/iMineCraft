@@ -5,24 +5,65 @@
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/FreeFlyCamera.hpp>
 #include "../voxel_engine/Chunk.hpp"
+#include "../voxel_engine/ChunkManager.hpp"
+#include "../voxel_engine/Block.hpp"
+#include "../inventory.hpp"
+
+
+Block* getBlockFromChunk(ChunkManager& chunkmanager, glm::vec3 position, glm::vec3 direction)
+{
+	int chunkX = (int) glm::round(position.x + direction.x) / Chunk::CHUNK_SIZE;
+		if (position.x + direction.x < 0) chunkX += -1;
+
+	int chunkY = (int) glm::round(position.y + direction.y) / Chunk::CHUNK_SIZE;
+		if (position.y + direction.y < 0) chunkY += -1;
+
+	int chunkZ = (int) glm::round(position.z + direction.z) / Chunk::CHUNK_SIZE;
+		if (position.z + direction.z < 0) chunkZ += -1;
+
+
+	int blockX = (int) glm::round(position.x + direction.x) - Chunk::CHUNK_SIZE * chunkX;
+		if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+
+	int blockY = (int)glm::round(position.y + direction.y) - Chunk::CHUNK_SIZE * chunkY;
+		if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+
+	int blockZ = (int)glm::round(position.z + direction.z) - Chunk::CHUNK_SIZE * chunkZ;
+		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+
+
+
+	return &chunkmanager.getChunk(chunkX, chunkY, chunkZ)->getBlocks()[blockX][blockY][blockZ];
+}
+
 
 void event_manager(SDLWindowManager& windowManager,
 				   FreeFlyCamera& ffCam,
 				   float& angleX,float& angleY,float& angleYfinal,
 				   float CAMERA_ROT_FACTOR,
 				   bool& done,
-				   Chunk& chunk){
+				   ChunkManager& chunkmanager,
+				   Inventory& inventory,
+				   int& crouch,
+				   BlockType& currentBlockType,
+				   std::vector<Mix_Chunk*> mix_chunk){
 
 	// INIT
 
-	Block*** blocks = chunk.getBlocks();
-	const float INERTIA_FACTOR = 10.0005;
-	const float INERTIA_JUMP_FACTOR = 10.0005;
 
-	float gravityFactor = 0.000f;
-	float playerSpeed = 0.100f;
+	const float INERTIA_FACTOR = 1.01;
+	const float INERTIA_JUMP_FACTOR = 1.05;
+
+
+	float gravityFactor = 0.03f;
+	float playerSpeed = 0.05f;
+
 
 	glm::vec3 velocity=glm::vec3(0,0,0);
+
+	bool leftClick = false;
+	bool rightClick = false;
+
 
 	// EVENTS
 	SDL_Event e;
@@ -36,6 +77,82 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				done = true; // Leave the loop after this iteration
 			}
+
+			if (e.key.keysym.sym == SDLK_LCTRL)
+			{
+				if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0,-1.5,0))->isActive() && crouch == 0)
+				{
+					ffCam.slide(glm::vec3(0,-1,0));
+					crouch = 1;	
+				}
+			}
+
+		}
+		//std::cerr << e.key.keysym.sym << std::endl;
+		if (e.type == SDL_KEYUP)
+		{
+			if (e.key.keysym.sym == SDLK_AMPERSAND)
+			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(17,mix_chunk[6],0, 450);
+				}
+				currentBlockType=BlockType_Lava;
+			}
+			if (e.key.keysym.sym == 233) //é
+			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(1,mix_chunk[6],0, 450);
+				}
+				currentBlockType=BlockType_Rock;
+			}
+			if (e.key.keysym.sym == SDLK_QUOTEDBL)
+			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(2,mix_chunk[6],0, 450);
+				}
+				currentBlockType=BlockType_Earth;
+			}
+			if (e.key.keysym.sym == SDLK_QUOTE)
+			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(3,mix_chunk[6],0, 450);
+				}
+				currentBlockType=BlockType_Grass;
+			}
+			if (e.key.keysym.sym == SDLK_LEFTPAREN)
+			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(4,mix_chunk[6],0, 450);
+				}
+				currentBlockType=BlockType_1st_Snow;
+			}
+			if (e.key.keysym.sym == SDLK_MINUS || e.key.keysym.sym == 167)
+			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(5,mix_chunk[6],0, 450);
+				}
+				currentBlockType=BlockType_Snow;
+			}
+			if (e.key.keysym.sym == 232) //è
+			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(6,mix_chunk[6],0, 450);
+				}
+				currentBlockType=BlockType_Ice;
+			}	
+
+			if (e.key.keysym.sym == SDLK_LCTRL && crouch == 1) 
+			{
+				ffCam.slide(glm::vec3(0,+1,0));
+				crouch = 0;		
+			}
 		}
 
 		//souris
@@ -45,6 +162,18 @@ void event_manager(SDLWindowManager& windowManager,
 			angleY -= e.motion.yrel * CAMERA_ROT_FACTOR;
 			angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
 			angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
+		}
+
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			if (e.button.button == SDL_BUTTON_LEFT)
+			{
+				leftClick = true;
+			}
+			if (e.button.button == SDL_BUTTON_RIGHT)
+			{
+				rightClick = true;
+			}
 		}
 	}
 	ffCam.rotateLeft(angleX);
@@ -57,18 +186,27 @@ void event_manager(SDLWindowManager& windowManager,
 			
 	if(windowManager.isKeyPressed(SDLK_z)) 
 	{
-		velocity+=ffCam.getFrontVector()*playerSpeed;
 		ffCam.setInertia(ffCam.getFrontVector()*playerSpeed);
-
 		if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
 		{
-			velocity+=ffCam.getFrontVector()*playerSpeed;
+			//run
+			if(Mix_Playing(0) == 0 && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() == 1)
+			{
+				Mix_PlayChannelTimed(7,mix_chunk[0],0, 450);
+			}
+			velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed*3.f,0,ffCam.getFrontVector().z*playerSpeed*3.f);
+
 		}
+		if(windowManager.isKeyPressed(SDLK_LCTRL)) 
+		{
+			velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed*0.3f,0,ffCam.getFrontVector().z*playerSpeed*0.3f);
+		}
+		else velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,ffCam.getFrontVector().z*playerSpeed);
 	}
 	
 	else if(windowManager.isKeyPressed(SDLK_s)) 
 	{
-		velocity+=ffCam.getFrontVector()*(-playerSpeed);
+		velocity+=glm::vec3(ffCam.getFrontVector().x*(-playerSpeed),0,ffCam.getFrontVector().z*(-playerSpeed));
 		ffCam.setInertia(ffCam.getFrontVector()*(-playerSpeed));
 	}
 
@@ -88,93 +226,130 @@ void event_manager(SDLWindowManager& windowManager,
 
 	if(windowManager.isKeyPressed(SDLK_SPACE)) 
 	{
-		velocity+=glm::vec3(0,1,0)*(2*playerSpeed);
-		ffCam.setJumpInertia(glm::vec3(0,0.008,0));
+		//jetpack
+		if(Mix_Playing(0) == 0)
+		{
+			Mix_PlayChannelTimed(8,mix_chunk[5],0, 450);
+		}
+		velocity+=glm::vec3(0,1,0)*(1.5f*playerSpeed);
+		ffCam.setJumpInertia(glm::vec3(0,1,0)*(1.5f*playerSpeed));
 	}
-	else if(windowManager.isKeyPressed(SDLK_b)) 
-	{
-		velocity+=glm::vec3(0,1,0)*(-2*playerSpeed);
-	}
+
 
 
 
 	// PHYSICS
 
-
 	// COLLISION
-	
-	if(blocks[(int)glm::round(ffCam.getPosition().x)]
-		     [(int)glm::round(ffCam.getPosition().y-1.5)]
-		     [(int)glm::round(ffCam.getPosition().z)]
-		     .isActive())
+
+
+	// plafond
+	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0,0.5,0))->isActive())
 	{
+		velocity=glm::vec3(velocity.x,0,velocity.z);
+		ffCam.setJumpInertia(glm::vec3(0,0,0));
+	}
+
+	int countCollision =0;
+
+	// +x
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, -1.0, 0))->isActive() && crouch == 0)
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, 0, 0))->isActive() )
+	{
+		countCollision += 1;
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(0,velocity.y,ffCam.getFrontVector().z*playerSpeed);
+		}
+		else velocity=glm::vec3(0,velocity.y,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
+	}
+
+
+	// -x
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, -1.0, 0))->isActive() && crouch == 0)
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, 0, 0))->isActive() )
+	{
+		countCollision += 1;
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(0,velocity.y,ffCam.getFrontVector().z*playerSpeed);
+		}
+		else velocity=glm::vec3(0,velocity.y,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
+	}
+
+	// +z
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z + 0.1))->isActive() && crouch == 0)
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z + 0.1))->isActive())
+	{
+		countCollision += 1;
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,velocity.y,0);
+		}
+		else velocity=glm::vec3(0,velocity.y,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
+	}
+
+	// -z
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z - 0.1))->isActive() && crouch == 0)
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z - 0.1))->isActive())
+	{
+		countCollision += 1;
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,velocity.y,0);
+		}
+		else velocity=glm::vec3(0,velocity.y,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
+	}
+
+	if(countCollision > 1) velocity=glm::vec3(0,velocity.y,0);
+
+
+	// sol
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() && crouch == 0)
+		|| (getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 0.5, 0))->isActive() && crouch == 1))
+	{
+		
 		gravityFactor = 0.00f;
+		velocity.y=0;
 		ffCam.setInertia(glm::vec3(0,0,0));
-	}
-
-	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
-			 .isActive())
-	{
-		if(windowManager.isKeyPressed(SDLK_z))
+		if(Mix_Playing(0) == 0)
 		{
-			velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
+			//grass
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Grass)
+			{
+				Mix_PlayChannelTimed(9,mix_chunk[1],0, 450);
+			}
+			//earth
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Earth)
+			{
+				Mix_PlayChannelTimed(10,mix_chunk[1],0, 450);
+			}
+			//first snow
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_1st_Snow)
+			{
+				Mix_PlayChannelTimed(11,mix_chunk[2],0, 450);
+			}
+			//snow
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow)
+			{
+				Mix_PlayChannelTimed(12,mix_chunk[2],0, 450);
+			}
+			//stone
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Rock)
+			{
+				Mix_PlayChannelTimed(13,mix_chunk[3],0, 450);
+			}
+			//lava
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Lava)
+			{
+				Mix_PlayChannelTimed(14,mix_chunk[4],0, 450);
+			}
 		}
-		else velocity=glm::vec3(0,0,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
-
 	}
-
-	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.2)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
-			 .isActive())
-	{
-		if(windowManager.isKeyPressed(SDLK_z))
-		{
-			velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
-		}
-		else velocity=glm::vec3(0,0,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
-
-	}
-
-	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.2)]
-			 .isActive())
-	{
-		if(windowManager.isKeyPressed(SDLK_z))
-		{
-			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
-		}
-		else velocity=glm::vec3(0,0,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
-
-	}
-
-	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.2)]
-			 .isActive())
-	{
-		if(windowManager.isKeyPressed(SDLK_z))
-		{
-			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
-		}
-		else velocity=glm::vec3(0,0,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
-
-	}
-
-
-
-
-
-
-
-
 
 
 
@@ -206,6 +381,122 @@ void event_manager(SDLWindowManager& windowManager,
 		ffCam.divideInertia(INERTIA_FACTOR);
 
 		ffCam.slide(ffCam.getInertia());
+	}
+
+	int chunkX = (int) glm::round(ffCam.getPosition().x) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().x < 0) chunkX += -1;
+
+	int chunkY = (int) glm::round(ffCam.getPosition().y) / Chunk::CHUNK_SIZE;
+		if (ffCam.getPosition().y < 0) chunkY += -1;
+
+	int chunkZ = (int) glm::round(ffCam.getPosition().z) / Chunk::CHUNK_SIZE;
+		if (ffCam.getPosition().z < 0) chunkZ += -1;
+
+
+	int blockX = (int) glm::round(ffCam.getPosition().x ) - Chunk::CHUNK_SIZE * chunkX;
+		if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+
+	int blockY = (int)glm::round(ffCam.getPosition().y) - Chunk::CHUNK_SIZE * chunkY;
+		if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+
+	int blockZ = (int)glm::round(ffCam.getPosition().z) - Chunk::CHUNK_SIZE * chunkZ;
+		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+
+
+
+
+	// DESTRUCT CUBE
+	if (leftClick)
+	{
+
+		chunkX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().x + ffCam.getFrontVector().x < 0) chunkX += -1;
+
+		chunkY = (int) glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().y + ffCam.getFrontVector().y < 0) chunkY += -1;
+
+		chunkZ = (int) glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().z + ffCam.getFrontVector().z < 0) chunkZ += -1;
+
+
+		blockX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) - Chunk::CHUNK_SIZE * chunkX;
+			if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+
+		blockY = (int)glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) - Chunk::CHUNK_SIZE * chunkY;
+			if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+
+		blockZ = (int)glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) - Chunk::CHUNK_SIZE * chunkZ;
+			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+
+
+
+		BlockType bt;
+		if (!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->getType() == BlockType_Lava))
+		{
+			if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->destructBlock(blockX,blockY,blockZ, bt) )
+			{
+				inventory.addBlock(bt);
+				chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+
+				//delete cube
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(15,mix_chunk[8],0, 450);
+				}
+			}
+		}
+	}
+
+
+	// CREATE CUBE
+	if (rightClick)
+	{
+		chunkX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().x + ffCam.getFrontVector().x < 0) chunkX += -1;
+
+		chunkY = (int) glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().y + ffCam.getFrontVector().y < 0) chunkY += -1;
+
+		chunkZ = (int) glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) / Chunk::CHUNK_SIZE;
+			if (ffCam.getPosition().z + ffCam.getFrontVector().z < 0) chunkZ += -1;
+
+
+		blockX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) - Chunk::CHUNK_SIZE * chunkX;
+			if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+
+		blockY = (int)glm::round(ffCam.getPosition().y + ffCam.getFrontVector().y) - Chunk::CHUNK_SIZE * chunkY;
+			if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+
+		blockZ = (int)glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) - Chunk::CHUNK_SIZE * chunkZ;
+			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+
+
+
+		BlockType bt = currentBlockType;
+
+		if (inventory.getNbBlock(bt) > 0)
+		{
+			if (!getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->isActive() && 
+				(	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(1,0,0))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(-1,0,0))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,1,0))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,-1,0))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,0,1))->isActive()
+				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,0,-1))->isActive()
+				 ))
+			{
+				if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,blockY,blockZ, bt) )
+				{
+					//add cube
+					if(Mix_Playing(0) == 0)
+					{
+						Mix_PlayChannelTimed(16,mix_chunk[7],0, 450);
+					}
+					inventory.deleteBlock(bt);
+					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+				}
+			}
+		}
 	}
 
 };

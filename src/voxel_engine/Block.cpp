@@ -1,20 +1,17 @@
 #include "Block.hpp"
 
 // Constructors
-Block::Block(){
-	m_active = false;
-}
+Block::Block(){}
 
 Block::Block(BlockType blockType){
 	m_blockType = blockType;
-	m_active = false;
 }
 
 // Destructor
 Block::~Block(){}
 
 // Getter
-bool Block::isActive(){
+bool Block::isActive() const{
 	return m_active;
 }
 
@@ -25,4 +22,12 @@ void Block::setActive(){
 
 void Block::setInactive(){
 	m_active = false;
+}
+
+BlockType Block::getType() const{
+	return m_blockType;
+}
+
+void Block::setType(int blockType){
+	m_blockType = (BlockType)blockType;
 }
