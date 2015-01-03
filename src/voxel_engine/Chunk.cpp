@@ -37,6 +37,11 @@ Block*** Chunk::getBlocks() const
 	return m_pBlocks;
 }
 
+Block*  Chunk::getBlock(const int & x, const int & y, const int & z) const
+{
+	return &(m_pBlocks[x][y][z]);
+}
+
 void Chunk::init()
 {
 	// Create the blocks A MODIFIER CAR DEJA FAIT DANS LE SETUP
@@ -395,13 +400,13 @@ void Chunk::createLandscape(PerlinNoise *pn)
 		for(int z = 0; z < CHUNK_SIZE; ++z)
 		{
 			// Use the noise library to get the height value of x, z
-			int height = (int) pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z);
+			int height = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
 			int min_chunk_y = m_position[1] * CHUNK_SIZE;
 
-			if(height < -CHUNK_SIZE)
-				height = -CHUNK_SIZE;
+			// if(height < -CHUNK_SIZE)
+			// 	height = -CHUNK_SIZE;
 
-			if(height >= min_chunk_y && height < min_chunk_y + CHUNK_SIZE)
+			if(height >= min_chunk_y)
 			{
 				int end;
 				if(height < min_chunk_y + CHUNK_SIZE)
@@ -648,11 +653,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 
 }
 
-Block*** Chunk::getBlocks()
-{
-	return m_pBlocks;
-}
-
 bool Chunk::isLoaded()
 {
 	return m_loaded;
@@ -711,63 +711,110 @@ void Chunk::setup(PerlinNoise *pn)
 	m_setup = true; 
 }
 
-void Chunk::buildMesh(PerlinNoise *pn)
+void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chunk * ch_Y_neg, const Chunk * ch_Y_pos, const Chunk * ch_Z_neg, const Chunk * ch_Z_pos)
 {
-	bool lDefault = true;
-
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
-		for (int z = 0; z < CHUNK_SIZE; z++)
+		for (int y = 0; y < CHUNK_SIZE; y++)
 		{
-			for (int y = 0; y < CHUNK_SIZE; y++)
+			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				if(m_pBlocks[x][y][z].isActive() == false)
+				if(!m_pBlocks[x][y][z].isActive())
 					continue;
 
-				int x_start = m_position[0] * CHUNK_SIZE;
-				int y_start = m_position[1] * CHUNK_SIZE;
-				int z_start = m_position[2] * CHUNK_SIZE;
+				int max = CHUNK_SIZE - 1;
+				bool lXNegative = true;
+				bool lXPositive = true;
+				bool lYNegative = true;
+				bool lYPositive = true;
+				bool lZNegative = true;
+				bool lZPositive = true;
 
-				int height = (int) pn->GetHeight(x_start + x, z_start + z);
-
-				bool lXNegative = lDefault;
-				bool lXPositive = lDefault;
-				bool lYNegative = lDefault;
-				bool lYPositive = lDefault;
-				bool lZNegative = lDefault;
-				bool lZPositive = lDefault;
-
-
-				if(x > 0)
-					lXNegative = !m_pBlocks[x - 1][y][z].isActive();
-				else
-					lXNegative = ((int) pn->GetHeight(x_start + x - 1, z_start + z) < y_start + y);
-
-				if(x < CHUNK_SIZE - 1)
-					lXPositive = !m_pBlocks[x + 1][y][z].isActive();
-				else
-					lXPositive = ((int) pn->GetHeight(x_start + x + 1, z_start + z) < y_start + y);
-
-				if(y > 0)
-					lYNegative = !m_pBlocks[x][y - 1][z].isActive();
-				else
-					lYNegative = (height < y_start + y - 1);
-
-				if(y < CHUNK_SIZE - 1)
-					lYPositive = !m_pBlocks[x][y + 1][z].isActive();
-				else
-					lYPositive = (height == y_start + y);
-
-				if(z > 0)
-					lZNegative = !m_pBlocks[x][y][z - 1].isActive();
-				else
-					lZNegative = ((int) pn->GetHeight(x_start + x, z_start + z - 1) < y_start + y);
-
-				if(z < CHUNK_SIZE - 1)
-					lZPositive = !m_pBlocks[x][y][z + 1].isActive();
-				else
-					lZPositive = ((int) pn->GetHeight(x_start + x, z_start + z + 1) < y_start + y);
 				
+				if(x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y < CHUNK_SIZE - 1 && z > 0 && z < CHUNK_SIZE - 1) // block frontiers intra chunk
+				{
+					lXNegative = !m_pBlocks[x - 1][y][z].isActive();
+					lXPositive = !m_pBlocks[x + 1][y][z].isActive();
+					lYNegative = !m_pBlocks[x][y - 1][z].isActive();
+					lYPositive = !m_pBlocks[x][y + 1][z].isActive();
+					lZNegative = !m_pBlocks[x][y][z - 1].isActive();
+					lZPositive = !m_pBlocks[x][y][z + 1].isActive();
+				}
+				else // block frontiers inter chunk
+				{
+					if(x == 0)
+					{
+						if(ch_X_neg == NULL)
+							lXNegative = false;
+						else
+							lXNegative = !(ch_X_neg->getBlock(max, y, z)->isActive());
+
+						lXPositive = !m_pBlocks[x + 1][y][z].isActive();
+					}
+					else if(x == max)
+					{
+						if(ch_X_pos == NULL)
+							lXPositive = false;
+						else
+							lXPositive = !(ch_X_pos->getBlock(0, y, z)->isActive());
+
+						lXNegative = !m_pBlocks[x - 1][y][z].isActive();
+					}
+					else
+					{
+						lXNegative = !m_pBlocks[x - 1][y][z].isActive();
+						lXPositive = !m_pBlocks[x + 1][y][z].isActive();
+					}
+
+					if(y == 0)
+					{
+						if(ch_Y_neg == NULL)
+							lYNegative = false;
+						else
+							lYNegative = !(ch_Y_neg->getBlock(x, max, z)->isActive());
+
+						lYPositive = !m_pBlocks[x][y + 1][z].isActive();
+					}
+					else if(y == max)
+					{
+						if(ch_Y_pos == NULL)
+							lYPositive = false;
+						else
+							lYPositive = !(ch_Y_pos->getBlock(x, 0, z)->isActive());
+
+						lYNegative = !m_pBlocks[x][y - 1][z].isActive();
+					}
+					else
+					{
+						lYNegative = !m_pBlocks[x][y - 1][z].isActive();
+						lYPositive = !m_pBlocks[x][y + 1][z].isActive();
+					}
+
+					if(z == 0)
+					{
+						if(ch_Z_neg == NULL)
+							lZNegative = false;
+						else
+							lZNegative = !(ch_Z_neg->getBlock(x, y, max)->isActive());
+
+						lZPositive = !m_pBlocks[x][y][z + 1].isActive();
+					}
+					else if(z == max)
+					{
+						if(ch_Z_pos == NULL)
+							lZPositive = false;
+						else
+							lZPositive = !(ch_Z_pos->getBlock(x, y, 0)->isActive());
+
+						lZNegative = !m_pBlocks[x][y][z - 1].isActive();
+					}
+					else
+					{
+						lZNegative = !m_pBlocks[x][y][z - 1].isActive();
+						lZPositive = !m_pBlocks[x][y][z + 1].isActive();
+					}
+
+				}
 				
 				createCube(x, y, z, lXNegative, lXPositive, lYNegative, lYPositive, lZNegative, lZPositive, m_pBlocks[x][y][z].getType());
 			}

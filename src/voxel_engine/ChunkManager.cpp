@@ -37,13 +37,15 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
 
     for (int i = -unloadLimit; i <= unloadLimit; ++i)
     {
-        for (int j = -1; j <= unloadLimit; ++j)
+        for (int j = -unloadLimit; j <= unloadLimit; ++j)
         {
             for (int k = -unloadLimit; k <= unloadLimit; ++k)
             {
                 glm::vec3 position(chunkCameraPosition[0] + i, chunkCameraPosition[1] + j, chunkCameraPosition[2] + k);
 
-                if(i <= chunkAreaLimit && j <= chunkAreaLimit && k <= chunkAreaLimit)
+                if(     i >= -chunkAreaLimit && i <= chunkAreaLimit
+                    &&  j >= -chunkAreaLimit && j <= chunkAreaLimit
+                    &&  k >= -chunkAreaLimit && k <= chunkAreaLimit)
                 {
                     
                     if(!chunkExist(position))
@@ -163,43 +165,42 @@ void ChunkManager::updateRebuildList()
 
         if(pChunk->isLoaded() && pChunk->isSetup())
         {
-            // if(lNumRebuiltChunkThisFrame != NUM_CHUNKS_PER_FRAME)
-            // {
-                pChunk->buildMesh(&m_PerlinNoise);
+            // Also add our neighbours since they might now be surrounded too (If we have neighbours)
+            Chunk* pChunkXMinus = getChunk(pChunk->getX()-1, pChunk->getY(), pChunk->getZ());
+            Chunk* pChunkXPlus = getChunk(pChunk->getX()+1, pChunk->getY(), pChunk->getZ());
+            Chunk* pChunkYMinus = getChunk(pChunk->getX(), pChunk->getY()-1, pChunk->getZ());
+            Chunk* pChunkYPlus = getChunk(pChunk->getX(), pChunk->getY()+1, pChunk->getZ());
+            Chunk* pChunkZMinus = getChunk(pChunk->getX(), pChunk->getY(), pChunk->getZ()-1);
+            Chunk* pChunkZPlus = getChunk(pChunk->getX(), pChunk->getY(), pChunk->getZ()+1);
 
-                m_vpChunkUpdateFlagsList.push_back(pChunk);
+            pChunk->buildMesh( pChunkXMinus, pChunkXPlus, pChunkYMinus, pChunkYPlus, pChunkZMinus, pChunkZPlus );
 
-                // Also add our neighbours since they might now be surrounded too (If we have neighbours)
-                Chunk* pChunkXMinus = getChunk(pChunk->getX()-1, pChunk->getY(), pChunk->getZ());
-                Chunk* pChunkXPlus = getChunk(pChunk->getX()+1, pChunk->getY(), pChunk->getZ());
-                Chunk* pChunkYMinus = getChunk(pChunk->getX(), pChunk->getY()-1, pChunk->getZ());
-                Chunk* pChunkYPlus = getChunk(pChunk->getX(), pChunk->getY()+1, pChunk->getZ());
-                Chunk* pChunkZMinus = getChunk(pChunk->getX(), pChunk->getY(), pChunk->getZ()-1);
-                Chunk* pChunkZPlus = getChunk(pChunk->getX(), pChunk->getY(), pChunk->getZ()+1);
+            m_vpChunkUpdateFlagsList.push_back(pChunk);
 
-                if(pChunkXMinus != NULL) 
-                    m_vpChunkUpdateFlagsList.push_back(pChunkXMinus);
+            
 
-                if(pChunkXPlus != NULL) 
-                    m_vpChunkUpdateFlagsList.push_back(pChunkXPlus);
+            if(pChunkXMinus != NULL) 
+                m_vpChunkUpdateFlagsList.push_back(pChunkXMinus);
 
-                if(pChunkYMinus != NULL) 
-                    m_vpChunkUpdateFlagsList.push_back(pChunkYMinus);
+            if(pChunkXPlus != NULL) 
+                m_vpChunkUpdateFlagsList.push_back(pChunkXPlus);
 
-                if(pChunkYPlus != NULL) 
-                    m_vpChunkUpdateFlagsList.push_back(pChunkYPlus);
+            if(pChunkYMinus != NULL) 
+                m_vpChunkUpdateFlagsList.push_back(pChunkYMinus);
 
-                if(pChunkZMinus != NULL) 
-                    m_vpChunkUpdateFlagsList.push_back(pChunkZMinus);
+            if(pChunkYPlus != NULL) 
+                m_vpChunkUpdateFlagsList.push_back(pChunkYPlus);
 
-                if(pChunkZPlus != NULL) 
-                    m_vpChunkUpdateFlagsList.push_back(pChunkZPlus);
-                
-                // Only rebuild a certain number of chunks per frame
-                lNumRebuiltChunkThisFrame++;
+            if(pChunkZMinus != NULL) 
+                m_vpChunkUpdateFlagsList.push_back(pChunkZMinus);
 
-                m_forceVisibilityUpdate = true;
-            // }
+            if(pChunkZPlus != NULL) 
+                m_vpChunkUpdateFlagsList.push_back(pChunkZPlus);
+            
+            // Only rebuild a certain number of chunks per frame
+            lNumRebuiltChunkThisFrame++;
+
+            m_forceVisibilityUpdate = true;
         }
     }
 
@@ -256,7 +257,8 @@ void ChunkManager::updateUnloadList()
 int ChunkManager::loadTerrain(const std::string & saveFolder)
 {
     std::ifstream file;
-    file.open(saveFolder + "terrain.json");
+    std::string filePath = saveFolder + "terrain.json";
+    file.open(filePath);
     std::string str, contents;
 
     if (file.is_open())
@@ -285,14 +287,18 @@ int ChunkManager::loadTerrain(const std::string & saveFolder)
         }
 
     }
-    else std::cerr << "Unable to open file";
-    exit(1);
+    else
+    {
+        std::cerr << "Unable to open file ( load of " + filePath + " )" << std::endl;
+        exit(1);
+    }
 }
 
 void ChunkManager::saveTerrain(const unsigned int & perlin_seed)
 {
     std::ofstream file;
-    file.open(m_pathJson + "terrain.json");
+    std::string filePath = m_pathJson + "terrain.json";
+    file.open(filePath);
 
     if (file.is_open())
     {
@@ -306,7 +312,7 @@ void ChunkManager::saveTerrain(const unsigned int & perlin_seed)
     }
     else
     {
-        std::cerr << "Unable to open file" << std::endl;
+        std::cerr << "Unable to open file ( save in " + filePath + " )" << std::endl;
         exit(1);
     }
 }
