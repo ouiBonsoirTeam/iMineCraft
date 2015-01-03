@@ -13,6 +13,7 @@ set(LIBRARY_OUTPUT_PATH  ${PROJECT_BINARY_DIR}/lib)
 find_package(OpenGL REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 
 if(WIN32)
     set(SDL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third-party/include/Windows)
@@ -27,27 +28,17 @@ else(WIN32)
     find_package(GLEW REQUIRED)
 endif(WIN32)
 
-if(APPLE)
-    set(FMOD_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/third-party/api/MAC/include)
-    set(FMOD_LIBRARY_DIRS ${CMAKE_SOURCE_DIR}/third-party/api/MAC/lib)
-    set(FMOD_LIBRARIES ${CMAKE_SOURCE_DIR}/third-party/api/MAC/lib/libfmodex.dylib ${CMAKE_SOURCE_DIR}/third-party/api/MAC/lib/libfmodexL.dylib)
-else(APPLE)
-    set(FMOD_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/third-party/api/LINUX/include)
-    set(FMOD_LIBRARY_DIRS ${CMAKE_SOURCE_DIR}/third-party/api/LINUX/lib)
-    set(FMOD_LIBRARIES ${CMAKE_SOURCE_DIR}/third-party/api/LINUX/lib/libfmodex64-4.44.33.so)
-endif(APPLE)
-
 if(UPEMLV)
     # Flag a activer pour compilation à la FAC
     set(OPENGL_LIBRARIES /usr/lib/x86_64-linux-gnu/libGL.so.1)
 endif(UPEMLV)
 
-include_directories(${FMOD_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS} ${SDLIMAGE_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
+include_directories(${SDLMIXER_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIRS} ${SDLIMAGE_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
 
 if(APPLE)
-    set(ALL_LIBRARIES glimac ${SDL2_TTF_LIBRARIES} ${SDLIMAGE_LIBRARY} ${CMAKE_SOURCE_DIR}/third-party/api/MAC/lib/libfmodex.dylib /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac ${SDLMIXER_LIBRARY} ${SDL2_TTF_LIBRARIES} ${SDLIMAGE_LIBRARY} /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 else(APPLE)
-    set(ALL_LIBRARIES glimac ${SDL2_TTF_LIBRARIES} ${SDLIMAGE_LIBRARY} ${CMAKE_SOURCE_DIR}/third-party/api/LINUX/lib/libfmodex64-4.44.33.so ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac ${SDLMIXER_LIBRARY} ${SDL2_TTF_LIBRARIES} ${SDLIMAGE_LIBRARY} ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 endif(APPLE)
 
 # Add the glimac library

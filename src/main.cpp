@@ -2,6 +2,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <glimac/SDLWindowManager.hpp>
+#include <SDL2/SDL_mixer.h>
 #include <glimac/Program.hpp>
 #include <glimac/Image.hpp>
 #include <glimac/glm.hpp>
@@ -9,10 +10,7 @@
 #include <glimac/CustomProgram.hpp>
 #include <glimac/FreeFlyCamera.hpp>
 #include <glimac/Torch.hpp>
-
 #include <glimac/Sound.hpp>
-#include "../third-party/api/MAC/include/fmod.h"
-#include "../third-party/api/LINUX/include/fmod.h"
 
 #include "voxel_engine/Chunk.hpp"
 #include "voxel_engine/ChunkManager.hpp"
@@ -41,11 +39,9 @@ int main(int argc, char** argv) {
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
-	// Musique du jeu
-    FMOD_SYSTEM *music;
-    FMOD_System_Create(&music);
-    FMOD_System_Init(music, 2, FMOD_INIT_NORMAL, NULL);
-    int playing = 0;
+
+	Mix_Music *music = nullptr;
+	std::vector<Mix_Chunk*> mix_chunk = initsound(music);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -117,16 +113,16 @@ int main(int argc, char** argv) {
 	bool done = false;
 	while(!done) {
 		// Play the music
-        if(playing == 0)
-        {
-            playMusic(music, NULL, "./bin/assets/sound/SOR_TFM_Atmos_65.mp3");
-            playing = 1;
-        }
+        // if(playing == 0)
+        // {
+        //     playMusic(systeme, NULL, "./bin/assets/sound/SOR_TFM_Atmos_65.mp3");
+        // }
 
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType);
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType, 
+						mix_chunk);
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
@@ -179,6 +175,7 @@ int main(int argc, char** argv) {
 	}
 
 	skybox.destruct();
-
+	deletesound(mix_chunk, music);
+	
 	return EXIT_SUCCESS;
 }
