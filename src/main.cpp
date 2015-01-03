@@ -25,29 +25,29 @@ using namespace glimac;
 
 int main(int argc, char** argv) {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
+	// SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
-	// const unsigned int windowWidth = windowManager.getWindow()->width;
-	// const unsigned int windowHeight = windowManager.getWindow()->height;
-	// const unsigned int windowWidth = 800;
- //    const unsigned int windowHeight = 600;
+	// // const unsigned int windowWidth = windowManager.getWindow()->width;
+	// // const unsigned int windowHeight = windowManager.getWindow()->height;
+	// // const unsigned int windowWidth = 800;
+ // //    const unsigned int windowHeight = 600;
 
-	glewExperimental = GL_TRUE;
-	// Initialize glew for OpenGL3+ support
-	GLenum glewInitError = glewInit();
-	if(GLEW_OK != glewInitError) {
-		std::cerr << glewGetErrorString(glewInitError) << std::endl;
-		return EXIT_FAILURE;
-	}
+	// glewExperimental = GL_TRUE;
+	// // Initialize glew for OpenGL3+ support
+	// GLenum glewInitError = glewInit();
+	// if(GLEW_OK != glewInitError) {
+	// 	std::cerr << glewGetErrorString(glewInitError) << std::endl;
+	// 	return EXIT_FAILURE;
+	// }
 
-	std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
-	std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
+	// std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
+	// std::cout << "GLEW Version : " << glewGetString(GLEW_VERSION) << std::endl;
 
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 
-	// SDL_Window* pWindow = NULL;
+	// SDL_Window* pWindow = windowManager.getWindow();
 	// SDL_Surface* pImage = NULL;
 	// int imgFlags = IMG_INIT_JPG|IMG_INIT_PNG|IMG_INIT_TIF;
 	// const char* imagePath = "./bin/assets/textures/caisse.jpg";
@@ -93,110 +93,127 @@ int main(int argc, char** argv) {
  //    std::cout << pFontSurface->w << std::endl;
  //    std::cout << pFontSurface->h << std::endl;
 
+	 SDL_Init(SDL_INIT_VIDEO);
+	 TTF_Init();
+	 SDL_Window * window = SDL_CreateWindow("SDL_ttf in SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+	 SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
+
+	 TTF_Font * font = TTF_OpenFont("./bin/assets/font/callme.ttf", 25);
+	 const char * error = TTF_GetError();
+	 SDL_Color color = { 255, 255, 255 };
+	 SDL_Surface * surface = TTF_RenderText_Solid(font,
+	  "BIIIIIIITE LOOOOOOL", color);
+	 SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer,
+	  surface);
+
+	 int texW = 0;
+	 int texH = 0;
+	 SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+	 SDL_Rect dstrect = { 0, 0, texW, texH };
 
 
-	Mix_Music *music = nullptr;
-	std::vector<Mix_Chunk*> mix_chunk = initsound(music);
 
-	glEnable(GL_DEPTH_TEST);
+	// Mix_Music *music = nullptr;
+	// std::vector<Mix_Chunk*> mix_chunk = initsound(music);
 
-	//Chargement des shaders
-    FilePath applicationPath(argv[0]);
+	// glEnable(GL_DEPTH_TEST);
 
-	//comme P ne change jamais on peut la declarer a l'initialisation
-	//glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+	// //Chargement des shaders
+ //    FilePath applicationPath(argv[0]);
 
-	GeneralProgram gProgram(applicationPath);
-	pointLightProgram lProgram(applicationPath);
-	SkyboxProgram skyProg(applicationPath);
+	// //comme P ne change jamais on peut la declarer a l'initialisation
+	// //glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
-	// gProgram.m_Program.use();
-	// lProgram.m_Program.use();
-	// skyProg.m_Program.use();
+	// GeneralProgram gProgram(applicationPath);
+	// pointLightProgram lProgram(applicationPath);
+	// SkyboxProgram skyProg(applicationPath);
 
-	//Load texture
-	std::unique_ptr<Image> texturePointer;
-	texturePointer = loadImage("../iMineCraft/assets/textures/glass_1024.png");
-	if(texturePointer == NULL)
-	{
-		std::cerr << "Error while charging texture." << std::endl;
-	}
+	// // gProgram.m_Program.use();
+	// // lProgram.m_Program.use();
+	// // skyProg.m_Program.use();
 
-	GLuint idTexture;
-	glGenTextures(1, &idTexture);
-	glBindTexture(GL_TEXTURE_2D,  idTexture);
-	std::cout << "Bison" << std::endl;
-	glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
-					texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
-	std::cout << "Rat" << std::endl;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D,  0);
+	// //Load texture
+	// std::unique_ptr<Image> texturePointer;
+	// texturePointer = loadImage("../iMineCraft/assets/textures/glass_1024.png");
+	// if(texturePointer == NULL)
+	// {
+	// 	std::cerr << "Error while charging texture." << std::endl;
+	// }
 
-	//Initialisation camera freefly
-	FreeFlyCamera ffCam;
+	// GLuint idTexture;
+	// glGenTextures(1, &idTexture);
+	// glBindTexture(GL_TEXTURE_2D,  idTexture);
+	// std::cout << "Bison" << std::endl;
+	// glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
+	// 				texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
+	// std::cout << "Rat" << std::endl;
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// glBindTexture(GL_TEXTURE_2D,  0);
 
-	// // TEST
-	ChunkManager chunkmanager;
-	chunkmanager.initialize("bin/assets/saves");
+	// //Initialisation camera freefly
+	// FreeFlyCamera ffCam;
 
-	// Chunk chunk;
-	// chunk.init();
+	// // // TEST
+	// ChunkManager chunkmanager;
+	// chunkmanager.initialize("bin/assets/saves");
 
-	// chunk.buildMesh();
+	// // Chunk chunk;
+	// // chunk.init();
 
-	//initialisation angle
-	float angleX = 0;
-	float angleY = 0;
-	float angleYfinal = 0;
+	// // chunk.buildMesh();
 
-	const float CAMERA_ROT_FACTOR = 0.05f;
+	// //initialisation angle
+	// float angleX = 0;
+	// float angleY = 0;
+	// float angleYfinal = 0;
 
-	int max_fps = 60;
-	float lastTime = windowManager.getTime();
-	float lastTime2 = windowManager.getTime();
-	int nbFrames = 0;
+	// const float CAMERA_ROT_FACTOR = 0.05f;
+
+	// int max_fps = 60;
+	// float lastTime = windowManager.getTime();
+	// float lastTime2 = windowManager.getTime();
+	// int nbFrames = 0;
 	
-	//make me a skybox
-	Skybox skybox;
-	skybox.init(skyProg);
+	// //make me a skybox
+	// Skybox skybox;
+	// skybox.init(skyProg);
 
-	// // make me a torch
-	// Torch torch;
-	BlockType currentBlockType = BlockType_Earth;
-	Inventory invent;
+	// // // make me a torch
+	// // Torch torch;
+	// BlockType currentBlockType = BlockType_Earth;
+	// Inventory invent;
 
 	// Application loop:
 	bool done = false;
 	while(!done) {
 	
-		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+		//chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType, 
-						mix_chunk);
+		//event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType, mix_chunk);
 
 		// Measure speed
-		float currentTime = windowManager.getTime();
-		nbFrames++;
-		if ( currentTime - lastTime >= 1.0 )
-		{ 
-		    std::cout << "fps : " << nbFrames << std::endl;
-		    std::cout << "invent : " << std::endl;
-		    invent.affiche();
-		    nbFrames = 0;
-		    lastTime += 1.0;
-		}
+		// float currentTime = windowManager.getTime();
+		// nbFrames++;
+		// if ( currentTime - lastTime >= 1.0 )
+		// { 
+		//     std::cout << "fps : " << nbFrames << std::endl;
+		//     std::cout << "invent : " << std::endl;
+		//     invent.affiche();
+		//     nbFrames = 0;
+		//     lastTime += 1.0;
+		// }
 
-		//std::cout<<"currentTime - lastTime2 : "<< (currentTime - lastTime2) << std::endl;
-		//std::cout<<"1/max_fps : "<< (1.f/max_fps) << std::endl;
-		//std::cout<<"diff : "<< (1.f/max_fps) - (currentTime - lastTime2) << std::endl;
-		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
-		{
-			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
-		}
+		// //std::cout<<"currentTime - lastTime2 : "<< (currentTime - lastTime2) << std::endl;
+		// //std::cout<<"1/max_fps : "<< (1.f/max_fps) << std::endl;
+		// //std::cout<<"diff : "<< (1.f/max_fps) - (currentTime - lastTime2) << std::endl;
+		// if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
+		// {
+		// 	usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
+		// }
 
-		lastTime2 = currentTime;
+		// lastTime2 = currentTime;
 
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
@@ -204,36 +221,48 @@ int main(int argc, char** argv) {
 		
 		// glClear(GL_COLOR_BUFFER_BIT);
 
-		glm::mat4 viewMatrix = ffCam.getViewMatrix();
+		// glm::mat4 viewMatrix = ffCam.getViewMatrix();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		skyProg.m_Program.use();
-			skybox.draw(skyProg, viewMatrix);
+		// skyProg.m_Program.use();
+		// 	skybox.draw(skyProg, viewMatrix);
 
-		gProgram.m_Program.use();
-			// torch.draw(lProgram, viewMatrix);
+		// gProgram.m_Program.use();
+		// 	// torch.draw(lProgram, viewMatrix);
 
 		
-		chunkmanager.render(gProgram, ffCam.getViewMatrix());
+		// chunkmanager.render(gProgram, ffCam.getViewMatrix());
 
 
 		// chunk.render(gProgram, viewMatrix, idTexture);
 
+		SDL_RenderCopy(renderer, texture, NULL, &dstrect);
+  		SDL_RenderPresent(renderer);
+  		
 		// SDL_BlitSurface(pImage,NULL,SDL_GetWindowSurface(pWindow),NULL);
 		// SDL_BlitSurface(pFontSurface,NULL,SDL_GetWindowSurface(pWindow),NULL);
 		// SDL_UpdateWindowSurface(pWindow);
 		// Update the display
-		windowManager.swapBuffers();
+		//windowManager.swapBuffers();
 
 	}
 
-	skybox.destruct();
-	deletesound(mix_chunk, music);
+	// skybox.destruct();
+	// deletesound(mix_chunk, music);
+
 	// SDL_FreeSurface(pFontSurface);
 	// TTF_CloseFont(pFont);
 	// SDL_FreeSurface(pImage);
+
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(surface);
+	TTF_CloseFont(font);
+
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	TTF_Quit();
 	
 	return EXIT_SUCCESS;
 }
