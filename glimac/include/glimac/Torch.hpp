@@ -28,7 +28,7 @@ namespace glimac
 			glm::vec3 getPosition(){ return _position; };
 			glm::vec3 getIntensity(){ return _intensity; };
 
-			glm::vec3 translatePos(glm::vec3 position);
+			void translatePos(glm::vec3 position);
 
 			// Methods
 			void computeLight(LightsProgram & prog, FreeFlyCamera &ffCam);

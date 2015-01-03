@@ -65,4 +65,4 @@ void main()
 	vec3 invLight = vec3(1,1,1) - light;
 
 	fFragColor = vec4(vec3(tex) - 0.4 * invLight, 1); 
-};
+}

@@ -113,7 +113,7 @@ namespace glimac
 	    glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	glm::vec3 Torch::translatePos(glm::vec3 position)
+	void Torch::translatePos(glm::vec3 position)
 	{
 		_position += position;
 	}
@@ -135,7 +135,7 @@ namespace glimac
 	void Torch::drawBillboard(GeneralProgram & prog, FreeFlyCamera &ffCam)
 	{
 		glm::vec3 rightVector = glm::vec3(1,0,0);
-		glm::vec3 upVector = glm::vec3(0,1,0);
+		// glm::vec3 upVector = glm::vec3(0,1,0);
 		glm::vec3 lookAtVector = glm::vec3(0,0,1);
 
 		glm::vec3 posCam = ffCam.getPosition();
