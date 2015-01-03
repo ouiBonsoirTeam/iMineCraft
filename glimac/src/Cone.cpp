@@ -56,7 +56,7 @@ void Cone::build(GLfloat height, GLfloat r, GLsizei discLat, GLsizei discHeight)
 
     m_nVertexCount = discLat * discHeight * 6;
     
-    GLuint idx = 0;
+    // GLuint idx = 0;
     // Construit les vertex finaux en regroupant les données en triangles:
     // Pour une longitude donnée, les deux triangles formant une face sont de la forme:
     // (i, i + 1, i + discLat + 1), (i, i + discLat + 1, i + discLat)

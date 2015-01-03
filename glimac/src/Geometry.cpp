@@ -25,24 +25,17 @@ bool Geometry::loadOBJ(const std::string& filepath, const std::string& mtlBasePa
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
 
-    std::cout << "" << std::endl;
-    std::clog << "Load OBJ " << filepath << std::endl;
     std::string objErr = tinyobj::LoadObj(shapes, materials, filepath.c_str(), mtlBasePath.c_str());
-
-    std::clog << "done." << std::endl;
 
     if (!objErr.empty()) {
         std::cerr << objErr << std::endl;
         return false;
     }
 
-    std::clog << "Load materials" << std::endl;
     m_Materials.reserve(m_Materials.size() + materials.size());
     for(auto& material: materials) {
         m_Materials.emplace_back();
         auto& m = m_Materials.back();
-
-        std::cout << "Material name : " << material.name.c_str() << std::endl;
 
         m.m_Ka = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]);
         m.m_Kd = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
@@ -53,46 +46,38 @@ bool Geometry::loadOBJ(const std::string& filepath, const std::string& mtlBasePa
         m.m_RefractionIndex = material.ior;
         m.m_Dissolve = material.dissolve;
 
-        std::cout << "m_Ka bien loadé : " << m.m_Ka << std::endl;
-        std::cout << "m_Kd bien loadé : " << m.m_Kd << std::endl;
-        std::cout << "m_Ks bien loadé : " << m.m_Ks << std::endl;
-
         if(loadTextures) {
             if(!material.ambient_texname.empty()) {
                 //std::replace(material.ambient_texname.begin(), material.ambient_texname.end(), '\\', '/');
                 FilePath texturePath = mtlBasePath + material.ambient_texname;
-                std::clog << "load " << texturePath << std::endl;
-                m.m_pKaMap = ImageManager::loadImage(texturePath);
-                std::cout << "load map_Ka ---> OK" << std::endl;
+                
+                m.m_pKaMap = ImageManager::loadImage(texturePath);  
             }
 
             if(!material.diffuse_texname.empty()) {
                 //std::replace(material.diffuse_texname.begin(), material.diffuse_texname.end(), '\\', '/');
                 FilePath texturePath = mtlBasePath + material.diffuse_texname;
-                std::clog << "load " << texturePath << std::endl;
-                m.m_pKdMap = ImageManager::loadImage(texturePath);
-                std::cout << "load map_Kd ---> OK" << std::endl;
+                
+                m.m_pKdMap = ImageManager::loadImage(texturePath);   
             }
 
             if(!material.specular_texname.empty()) {
                 //std::replace(material.specular_texname.begin(), material.specular_texname.end(), '\\', '/');
                 FilePath texturePath = mtlBasePath + material.specular_texname;
-                std::clog << "load " << texturePath << std::endl;
-                m.m_pKsMap = ImageManager::loadImage(texturePath);
-                std::cout << "load map_Kd ---> OK" << std::endl;
+                
+                m.m_pKsMap = ImageManager::loadImage(texturePath);   
             }
 
             if(!material.normal_texname.empty()) {
                 //std::replace(material.normal_texname.begin(), material.normal_texname.end(), '\\', '/');
                 FilePath texturePath = mtlBasePath + material.normal_texname;
-                std::clog << "load " << texturePath << std::endl;
+                
                 m.m_pNormalMap = ImageManager::loadImage(texturePath);
-                std::cout << "load map_N ---> OK" << std::endl;
+                
             }
-        }
-        std::cout << "" << std::endl;
+        }  
     }
-    std::clog << "done." << std::endl;
+    
 
     auto globalVertexOffset = m_VertexBuffer.size();
     auto globalIndexOffset = m_IndexBuffer.size();
@@ -103,10 +88,6 @@ bool Geometry::loadOBJ(const std::string& filepath, const std::string& mtlBasePa
         nbVertex += shape.mesh.positions.size();
         nbIndex += shape.mesh.indices.size();
     }
-
-    std::clog << "Number of meshes: " << shapes.size() << std::endl;
-    std::clog << "Number of vertices: " << nbVertex << std::endl;
-    std::clog << "Number of triangles: " << (nbIndex) / 3 << std::endl;
 
     m_BBox = BBox3f(glm::vec3(shapes[0].mesh.positions[0], shapes[0].mesh.positions[1], shapes[0].mesh.positions[2]));
 
@@ -316,8 +297,6 @@ void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const Fre
 
     glm::vec3 upAux = glm::cross(objToCamProj, lookAtVector);
 
-    //glm::mat4 modelMatrix = glm::mat4(1.0);
-
     modelMatrix = glm::translate(modelMatrix, posObj);
 
     modelMatrix = glm::scale(modelMatrix, glm::vec3(0.05, 0.05, 0.05));
@@ -353,7 +332,6 @@ void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const Fre
     modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(0,0,-1));
     modelMatrix = glm::translate(modelMatrix, -glm::vec3(0,5,3));
     modelMatrix = glm::scale(modelMatrix, glm::vec3(0.8, 0.8, 0.8));
-
     modelMatrix = glm::rotate(modelMatrix, 10.f - abs(breakCube), glm::vec3(0,1,1));
     if (breakCube < 10)
         breakCube += 2;
@@ -372,7 +350,6 @@ void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const Fre
     glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
     glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
-
     glBindVertexArray(m_vao);
 
     glBindTexture(GL_TEXTURE_2D, m_texture);
@@ -380,11 +357,9 @@ void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const Fre
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
-
     glDrawElements(GL_TRIANGLES, obj.getIndexCount(), GL_UNSIGNED_INT, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 
     glBindTexture(GL_TEXTURE_2D, 0);
 

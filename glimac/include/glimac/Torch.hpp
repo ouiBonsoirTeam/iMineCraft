@@ -4,6 +4,7 @@
 #include <glimac/Texture.hpp>
 #include <glimac/glm.hpp>
 #include <glimac/CustomProgram.hpp>
+#include <glimac/FreeFlyCamera.hpp>
 
 namespace glimac
 {
@@ -13,20 +14,26 @@ namespace glimac
 		private:
 			glm::vec3 _position;
 			glm::vec3 _intensity;
-			float _radius;
-			// Texture _texture;
+			GLuint _vbo_pos;
+			GLuint _vbo_tex;
+			GLuint _vao;
+			GLuint _texture;
 
 		public:
 			// Constructors
 			Torch();
-			Torch(glm::vec3 p, glm::vec3 i = glm::vec3(20, 20, 20), float r = 1 /*, Texture t = NULL*/);
+			Torch(glm::vec3 position);
 
 			// Getters
 			glm::vec3 getPosition(){ return _position; };
 			glm::vec3 getIntensity(){ return _intensity; };
 
+			void translatePos(glm::vec3 position);
+
 			// Methods
-			void draw(pointLightProgram & prog, glm::mat4 & matrixV);
+			void computeLight(LightsProgram & prog, FreeFlyCamera &ffCam);
+
+			void drawBillboard(GeneralProgram & prog, FreeFlyCamera &ffCam);
 	};
 	
 }

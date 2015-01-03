@@ -22,15 +22,15 @@
 #include "physics/Event_manager.hpp"
 #include "voxel_engine/Block.hpp"
 #include "Skybox.hpp"
-
-
+#include "Light.hpp"
+#include "Helmet.hpp"
 
 using namespace glimac;
 
 int main(int argc, char** argv) 
 {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -52,13 +52,19 @@ int main(int argc, char** argv)
 	std::vector<Mix_Chunk*> mix_chunk = initsound(music);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//For transparency
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//Chargement des shaders
     FilePath applicationPath(argv[0]);
 
 	GeneralProgram gProgram(applicationPath);
-	pointLightProgram lProgram(applicationPath);
-
+	LightsProgram lightsProg(applicationPath);
+	HelmetProgram hellProg(applicationPath);
 	SkyboxProgram skyProgram(applicationPath);
 	GeometryProgram geoProgram(applicationPath);
 
@@ -117,10 +123,16 @@ int main(int argc, char** argv)
 
 	srand(time(NULL));
 
+	Light sun = Light(glm::vec3(1,1,1), glm::vec3(-0.5,0.5,-0.5));
 
+	Torch torch(glm::vec3(3,glm::round(chunkmanager.getNoiseValue(3,6))+2,6));
+
+	// define current BlockType
 	BlockType currentBlockType = BlockType_Earth;
+
 	Inventory invent;
 
+	Helmet helmet;
 
 	// Application loop:
 	bool done = false;
@@ -145,7 +157,6 @@ int main(int argc, char** argv)
 
 		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
 		{
-
 			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
 		}
 
@@ -154,7 +165,7 @@ int main(int argc, char** argv)
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
 		 *********************************/
-		
+
 		glm::mat4 viewMatrix = ffCam.getViewMatrix();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -166,8 +177,20 @@ int main(int argc, char** argv)
 			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
 			crowbar.drawCrowbar(geoProgram, crowbar, ffCam, breakCube);
 
+		lightsProg.m_Program.use();
+			torch.translatePos(glm::sin(windowManager.getTime()) * glm::vec3(0,0.02,0));
+			torch.computeLight(lightsProg, ffCam);
+			sun.initMaterial(glm::vec3(1,1,1), glm::vec3(1,1,1), 2.f);
+			sun.computeLight(lightsProg, ffCam.getViewMatrix());
+
+			chunkmanager.render(lightsProg, ffCam.getViewMatrix());
+
 		gProgram.m_Program.use();
-			chunkmanager.render(gProgram, ffCam.getViewMatrix());
+			torch.drawBillboard(gProgram, ffCam);
+
+		hellProg.m_Program.use();
+			helmet.setPosition(ffCam.getPosition() + glm::vec3(ffCam.getFrontVector().x * 0.15, ffCam.getFrontVector().y * 0.15, ffCam.getFrontVector().z * 0.15 ));
+			helmet.drawBillboard(hellProg, ffCam);
 
 		// Update the display
 		windowManager.swapBuffers();

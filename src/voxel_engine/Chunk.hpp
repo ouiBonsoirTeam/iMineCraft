@@ -65,7 +65,7 @@ public:
 	void createLandscape(PerlinNoise *pn);
 
 	// render
-	void render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
+	void render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
  
 	void update();
 

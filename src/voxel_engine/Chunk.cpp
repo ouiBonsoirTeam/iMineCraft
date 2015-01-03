@@ -377,7 +377,7 @@ void Chunk::createLandscape(PerlinNoise *pn)
 	}
 }
 
-void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
+void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
     glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;

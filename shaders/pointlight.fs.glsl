@@ -2,12 +2,11 @@
 
 in vec3 vFragViewCoord;
 in vec3 vFragViewNormale;
+in vec4 vFragTexture;
 
-out vec3 fFragColor;
+out vec4 fFragColor;
 
-// uniform vec3 uColor;
-//uniform sampler2D uTexture;
-//uniform sampler2D uTextureNuage;
+uniform sampler2D uTexture;
 
 //parametre du materiau
 uniform vec3 uKd;
@@ -40,14 +39,17 @@ vec3 blinnPhong()
 
 void main() {
 
-	//vec4 texAvery = texture(uTexture, vFragTexture) + texture(uTextureNuage, vFragTexture);
+	vec4 textMain = texture(uTexture, vFragTexture.xy);
+	vec4 textOcclu = vec4(1, 1, 1, 1) - texture(uTexture, vFragTexture.zw);
+	vec4 tex = textMain - textOcclu * 0.5;
 
-	//fFragColor.rgb = texAvery.rgb;
+	vec3 invLight = vec3(1,1,1) - blinnPhong();
 
-	fFragColor.rgb = blinnPhong();
-	//fFragColor.rgb = vec3(1, 1, 1);
+	fFragColor = vec4(vec3(tex) - invLight , 1);
 
-	//fFragColor.rgb = uLightDir_vs.rgb;
+
+
+	//fFragColor.rgb = blinnPhong();
 
 
 
