@@ -10,11 +10,14 @@
 #include <glimac/FreeFlyCamera.hpp>
 #include <glimac/Torch.hpp>
 
+#include <glimac/Sound.hpp>
+#include "../third-party/api/MAC/include/fmod.h"
+#include "../third-party/api/LINUX/include/fmod.h"
+
 #include "voxel_engine/Chunk.hpp"
 #include "voxel_engine/ChunkManager.hpp"
 #include "physics/Event_manager.hpp"
 #include "Skybox.hpp"
-
 
 using namespace glimac;
 
@@ -38,6 +41,11 @@ int main(int argc, char** argv) {
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
+	// Musique du jeu
+    FMOD_SYSTEM *music;
+    FMOD_System_Create(&music);
+    FMOD_System_Init(music, 2, FMOD_INIT_NORMAL, NULL);
+    int playing = 0;
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -98,6 +106,12 @@ int main(int argc, char** argv) {
 	// Application loop:
 	bool done = false;
 	while(!done) {
+		// Play the music
+        if(playing == 0)
+        {
+            playMusic(music, NULL, "./bin/assets/sound/SOR_TFM_Atmos_65.mp3");
+            playing = 1;
+        }
 
 		chunkmanager->update(ffCam.getPosition(), ffCam.getFrontVector());
 		

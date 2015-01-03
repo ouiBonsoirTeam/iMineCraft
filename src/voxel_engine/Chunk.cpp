@@ -338,8 +338,8 @@ void Chunk::createLandscape(PerlinNoise *pn)
 			int height = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
 			int min_chunk_y = m_position[1] * CHUNK_SIZE;
 
-			// if(height < -CHUNK_SIZE)
-			// 	height = -CHUNK_SIZE;
+			if(height < -CHUNK_SIZE)
+				height = -CHUNK_SIZE;
 
 			if(height >= min_chunk_y)
 			{
@@ -604,8 +604,6 @@ void Chunk::load(const Json::Value &chunkData)
 
 void Chunk::setup(PerlinNoise *pn)
 {
-	// Create the blocks
-	
 	// Create the blocks
 	m_pBlocks = new Block**[CHUNK_SIZE];
 	for(int i = 0; i < CHUNK_SIZE; i++)

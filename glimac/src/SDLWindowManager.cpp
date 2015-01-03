@@ -19,8 +19,7 @@ SDLWindowManager::SDLWindowManager(const char* title, bool fullscreen) {
         std::cerr << SDL_GetError() << std::endl;
     }
     else{
-        std::cout << current.w << std::endl;
-        std::cout << current.h << std::endl;
+        std::cout << "User screen resolution : " << current.w << "px * " << current.h << "px" << std::endl;
         width = current.w;
         height = current.h;
     }
