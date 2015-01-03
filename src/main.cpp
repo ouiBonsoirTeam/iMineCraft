@@ -17,6 +17,7 @@
 #include "voxel_engine/Chunk.hpp"
 #include "voxel_engine/ChunkManager.hpp"
 #include "physics/Event_manager.hpp"
+#include "voxel_engine/Block.hpp"
 #include "Skybox.hpp"
 
 using namespace glimac;
@@ -133,22 +134,26 @@ int main(int argc, char** argv) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,  0);
 
-	//Initialisation camera freefly
-	FreeFlyCamera ffCam;
+	
 
-	// // TEST
+	// Initialisation chunkmanager
 	ChunkManager chunkmanager;
 	chunkmanager.initialize("bin/assets/saves");
 
-	// Chunk chunk;
-	// chunk.init();
 
-	// chunk.buildMesh();
+	//Initialisation camera freefly
+	FreeFlyCamera ffCam;
+	chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+	
+	ffCam.setPosition(glm::vec3(5,chunkmanager.getNoiseValue(5,5)+5,5));
+
 
 	//initialisation angle
 	float angleX = 0;
 	float angleY = 0;
 	float angleYfinal = 0;
+
+	int crouch = 0;
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
 
@@ -173,7 +178,7 @@ int main(int argc, char** argv) {
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType, 
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, crouch, currentBlockType, 
 						mix_chunk);
 
 		// Measure speed
