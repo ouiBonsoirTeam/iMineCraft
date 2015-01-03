@@ -620,18 +620,18 @@ void Chunk::setup(PerlinNoise *pn)
 
 	if (m_loaded)
 	{
-		for(unsigned int cpt = 0; cpt < m_Added_Deleted_Blocks["block"].size(); ++cpt)
+		for(unsigned int cpt = 0; cpt < m_Added_Deleted_Blocks.size(); ++cpt)
 		{
-			int i = m_Added_Deleted_Blocks["block"][cpt]["x"].asInt();
-			int j = m_Added_Deleted_Blocks["block"][cpt]["y"].asInt();
-			int k = m_Added_Deleted_Blocks["block"][cpt]["z"].asInt();
+			int i = m_Added_Deleted_Blocks[cpt]["x"].asInt();
+			int j = m_Added_Deleted_Blocks[cpt]["y"].asInt();
+			int k = m_Added_Deleted_Blocks[cpt]["z"].asInt();
 
-			if (m_Added_Deleted_Blocks["block"][cpt]["active"] == true)
+			if (m_Added_Deleted_Blocks[cpt]["active"] == true)
 				m_pBlocks[i][j][k].setActive();
 			else
 				m_pBlocks[i][j][k].setInactive();
 
-			m_pBlocks[i][j][k].setType(m_Added_Deleted_Blocks["block"][cpt]["type"].asInt());
+			m_pBlocks[i][j][k].setType(m_Added_Deleted_Blocks[cpt]["type"].asInt());
 		}
 	}
 
@@ -758,11 +758,51 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 	m_pRenderer->setVao();
 }
 
+void Chunk::update_Added_Deleted_Blocks(const int &x, const int &y, const int &z, const bool &active)
+{
+	unsigned int cpt = 0;
+	bool blockFound = false;
+
+	while(cpt < m_Added_Deleted_Blocks.size() && !blockFound)
+	{
+		int i = m_Added_Deleted_Blocks[cpt]["x"].asInt();
+		int j = m_Added_Deleted_Blocks[cpt]["y"].asInt();
+		int k = m_Added_Deleted_Blocks[cpt]["z"].asInt();
+
+		if(i == x && j == y && k == z)
+		{
+			m_Added_Deleted_Blocks[cpt]["active"] = Json::Value(active);
+			m_Added_Deleted_Blocks[cpt]["type"] = Json::Value(m_pBlocks[x][y][z].getType());
+
+			blockFound = true;
+		}
+
+		++cpt;
+	}
+
+	if(!blockFound)
+	{
+	    Json::Value jsonValue;
+
+	    jsonValue["x"] = Json::Value(x);
+	    jsonValue["y"] = Json::Value(y);
+	    jsonValue["z"] = Json::Value(z);
+	    jsonValue["active"] = Json::Value(active);
+	    jsonValue["type"] = Json::Value(m_pBlocks[x][y][z].getType());
+
+        m_Added_Deleted_Blocks.append(jsonValue);
+	}
+}
+
 bool Chunk::destructBlock(const int &x, const int &y, const int &z, BlockType & bt)
 {
-	if (m_pBlocks[x][y][z].isActive()){
+	if (m_pBlocks[x][y][z].isActive())
+	{
 		bt = m_pBlocks[x][y][z].getType();
 		m_pBlocks[x][y][z].setInactive();
+
+		update_Added_Deleted_Blocks(x, y, z, false);
+
 		return true;
 	}
 	return false;
@@ -772,6 +812,9 @@ bool Chunk::constructBlock(const int &x, const int &y, const int &z, BlockType t
 {	
 	m_pBlocks[x][y][z].setActive();
 	m_pBlocks[x][y][z].setType(type);
+
+	update_Added_Deleted_Blocks(x, y, z, true);
+
 	return true;
 }
 
