@@ -43,7 +43,8 @@ void event_manager(SDLWindowManager& windowManager,
 				   float CAMERA_ROT_FACTOR,
 				   bool& done,
 				   ChunkManager& chunkmanager,
-				   Inventory& inventory){
+				   Inventory& inventory,
+				   BlockType& currentBlockType){
 
 	// INIT
 
@@ -71,6 +72,37 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				done = true; // Leave the loop after this iteration
 			}
+		}
+		if (e.type == SDL_KEYUP)
+		{
+			if (e.key.keysym.sym == SDLK_AMPERSAND)
+			{
+				currentBlockType=BlockType_Lava;
+			}
+			if (e.key.keysym.sym == 233) //é
+			{
+				currentBlockType=BlockType_Rock;
+			}
+			if (e.key.keysym.sym == SDLK_QUOTEDBL)
+			{
+				currentBlockType=BlockType_Earth;
+			}
+			if (e.key.keysym.sym == SDLK_QUOTE)
+			{
+				currentBlockType=BlockType_Grass;
+			}
+			if (e.key.keysym.sym == SDLK_LEFTPAREN)
+			{
+				currentBlockType=BlockType_1st_Snow;
+			}
+			if (e.key.keysym.sym == SDLK_MINUS)
+			{
+				currentBlockType=BlockType_Snow;
+			}
+			if (e.key.keysym.sym == 232) //è
+			{
+				currentBlockType=BlockType_Ice;
+			}			
 		}
 
 		//souris
@@ -310,13 +342,13 @@ void event_manager(SDLWindowManager& windowManager,
 		BlockType bt;
 		if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->destructBlock(blockX,blockY,blockZ, bt) )
 		{
-			std::cout << "type : " << bt << std::endl;
 			inventory.addBlock(bt);
 			chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
 		}
 
 	}
 
+		std::cout << "currentBlockType : " << currentBlockType << std::endl;
 
 	// CREATE CUBE
 	if (rightClick)
@@ -341,7 +373,8 @@ void event_manager(SDLWindowManager& windowManager,
 			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
 
 		//Faire une fonction qui récupère le choix du bloc type
-		BlockType bt = BlockType_Earth;
+		BlockType bt = currentBlockType;
+		std::cout << "currentBlockType : " << currentBlockType << std::endl;
 
 		if (inventory.getNbBlock(bt) > 0)
 		{
@@ -361,9 +394,6 @@ void event_manager(SDLWindowManager& windowManager,
 				}
 			}
 		}
-
-		
-
 	}
 
 };

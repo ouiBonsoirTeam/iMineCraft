@@ -14,6 +14,7 @@ enum BlockType {
 	BlockType_Count
 };
 
+
 class Block{
 
 private:

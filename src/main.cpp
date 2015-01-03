@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
 
 	// // make me a torch
 	// Torch torch;
-
+	BlockType currentBlockType = BlockType_Earth;
 	Inventory invent;
 
 	// Application loop:
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent);
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType);
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
