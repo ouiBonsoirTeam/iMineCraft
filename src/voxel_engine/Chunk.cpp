@@ -436,8 +436,6 @@ void Chunk::createLandscape(PerlinNoise *pn)
 
 void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
-	m_pRenderer->setVao();
-
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
     glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
@@ -708,6 +706,7 @@ void Chunk::buildMesh()
     }
 
     m_pRenderer->finishVbo();
+    m_pRenderer->setVao();
 }
 
 void Chunk::destructBlock(const int &x, const int &y, const int &z)
