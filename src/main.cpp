@@ -22,7 +22,7 @@
 #include "physics/Event_manager.hpp"
 #include "voxel_engine/Block.hpp"
 #include "Skybox.hpp"
-
+#include "Helmet.hpp"
 
 
 using namespace glimac;
@@ -53,12 +53,16 @@ int main(int argc, char** argv)
 
 	glEnable(GL_DEPTH_TEST);
 
+	//For transparency
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	//Chargement des shaders
     FilePath applicationPath(argv[0]);
 
 	GeneralProgram gProgram(applicationPath);
 	pointLightProgram lProgram(applicationPath);
-
+	HelmetProgram hellProg(applicationPath);
 	SkyboxProgram skyProgram(applicationPath);
 	GeometryProgram geoProgram(applicationPath);
 
@@ -116,10 +120,10 @@ int main(int argc, char** argv)
 
 	srand(time(NULL));
 
-
 	BlockType currentBlockType = BlockType_Earth;
 	Inventory invent;
 
+	Helmet helmet;
 
 	// Application loop:
 	bool done = false;
@@ -144,7 +148,6 @@ int main(int argc, char** argv)
 
 		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
 		{
-
 			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
 		}
 
@@ -167,6 +170,10 @@ int main(int argc, char** argv)
 
 		gProgram.m_Program.use();
 			chunkmanager.render(gProgram, ffCam.getViewMatrix());
+
+		hellProg.m_Program.use();
+			helmet.setPosition(ffCam.getPosition() + glm::vec3(ffCam.getFrontVector().x * 0.15, ffCam.getFrontVector().y * 0.15, ffCam.getFrontVector().z * 0.15 ));
+			helmet.drawBillboard(hellProg, ffCam);
 
 		// Update the display
 		windowManager.swapBuffers();
