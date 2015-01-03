@@ -73,6 +73,16 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				done = true; // Leave the loop after this iteration
 			}
+
+			if (e.key.keysym.sym == SDLK_LCTRL)
+			{
+				if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0,-1.5,0))->isActive() && crouch == 0)
+				{
+					ffCam.slide(glm::vec3(0,-1,0));
+					crouch = 1;	
+				}
+			}
+
 		}
 		if (e.type == SDL_KEYUP)
 		{
@@ -261,11 +271,7 @@ void event_manager(SDLWindowManager& windowManager,
 	
 	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() || crouch == 1)
 	{
-		if(windowManager.isKeyPressed(SDLK_LCTRL) && crouch == 0)
-		{
-			ffCam.slide(glm::vec3(0,-1,0));
-			crouch = 1;
-		}
+		
 		gravityFactor = 0.00f;
 		velocity.y=0;
 		ffCam.setInertia(glm::vec3(0,0,0));
@@ -388,6 +394,7 @@ void event_manager(SDLWindowManager& windowManager,
 		blockZ = (int)glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) - Chunk::CHUNK_SIZE * chunkZ;
 			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
 
+
 		//Faire une fonction qui récupère le choix du bloc type
 		BlockType bt = currentBlockType;
 		std::cout << "currentBlockType : " << currentBlockType << std::endl;
@@ -395,7 +402,6 @@ void event_manager(SDLWindowManager& windowManager,
 		if (inventory.getNbBlock(bt) > 0)
 		{
 			if (!getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->isActive() && 
-
 				(	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(1,0,0))->isActive()
 				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(-1,0,0))->isActive()
 				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,1,0))->isActive()
