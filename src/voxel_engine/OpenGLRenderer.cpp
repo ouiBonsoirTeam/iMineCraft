@@ -16,6 +16,12 @@ OpenGLRenderer::~OpenGLRenderer(){
 	glDeleteVertexArrays(1, &m_vao);
 }
 
+void OpenGLRenderer::clean(){
+	m_vertices.clear();
+	m_textures.clear();
+	m_normals.clear();
+}
+
 void OpenGLRenderer::addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3){
 	m_vertices.push_back(position_1);
 	m_vertices.push_back(position_2);
@@ -35,7 +41,6 @@ void OpenGLRenderer::addNormal(glm::vec3 n){
 	m_normals.push_back(n);
 	m_normals.push_back(n);
 	m_normals.push_back(n);
-
 }
 
 void OpenGLRenderer::finishVboPosition(){
@@ -71,7 +76,7 @@ void OpenGLRenderer::finishVbo()
 
 void OpenGLRenderer::setVao(){
 	glGenVertexArrays(1, &m_vao);
-	
+
 	glBindVertexArray(m_vao);
 
 	glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
@@ -106,11 +111,4 @@ void OpenGLRenderer::renderMesh(GLuint idTexture){
 
 void OpenGLRenderer::getMeshInformation(int &numVerts){
 	numVerts = m_vertices.size();
-}
-
-void OpenGLRenderer::clean()
-{
-	m_vertices.clear();
-	m_normals.clear();
-	m_textures.clear();
 }

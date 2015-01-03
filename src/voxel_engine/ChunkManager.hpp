@@ -30,11 +30,9 @@ class ChunkManager
 
 	std::string m_pathJson;
 
-	const static int NUM_CHUNKS_PER_FRAME = 3;
-
 public:
 	ChunkManager(){};
-	~ChunkManager(){};
+	~ChunkManager();
 
 	// Getters
 	float getNoiseValue(const int & x, const int & z) { return (float) m_PerlinNoise.GetHeight(x, z); }
@@ -58,8 +56,12 @@ public:
 	void addChunkToRebuildList(Chunk * chunk);
 
 
+	void saveTerrain(const unsigned int & perlin_seed);
+	int loadTerrain(const std::string & saveFolder);
+	void unloadWorld();
 	bool jsonChunkExist(const std::string &fileName);
 	Json::Value loadAndParseJsonFile(const std::string& fileName);
 
 	Chunk* getChunk(const int &x, const int &y, const int &z);
+	Chunk* getChunk(const glm::vec3 &pos);
 };

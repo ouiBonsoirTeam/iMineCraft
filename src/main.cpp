@@ -1,37 +1,42 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <unistd.h>
+
+#include <stdlib.h>
+#include <time.h>
+
 #include <glimac/SDLWindowManager.hpp>
+#include <SDL2/SDL_mixer.h>
 #include <glimac/Program.hpp>
 #include <glimac/Image.hpp>
 #include <glimac/glm.hpp>
-#include <glimac/Sphere.hpp>
 #include <glimac/CustomProgram.hpp>
 #include <glimac/FreeFlyCamera.hpp>
 #include <glimac/Torch.hpp>
-
+#include <glimac/Geometry.hpp>
 #include <glimac/Sound.hpp>
-#include "../third-party/api/MAC/include/fmod.h"
-#include "../third-party/api/LINUX/include/fmod.h"
+#include <glimac/tiny_obj_loader.h>
 
 #include "voxel_engine/Chunk.hpp"
 #include "voxel_engine/ChunkManager.hpp"
 #include "physics/Event_manager.hpp"
+#include "voxel_engine/Block.hpp"
 #include "Skybox.hpp"
 #include "Light.hpp"
+#include "Helmet.hpp"
 
 using namespace glimac;
 
-
-
-int main(int argc, char** argv) {
+int main(int argc, char** argv) 
+{
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
 	GLenum glewInitError = glewInit();
-	if(GLEW_OK != glewInitError) {
+	if(GLEW_OK != glewInitError) 
+	{
 		std::cerr << glewGetErrorString(glewInitError) << std::endl;
 		return EXIT_FAILURE;
 	}
@@ -42,27 +47,26 @@ int main(int argc, char** argv) {
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
-	// Musique du jeu
-    FMOD_SYSTEM *music;
-    FMOD_System_Create(&music);
-    FMOD_System_Init(music, 2, FMOD_INIT_NORMAL, NULL);
-    int playing = 0;
+
+	Mix_Music *music = nullptr;
+	std::vector<Mix_Chunk*> mix_chunk = initsound(music);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//For transparency
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//Chargement des shaders
     FilePath applicationPath(argv[0]);
 
-	//comme P ne change jamais on peut la declarer a l'initialisation
-	//glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
 	GeneralProgram gProgram(applicationPath);
-	SkyboxProgram skyProg(applicationPath);
-	// PointLightProgram lProgram(applicationPath);
-	// DirectionalLightProgram sunProg(applicationPath);
 	LightsProgram lightsProg(applicationPath);
+	HelmetProgram hellProg(applicationPath);
+	SkyboxProgram skyProgram(applicationPath);
+	GeometryProgram geoProgram(applicationPath);
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
@@ -75,23 +79,30 @@ int main(int argc, char** argv) {
 	GLuint idTexture;
 	glGenTextures(1, &idTexture);
 	glBindTexture(GL_TEXTURE_2D,  idTexture);
+
 	glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
 					texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,  0);
 
+	std::string savesFolder = "bin/assets/saves/";
+	ChunkManager chunkmanager;
+	chunkmanager.initialize(savesFolder);
+
 	//Initialisation camera freefly
 	FreeFlyCamera ffCam;
-
-	// // TEST
-	ChunkManager chunkmanager;
-	chunkmanager.initialize("bin/assets/saves");
+	chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+	
+	ffCam.setPosition(glm::vec3(0,chunkmanager.getNoiseValue(0,0)+5,0));
 
 	//initialisation angle
 	float angleX = 0;
 	float angleY = 0;
 	float angleYfinal = 0;
+
+	int crouch = 0;
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
 
@@ -100,36 +111,38 @@ int main(int argc, char** argv) {
 	float lastTime2 = windowManager.getTime();
 	int nbFrames = 0;
 	
-	//make me a skybox
 	Skybox skybox;
-	skybox.init(skyProg);
+		skybox.init(skyProgram);
 
-	//make me a sun
+	Geometry lander;
+		lander.init(geoProgram, lander, "Lander.obj", true, "Lander.png");
+
+	Geometry crowbar;
+		crowbar.init(geoProgram, crowbar, "crowbar.obj", true, "metal01.jpg");
+
+	srand(time(NULL));
+
 	Light sun = Light(glm::vec3(1,1,1), glm::vec3(-0.5,0.5,-0.5));
 
-	// make me a torch
-	Torch torch(glm::vec3(5,8,5));
+	Torch torch(glm::vec3(3,glm::round(chunkmanager.getNoiseValue(3,6))+2,6));
 
 	// define current BlockType
 	BlockType currentBlockType = BlockType_Earth;
 
-	// make me an inventory
 	Inventory invent;
+
+	Helmet helmet;
 
 	// Application loop:
 	bool done = false;
-	while(!done) {
-		// Play the music
-        if(playing == 0)
-        {
-            playMusic(music, NULL, "./bin/assets/sound/SOR_TFM_Atmos_65.mp3");
-            playing = 1;
-        }
-
+	while(!done) 
+	{
+	
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType);
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, crouch, currentBlockType, 
+						mix_chunk);
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
@@ -137,8 +150,6 @@ int main(int argc, char** argv) {
 		if ( currentTime - lastTime >= 1.0 )
 		{ 
 		    std::cout << "fps : " << nbFrames << std::endl;
-		    std::cout << "invent : " << std::endl;
-		    invent.affiche();
 		    nbFrames = 0;
 		    lastTime += 1.0;
 		}
@@ -158,9 +169,12 @@ int main(int argc, char** argv) {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		skyProgram.m_Program.use();
+			skybox.draw(skyProgram, viewMatrix);
 
-		skyProg.m_Program.use();
-			skybox.draw(skyProg, viewMatrix);
+		geoProgram.m_Program.use();
+			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
+			crowbar.drawCrowbar(geoProgram, crowbar, ffCam);
 
 		lightsProg.m_Program.use();
 			torch.translatePos(glm::sin(windowManager.getTime()) * glm::vec3(0,0.02,0));
@@ -170,17 +184,25 @@ int main(int argc, char** argv) {
 
 			chunkmanager.render(lightsProg, ffCam.getViewMatrix());
 
-		
-
 		gProgram.m_Program.use();
 			torch.drawBillboard(gProgram, ffCam);
 
+		hellProg.m_Program.use();
+			helmet.setPosition(ffCam.getPosition() + glm::vec3(ffCam.getFrontVector().x * 0.15, ffCam.getFrontVector().y * 0.15, ffCam.getFrontVector().z * 0.15 ));
+			helmet.drawBillboard(hellProg, ffCam);
+
 		// Update the display
 		windowManager.swapBuffers();
-
 	}
 
+	// Unload and save the displayed map
+	chunkmanager.unloadWorld();
+	
 	skybox.destruct();
+	crowbar.destruct();
+
+	glDeleteTextures(1, &idTexture);
+	deletesound(mix_chunk, music);
 
 	return EXIT_SUCCESS;
 }

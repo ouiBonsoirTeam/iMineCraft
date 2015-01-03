@@ -8,11 +8,8 @@ out vec4 fFragColor;
 
 uniform sampler2D uTexture;
 
-void main() {
-
+void main() 
+{
 	vec4 textMain = texture(uTexture, vFragTexture.xy);
-	//vec4 textOcclu = vec4(1, 1, 1, 1) - texture(uTexture, vFragTexture.zw);
-	//fFragColor = vec3(textMain - textOcclu * 0.5);
 	fFragColor = textMain;
-
 }

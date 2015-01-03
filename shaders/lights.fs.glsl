@@ -55,19 +55,14 @@ vec3 blinnPhongPoint()
 				 ) ) / (d*d) ;
 }
 
-void main() {
-
+void main() 
+{
 	vec4 textMain = texture(uTexture, vFragTexture.xy);
 	vec4 textOcclu = vec4(1, 1, 1, 1) - texture(uTexture, vFragTexture.zw);
 	vec4 tex = textMain - textOcclu * 0.5;
 
-
-	//vec3 invLightDir = vec3(1,1,1) - blinnPhongDirec();
-	//vec3 invLightPoint = vec3(1,1,1) - blinnPhongPoint();
-	vec3 light = blinnPhongPoint() + blinnPhongDirec();
+	vec3 light = blinnPhongPoint() + 0.6 * blinnPhongDirec();
 	vec3 invLight = vec3(1,1,1) - light;
 
-	fFragColor = vec4(vec3(tex) - invLight, 1); //+  vec4(vec3(tex) - invLightPoint, 1);
-	//fFragColor = vec4(vec3(textMain - textOcclu * 0.5) - (vec3(1,1,1) - blinnPhong()), 1);
-
+	fFragColor = vec4(vec3(tex) - 0.4 * invLight, 1); 
 };
