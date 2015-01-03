@@ -49,7 +49,7 @@ void Sphere::build(GLfloat r, GLsizei discLat, GLsizei discLong) {
 
     m_nVertexCount = discLat * discLong * 6;
     
-    GLuint idx = 0;
+    // GLuint idx = 0;
     // Construit les vertex finaux en regroupant les données en triangles:
     // Pour une longitude donnée, les deux triangles formant une face sont de la forme:
     // (i, i + 1, i + discLat + 1), (i, i + discLat + 1, i + discLat)

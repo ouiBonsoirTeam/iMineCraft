@@ -194,6 +194,11 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				Mix_PlayChannelTimed(7,mix_chunk[0],0, 450);
 			}
+			//jetpack avec shift
+			if(Mix_Playing(0) == 0)
+			{
+				Mix_PlayChannelTimed(18,mix_chunk[5],0, 450);
+			}
 			velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed*3.f,0,ffCam.getFrontVector().z*playerSpeed*3.f);
 
 		}
@@ -319,32 +324,32 @@ void event_manager(SDLWindowManager& windowManager,
 		if(Mix_Playing(0) == 0)
 		{
 			//grass
-			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Grass)
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Grass)
 			{
 				Mix_PlayChannelTimed(9,mix_chunk[1],0, 450);
 			}
 			//earth
-			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Earth)
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Earth)
 			{
 				Mix_PlayChannelTimed(10,mix_chunk[1],0, 450);
 			}
 			//first snow
-			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_1st_Snow)
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_1st_Snow)
 			{
 				Mix_PlayChannelTimed(11,mix_chunk[2],0, 450);
 			}
 			//snow
-			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow)
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow)
 			{
 				Mix_PlayChannelTimed(12,mix_chunk[2],0, 450);
 			}
 			//stone
-			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Rock)
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Rock)
 			{
 				Mix_PlayChannelTimed(13,mix_chunk[3],0, 450);
 			}
 			//lava
-			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Lava)
+			if (getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Lava)
 			{
 				Mix_PlayChannelTimed(14,mix_chunk[4],0, 450);
 			}

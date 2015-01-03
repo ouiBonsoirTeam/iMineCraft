@@ -1,8 +1,0 @@
-# WAVEFRONT OBJ EXPORTED WITH QUBICLE CONSTRUCTOR v1.6.0.0
-# www.qubicle-constructor.com
-
-newmtl tree_simpletex
-Kd 1.0 1.0 1.0
-d 1.000000
-Ns 1
-map_Kd tree.png

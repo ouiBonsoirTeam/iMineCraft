@@ -108,7 +108,7 @@ Helmet::Helmet()
 void Helmet::drawBillboard(HelmetProgram & prog, FreeFlyCamera &ffCam)
 {
 	glm::vec3 rightVector = glm::vec3(1,0,0);
-	glm::vec3 upVector = glm::vec3(0,1,0);
+	//glm::vec3 upVector = glm::vec3(0,1,0);
 	glm::vec3 lookAtVector = glm::vec3(0,0,1);
 
 	glm::vec3 posCam = ffCam.getPosition();

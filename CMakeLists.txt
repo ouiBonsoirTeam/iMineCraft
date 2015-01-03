@@ -11,8 +11,6 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH  ${PROJECT_BINARY_DIR}/lib)
 
 find_package(OpenGL REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 
 if(WIN32)
@@ -33,12 +31,12 @@ if(UPEMLV)
     set(OPENGL_LIBRARIES /usr/lib/x86_64-linux-gnu/libGL.so.1)
 endif(UPEMLV)
 
-include_directories(${SDLMIXER_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIRS} ${SDLIMAGE_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
+include_directories(${SDLMIXER_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
 
 if(APPLE)
-    set(ALL_LIBRARIES glimac ${SDLMIXER_LIBRARY} ${SDL2_TTF_LIBRARIES} ${SDLIMAGE_LIBRARY} /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac ${SDLMIXER_LIBRARY} /usr/local/lib/libSDL2.dylib ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 else(APPLE)
-    set(ALL_LIBRARIES glimac ${SDLMIXER_LIBRARY} ${SDL2_TTF_LIBRARIES} ${SDLIMAGE_LIBRARY} ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+    set(ALL_LIBRARIES glimac ${SDLMIXER_LIBRARY} ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 endif(APPLE)
 
 # Add the glimac library
