@@ -295,7 +295,7 @@ void Geometry::draw(GeometryProgram &geoProgram,
     glBindVertexArray(0);
 }
 
-void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam)
+void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam, float &breakCube)
 {
     //render pour l'obj
     glm::mat4 modelMatrix = glm::mat4(1.0);
@@ -354,7 +354,9 @@ void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const Fre
     modelMatrix = glm::translate(modelMatrix, -glm::vec3(0,5,3));
     modelMatrix = glm::scale(modelMatrix, glm::vec3(0.8, 0.8, 0.8));
 
-
+    modelMatrix = glm::rotate(modelMatrix, 10.f - abs(breakCube), glm::vec3(0,1,1));
+    if (breakCube < 10)
+        breakCube += 2;
 
     glm::mat4 modelViewMatrix = ffCam.getViewMatrix() * modelMatrix;
 

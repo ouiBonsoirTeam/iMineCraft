@@ -46,7 +46,8 @@ void event_manager(SDLWindowManager& windowManager,
 				   Inventory& inventory,
 				   int& crouch,
 				   BlockType& currentBlockType,
-				   std::vector<Mix_Chunk*> mix_chunk){
+				   std::vector<Mix_Chunk*> mix_chunk,
+				   float &breackCube){
 
 	// INIT
 
@@ -408,6 +409,8 @@ void event_manager(SDLWindowManager& windowManager,
 	// DESTRUCT CUBE
 	if (leftClick)
 	{
+		breackCube = -10;
+
 
 		chunkX = (int) glm::round(ffCam.getPosition().x + ffCam.getFrontVector().x) / Chunk::CHUNK_SIZE;
 			if (ffCam.getPosition().x + ffCam.getFrontVector().x < 0) chunkX += -1;

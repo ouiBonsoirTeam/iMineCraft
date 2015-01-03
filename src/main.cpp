@@ -97,6 +97,7 @@ int main(int argc, char** argv)
 	float angleYfinal = 0;
 
 	int crouch = 0;
+	float breakCube = 0;
 
 	const float CAMERA_ROT_FACTOR = 0.05f;
 
@@ -130,7 +131,7 @@ int main(int argc, char** argv)
 		
 		// Event loop:
 		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, crouch, currentBlockType, 
-						mix_chunk);
+						mix_chunk, breakCube);
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
@@ -163,7 +164,7 @@ int main(int argc, char** argv)
 
 		geoProgram.m_Program.use();
 			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
-			crowbar.drawCrowbar(geoProgram, crowbar, ffCam);
+			crowbar.drawCrowbar(geoProgram, crowbar, ffCam, breakCube);
 
 		gProgram.m_Program.use();
 			chunkmanager.render(gProgram, ffCam.getViewMatrix());
