@@ -37,71 +37,6 @@ Block*** Chunk::getBlocks() const
 	return m_pBlocks;
 }
 
-void Chunk::init()
-{
-    // Create the blocks A MODIFIER CAR DEJA FAIT DANS LE SETUP
-    m_pBlocks = new Block**[CHUNK_SIZE];
-    for(int i = 0; i < CHUNK_SIZE; i++)
-    {
-        m_pBlocks[i] = new Block*[CHUNK_SIZE];
-
-        for(int j = 0; j < CHUNK_SIZE; j++)
-        {
-            m_pBlocks[i][j] = new Block[CHUNK_SIZE];
-        }
-    }
-
-    m_pRenderer = new OpenGLRenderer;
-
-	int y = 0;
-	for (int x = 0; x < CHUNK_SIZE; x++)
-	{
-		for (int z = 0; z < CHUNK_SIZE; z++)
-		{
-			m_pBlocks[x][y][z].setActive();
-		}	
-	}
-
-	m_pBlocks[2][1][2].setActive();
-	m_pBlocks[3][1][3].setActive();
-	m_pBlocks[3][1][2].setActive();
-
-	m_pBlocks[5][1][4].setActive();
-	m_pBlocks[5][1][6].setActive();
-
-	m_pBlocks[8][1][6].setActive();
-	m_pBlocks[9][1][6].setActive();
-	m_pBlocks[10][1][6].setActive();
-	m_pBlocks[4][1][16].setActive();
-	m_pBlocks[6][1][16].setActive();
-	m_pBlocks[6][1][16].setActive();
-	m_pBlocks[6][1][16].setActive();
-	m_pBlocks[16][1][8].setActive();
-	m_pBlocks[16][1][7].setActive();
-	m_pBlocks[15][1][6].setActive();
-	m_pBlocks[15][2][7].setActive();
-	m_pBlocks[13][1][6].setActive();
-	m_pBlocks[4][1][8].setActive();
-	m_pBlocks[12][1][10].setActive();
-	m_pBlocks[12][1][11].setActive();
-	m_pBlocks[13][1][12].setActive();
-	m_pBlocks[10][1][2].setActive();
-	m_pBlocks[13][1][9].setActive();
-	m_pBlocks[13][1][11].setActive();
-
-
-	m_pBlocks[2][4][2].setActive();
-	m_pBlocks[2][5][2].setActive();
-	m_pBlocks[3][5][3].setActive();
-	m_pBlocks[3][5][2].setActive();
-
-
-	m_pBlocks[8][1][9].setActive();
-	m_pBlocks[7][1][9].setActive();
-	m_pBlocks[9][1][9].setActive();
-	m_pBlocks[7][1][7].setActive();
-}
-
 bool Chunk::blockExist(int x, int y, int z)
 {
 	return !(x < 0 || x > CHUNK_SIZE - 1 || y < 0 || y > CHUNK_SIZE - 1 || z < 0 || z > CHUNK_SIZE - 1);
@@ -433,8 +368,6 @@ void Chunk::createLandscape(PerlinNoise *pn)
 
 void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
-	m_pRenderer->setVao();
-
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
     glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
@@ -748,6 +681,7 @@ void Chunk::buildMesh()
     }
 
     m_pRenderer->finishVbo();
+    m_pRenderer->setVao();
 }
 
 void Chunk::destructBlock(const int &x, const int &y, const int &z)

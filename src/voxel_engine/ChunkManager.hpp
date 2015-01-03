@@ -30,8 +30,6 @@ class ChunkManager
 
 	std::string m_pathJson;
 
-	const static int NUM_CHUNKS_PER_FRAME = 3;
-
 public:
 	ChunkManager(){};
 	~ChunkManager();

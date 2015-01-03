@@ -16,6 +16,12 @@ OpenGLRenderer::~OpenGLRenderer(){
 	glDeleteVertexArrays(1, &m_vao);
 }
 
+void OpenGLRenderer::clean(){
+	m_vertices.clear();
+	m_textures.clear();
+	m_normals.clear();
+}
+
 void OpenGLRenderer::addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3){
 	m_vertices.push_back(position_1);
 	m_vertices.push_back(position_2);
@@ -30,12 +36,6 @@ void OpenGLRenderer::addTexture(glm::vec4 texPos_1, glm::vec4 texPos_2, glm::vec
 
 void OpenGLRenderer::addNormal(glm::vec3 n){
 	m_normals.push_back(n);
-	m_normals.push_back(n);
-	m_normals.push_back(n);
-	m_normals.push_back(n);
-	m_normals.push_back(n);
-	m_normals.push_back(n);
-
 }
 
 void OpenGLRenderer::finishVboPosition(){
@@ -71,19 +71,16 @@ void OpenGLRenderer::finishVbo()
 
 void OpenGLRenderer::setVao(){
 	glGenVertexArrays(1, &m_vao);
-	
+
 	glBindVertexArray(m_vao);
 
 	glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[POSITION]);
 	glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
 
-	if(m_textures.size() != 0)
-	{
-		glEnableVertexAttribArray(VERTEX_ATTR_TEXTCOORD);
-		glBindBuffer(GL_ARRAY_BUFFER, m_buffer[TEXTURE]);
-		glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (const GLvoid*)(0));
-	}
+	glEnableVertexAttribArray(VERTEX_ATTR_TEXTCOORD);
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[TEXTURE]);
+	glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (const GLvoid*)(0));
 	
 	glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[NORMAL]);
