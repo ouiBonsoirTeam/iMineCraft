@@ -2,6 +2,16 @@
 #include <iostream>
 #include <fstream>
 
+ChunkManager::~ChunkManager(){
+    ChunkList::iterator iterator;   
+
+    for(iterator = m_vpGlobalChunkList.begin(); iterator != m_vpGlobalChunkList.end(); ++iterator)
+    {
+        Chunk* pChunk = (*iterator);
+        delete pChunk;
+    }
+
+};
 
 void ChunkManager::initialize(const std::string& saveFolder)
 {

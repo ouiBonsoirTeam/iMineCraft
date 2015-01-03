@@ -34,7 +34,7 @@ class ChunkManager
 
 public:
 	ChunkManager(){};
-	~ChunkManager(){};
+	~ChunkManager();
 
 	// Getters
 	float getNoiseValue(const int & x, const int & z) { return (float) m_PerlinNoise.GetHeight(x, z); }

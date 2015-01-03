@@ -77,8 +77,8 @@ int main(int argc, char** argv) {
 
 	// // TEST
 	std::string savesFolder = "bin/assets/saves/";
-	ChunkManager chunkmanager;
-	chunkmanager.initialize(savesFolder);
+	ChunkManager * chunkmanager = new ChunkManager;
+	chunkmanager->initialize(savesFolder);
 
 	// Chunk chunk;
 	// chunk.init();
@@ -108,10 +108,10 @@ int main(int argc, char** argv) {
 	bool done = false;
 	while(!done) {
 
-		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+		chunkmanager->update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,*chunkmanager.getChunk(0,0,0));			
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,*chunkmanager->getChunk(0,0,0));			
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
 			// torch.draw(lProgram, viewMatrix);
 
 		
-		chunkmanager.render(gProgram, ffCam.getViewMatrix());
+		chunkmanager->render(gProgram, ffCam.getViewMatrix());
 
 
 		// chunk.render(gProgram, viewMatrix, idTexture);
@@ -162,6 +162,7 @@ int main(int argc, char** argv) {
 	}
 
 	skybox.destruct();
+	delete chunkmanager;
 
 	return EXIT_SUCCESS;
 }
