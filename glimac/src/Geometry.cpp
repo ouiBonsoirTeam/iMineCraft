@@ -21,13 +21,13 @@ void Geometry::generateNormals(unsigned int meshIndex) {
     }
 }
 
-bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures) {
+bool Geometry::loadOBJ(const std::string& filepath, const std::string& mtlBasePath, bool loadTextures) {
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
 
+    std::cout << "" << std::endl;
     std::clog << "Load OBJ " << filepath << std::endl;
-    std::string objErr = tinyobj::LoadObj(shapes, materials,
-        filepath.c_str(), mtlBasePath.c_str());
+    std::string objErr = tinyobj::LoadObj(shapes, materials, filepath.c_str(), mtlBasePath.c_str());
 
     std::clog << "done." << std::endl;
 
@@ -42,6 +42,8 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
         m_Materials.emplace_back();
         auto& m = m_Materials.back();
 
+        std::cout << "Material name : " << material.name.c_str() << std::endl;
+
         m.m_Ka = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]);
         m.m_Kd = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
         m.m_Ks = glm::vec3(material.specular[0], material.specular[1], material.specular[2]);
@@ -51,12 +53,17 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
         m.m_RefractionIndex = material.ior;
         m.m_Dissolve = material.dissolve;
 
+        std::cout << "m_Ka bien loadé : " << m.m_Ka << std::endl;
+        std::cout << "m_Kd bien loadé : " << m.m_Kd << std::endl;
+        std::cout << "m_Ks bien loadé : " << m.m_Ks << std::endl;
+
         if(loadTextures) {
             if(!material.ambient_texname.empty()) {
                 //std::replace(material.ambient_texname.begin(), material.ambient_texname.end(), '\\', '/');
                 FilePath texturePath = mtlBasePath + material.ambient_texname;
                 std::clog << "load " << texturePath << std::endl;
                 m.m_pKaMap = ImageManager::loadImage(texturePath);
+                std::cout << "load map_Ka ---> OK" << std::endl;
             }
 
             if(!material.diffuse_texname.empty()) {
@@ -64,6 +71,7 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
                 FilePath texturePath = mtlBasePath + material.diffuse_texname;
                 std::clog << "load " << texturePath << std::endl;
                 m.m_pKdMap = ImageManager::loadImage(texturePath);
+                std::cout << "load map_Kd ---> OK" << std::endl;
             }
 
             if(!material.specular_texname.empty()) {
@@ -71,6 +79,7 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
                 FilePath texturePath = mtlBasePath + material.specular_texname;
                 std::clog << "load " << texturePath << std::endl;
                 m.m_pKsMap = ImageManager::loadImage(texturePath);
+                std::cout << "load map_Kd ---> OK" << std::endl;
             }
 
             if(!material.normal_texname.empty()) {
@@ -78,8 +87,10 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
                 FilePath texturePath = mtlBasePath + material.normal_texname;
                 std::clog << "load " << texturePath << std::endl;
                 m.m_pNormalMap = ImageManager::loadImage(texturePath);
+                std::cout << "load map_N ---> OK" << std::endl;
             }
         }
+        std::cout << "" << std::endl;
     }
     std::clog << "done." << std::endl;
 
@@ -168,6 +179,225 @@ bool Geometry::loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bo
     }
 
     return true;
+}
+
+void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, bool loadTextures, const std::string& texture)
+{
+    //load obj
+    if (!obj.loadOBJ("bin/assets/obj/"+filepath, "bin/assets/obj/mtl/", loadTextures))
+        std::cerr << "Impossible de charger l'objet" << std::endl;
+
+    //load texture
+    std::unique_ptr<Image> texturePointer;
+    texturePointer = loadImage("bin/assets/textures/"+texture);
+    if(texturePointer == NULL)
+    {
+        std::cerr << "Error while charging texture." << std::endl;
+    }
+
+    glGenTextures(1, &m_texture);
+    glBindTexture(GL_TEXTURE_2D,  m_texture);
+    glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
+                    texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D,  0);
+
+    glGenBuffers(1, &m_vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+
+    glBufferData(GL_ARRAY_BUFFER, obj.getVertexCount() * sizeof(glm::vec3), obj.getVertexBuffer(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+    glGenBuffers(1, &m_ibo);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj.getIndexCount() * sizeof(uint32_t), obj.getIndexBuffer(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+    const static GLuint VERTEX_ATTR_POSITION = 0;
+    const static GLuint VERTEX_ATTR_NORMAL = 1;
+    const static GLuint VERTEX_ATTR_TEXTCOORD = 2;
+
+    glGenVertexArrays(1, &m_vao);
+
+    glBindVertexArray(m_vao);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+
+
+        glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+        glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+        glEnableVertexAttribArray(VERTEX_ATTR_TEXTCOORD);
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+            glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(0* sizeof(GLfloat)));
+            glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(3 * sizeof(GLfloat)));
+            glVertexAttribPointer(VERTEX_ATTR_TEXTCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*)(6 * sizeof(GLfloat)));
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+}
+
+void Geometry::draw(GeometryProgram &geoProgram, 
+                    Geometry &obj,
+                    const glm::mat4 &viewMatrix, 
+                    const glm::vec3 &trans, 
+                    const glm::vec3 &scal, 
+                    const float &angleR, 
+                    const glm::vec3 &rot)
+{
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), trans);
+    modelMatrix = glm::rotate(modelMatrix, angleR, rot);
+    modelMatrix = glm::scale(modelMatrix, scal);
+
+
+    glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+
+    // A sortir de la classe : Identique dans tout le programme
+    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+
+    glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
+
+    // Normale
+    glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
+
+    glUniformMatrix4fv(geoProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+    glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+    glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+
+    glBindVertexArray(m_vao);
+
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+    glUniform1i(geoProgram.uTexture, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+
+
+    glDrawElements(GL_TRIANGLES, obj.getIndexCount(), GL_UNSIGNED_INT, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glBindVertexArray(0);
+}
+
+void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam)
+{
+    //render pour l'obj
+    glm::mat4 modelMatrix = glm::mat4(1.0);
+
+    glm::vec3 lookAtVector = glm::vec3(0,0,1);
+
+    glm::vec3 posCam = ffCam.getPosition();
+    glm::vec3 posObj = ffCam.getPosition() + glm::vec3(ffCam.getFrontVector().x * 0.2,ffCam.getFrontVector().y * 0.2,ffCam.getFrontVector().z * 0.2 );
+
+    glm::vec3 objToCamProj = posCam - posObj;
+    objToCamProj[1] = 0;
+
+    objToCamProj = glm::normalize(objToCamProj);
+
+    float angleCosine = glm::dot(objToCamProj, lookAtVector);
+
+    float angle = glm::acos(angleCosine);
+
+    glm::vec3 upAux = glm::cross(objToCamProj, lookAtVector);
+
+    //glm::mat4 modelMatrix = glm::mat4(1.0);
+
+    modelMatrix = glm::translate(modelMatrix, posObj);
+
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+
+
+    if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
+    {
+        if (upAux[1] < 0)
+            modelMatrix = glm::rotate(modelMatrix, angle, ffCam.getUpVector());
+        else
+            modelMatrix = glm::rotate(modelMatrix, angle, -ffCam.getUpVector());
+    }
+
+
+    glm::vec3 objToCam = posCam - posObj;
+
+    objToCam = glm::normalize(objToCam);
+
+    angleCosine = glm::dot(objToCamProj,objToCam);
+
+    angle = glm::acos(angleCosine);
+
+    if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
+    {
+        if (objToCam[1] < 0)
+            modelMatrix = glm::rotate(modelMatrix, angle, -ffCam.getLeftVector());
+        else
+            modelMatrix = glm::rotate(modelMatrix, angle, ffCam.getLeftVector());
+    }
+
+    modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(-1,0,0));
+    modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(0,-1,0));
+    modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(0,0,-1));
+    modelMatrix = glm::translate(modelMatrix, -glm::vec3(0,5,3));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.8, 0.8, 0.8));
+
+
+
+    glm::mat4 modelViewMatrix = ffCam.getViewMatrix() * modelMatrix;
+
+    // A sortir de la classe : Identique dans tout le programme
+    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+
+    glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
+
+    // Normale
+    glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
+
+    glUniformMatrix4fv(geoProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+    glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+    glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+
+    glBindVertexArray(m_vao);
+
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+    glUniform1i(geoProgram.uTexture, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+
+
+    glDrawElements(GL_TRIANGLES, obj.getIndexCount(), GL_UNSIGNED_INT, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glBindVertexArray(0);
+}
+
+void Geometry::destruct()
+{
+    // release vertex and index buffer object
+    glDeleteVertexArrays(1, &m_vao);
+    glDeleteBuffers(1, &m_vbo);
+    glDeleteBuffers(1, &m_ibo);
+
+    // release texture
+    glDeleteTextures(1, &m_texture);
 }
 
 }
