@@ -2,6 +2,16 @@
 #include <iostream>
 #include <fstream>
 
+ChunkManager::~ChunkManager(){
+    ChunkList::iterator iterator;   
+
+    for(iterator = m_vpGlobalChunkList.begin(); iterator != m_vpGlobalChunkList.end(); ++iterator)
+    {
+        Chunk* pChunk = (*iterator);
+        delete pChunk;
+    }
+
+};
 
 void ChunkManager::initialize(const std::string& saveFolder)
 {
@@ -32,7 +42,7 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
         chunkCameraPosition[i] = (int)cameraPosition[i] / Chunk::CHUNK_SIZE;
     }
 
-    int chunkAreaLimit = 2;
+    int chunkAreaLimit = 1;
     int unloadLimit = chunkAreaLimit + 1;
 
     for (int i = -unloadLimit; i <= unloadLimit; ++i)
@@ -48,8 +58,9 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
                     &&  k >= -chunkAreaLimit && k <= chunkAreaLimit)
                 {
                     
-                    if(!chunkExist(position))
+                    if(!chunkExist(position)){
                         m_vpChunkLoadList.push_back(new Chunk(position));
+                    }
                 }
                 else
                 {
@@ -246,7 +257,7 @@ void ChunkManager::updateUnloadList()
         if(pChunk->isLoaded())
         {
             pChunk->unload("bin/assets/saves/");
-
+            delete pChunk;
             m_forceVisibilityUpdate = true;
         }
     }

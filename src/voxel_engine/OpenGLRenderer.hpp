@@ -9,18 +9,6 @@ enum VBO { POSITION, NORMAL, TEXTURE};
 
 using namespace glimac;
 
-enum bufferType { 
-	INDEX_BUFFER = 0,
-
-	POS_VB,
-	NORMAL_VB,
-	TEXT_COORDS_VB,
-	WVP_MAT_VB,
-	WORLD_MAT_VB,
-
-	BUFFER_SIZE
-};
-
 class OpenGLRenderer
 {
 	GLuint m_vao;
@@ -42,6 +30,8 @@ public:
 
 	// Destructor
 	~OpenGLRenderer();
+
+	void clean();
 
 	// Setters
 	void addTriangle(glm::vec3 position_1, glm::vec3 position_2, glm::vec3 position_3);

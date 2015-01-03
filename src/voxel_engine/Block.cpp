@@ -1,5 +1,4 @@
 #include "Block.hpp"
-#include <iostream>
 
 // Constructors
 Block::Block(){}

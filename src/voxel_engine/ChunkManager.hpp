@@ -30,11 +30,9 @@ class ChunkManager
 
 	std::string m_pathJson;
 
-	const static int NUM_CHUNKS_PER_FRAME = 3;
-
 public:
 	ChunkManager(){};
-	~ChunkManager(){};
+	~ChunkManager();
 
 	// Getters
 	float getNoiseValue(const int & x, const int & z) { return (float) m_PerlinNoise.GetHeight(x, z); }

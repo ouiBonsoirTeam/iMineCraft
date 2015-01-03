@@ -42,71 +42,6 @@ Block*  Chunk::getBlock(const int & x, const int & y, const int & z) const
 	return &(m_pBlocks[x][y][z]);
 }
 
-void Chunk::init()
-{
-	// Create the blocks A MODIFIER CAR DEJA FAIT DANS LE SETUP
-	m_pBlocks = new Block**[CHUNK_SIZE];
-	for(int i = 0; i < CHUNK_SIZE; i++)
-	{
-		m_pBlocks[i] = new Block*[CHUNK_SIZE];
-
-		for(int j = 0; j < CHUNK_SIZE; j++)
-		{
-			m_pBlocks[i][j] = new Block[CHUNK_SIZE];
-		}
-	}
-
-	m_pRenderer = new OpenGLRenderer;
-
-	int y = 0;
-	for (int x = 0; x < CHUNK_SIZE; x++)
-	{
-		for (int z = 0; z < CHUNK_SIZE; z++)
-		{
-			m_pBlocks[x][y][z].setActive();
-		}	
-	}
-
-	m_pBlocks[2][1][2].setActive();
-	m_pBlocks[3][1][3].setActive();
-	m_pBlocks[3][1][2].setActive();
-
-	m_pBlocks[5][1][4].setActive();
-	m_pBlocks[5][1][6].setActive();
-
-	m_pBlocks[8][1][6].setActive();
-	m_pBlocks[9][1][6].setActive();
-	m_pBlocks[10][1][6].setActive();
-	m_pBlocks[4][1][16].setActive();
-	m_pBlocks[6][1][16].setActive();
-	m_pBlocks[6][1][16].setActive();
-	m_pBlocks[6][1][16].setActive();
-	m_pBlocks[16][1][8].setActive();
-	m_pBlocks[16][1][7].setActive();
-	m_pBlocks[15][1][6].setActive();
-	m_pBlocks[15][2][7].setActive();
-	m_pBlocks[13][1][6].setActive();
-	m_pBlocks[4][1][8].setActive();
-	m_pBlocks[12][1][10].setActive();
-	m_pBlocks[12][1][11].setActive();
-	m_pBlocks[13][1][12].setActive();
-	m_pBlocks[10][1][2].setActive();
-	m_pBlocks[13][1][9].setActive();
-	m_pBlocks[13][1][11].setActive();
-
-
-	m_pBlocks[2][4][2].setActive();
-	m_pBlocks[2][5][2].setActive();
-	m_pBlocks[3][5][3].setActive();
-	m_pBlocks[3][5][2].setActive();
-
-
-	m_pBlocks[8][1][9].setActive();
-	m_pBlocks[7][1][9].setActive();
-	m_pBlocks[9][1][9].setActive();
-	m_pBlocks[7][1][7].setActive();
-}
-
 bool Chunk::blockExist(int x, int y, int z)
 {
 	return !(x < 0 || x > CHUNK_SIZE - 1 || y < 0 || y > CHUNK_SIZE - 1 || z < 0 || z > CHUNK_SIZE - 1);
@@ -444,10 +379,8 @@ void Chunk::createLandscape(PerlinNoise *pn)
 
 void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
-	m_pRenderer->setVao();
-
-	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
-	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
+    glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
 	// A sortir de la classe : Identique dans tout le programme
 	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
@@ -719,109 +652,110 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				if(!m_pBlocks[x][y][z].isActive())
-					continue;
+				if(m_pBlocks[x][y][z].isActive())
 
-				int max = CHUNK_SIZE - 1;
-				bool lXNegative = true;
-				bool lXPositive = true;
-				bool lYNegative = true;
-				bool lYPositive = true;
-				bool lZNegative = true;
-				bool lZPositive = true;
-
-				
-				if(x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y < CHUNK_SIZE - 1 && z > 0 && z < CHUNK_SIZE - 1) // block frontiers intra chunk
 				{
-					lXNegative = !m_pBlocks[x - 1][y][z].isActive();
-					lXPositive = !m_pBlocks[x + 1][y][z].isActive();
-					lYNegative = !m_pBlocks[x][y - 1][z].isActive();
-					lYPositive = !m_pBlocks[x][y + 1][z].isActive();
-					lZNegative = !m_pBlocks[x][y][z - 1].isActive();
-					lZPositive = !m_pBlocks[x][y][z + 1].isActive();
-				}
-				else // block frontiers inter chunk
-				{
-					if(x == 0)
-					{
-						if(ch_X_neg == NULL)
-							lXNegative = false;
-						else
-							lXNegative = !(ch_X_neg->getBlock(max, y, z)->isActive());
+					int max = CHUNK_SIZE - 1;
+					bool lXNegative = true;
+					bool lXPositive = true;
+					bool lYNegative = true;
+					bool lYPositive = true;
+					bool lZNegative = true;
+					bool lZPositive = true;
 
-						lXPositive = !m_pBlocks[x + 1][y][z].isActive();
-					}
-					else if(x == max)
-					{
-						if(ch_X_pos == NULL)
-							lXPositive = false;
-						else
-							lXPositive = !(ch_X_pos->getBlock(0, y, z)->isActive());
-
-						lXNegative = !m_pBlocks[x - 1][y][z].isActive();
-					}
-					else
+					
+					if(x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y < CHUNK_SIZE - 1 && z > 0 && z < CHUNK_SIZE - 1) // block frontiers intra chunk
 					{
 						lXNegative = !m_pBlocks[x - 1][y][z].isActive();
 						lXPositive = !m_pBlocks[x + 1][y][z].isActive();
-					}
-
-					if(y == 0)
-					{
-						if(ch_Y_neg == NULL)
-							lYNegative = false;
-						else
-							lYNegative = !(ch_Y_neg->getBlock(x, max, z)->isActive());
-
-						lYPositive = !m_pBlocks[x][y + 1][z].isActive();
-					}
-					else if(y == max)
-					{
-						if(ch_Y_pos == NULL)
-							lYPositive = false;
-						else
-							lYPositive = !(ch_Y_pos->getBlock(x, 0, z)->isActive());
-
-						lYNegative = !m_pBlocks[x][y - 1][z].isActive();
-					}
-					else
-					{
 						lYNegative = !m_pBlocks[x][y - 1][z].isActive();
 						lYPositive = !m_pBlocks[x][y + 1][z].isActive();
-					}
-
-					if(z == 0)
-					{
-						if(ch_Z_neg == NULL)
-							lZNegative = false;
-						else
-							lZNegative = !(ch_Z_neg->getBlock(x, y, max)->isActive());
-
-						lZPositive = !m_pBlocks[x][y][z + 1].isActive();
-					}
-					else if(z == max)
-					{
-						if(ch_Z_pos == NULL)
-							lZPositive = false;
-						else
-							lZPositive = !(ch_Z_pos->getBlock(x, y, 0)->isActive());
-
-						lZNegative = !m_pBlocks[x][y][z - 1].isActive();
-					}
-					else
-					{
 						lZNegative = !m_pBlocks[x][y][z - 1].isActive();
 						lZPositive = !m_pBlocks[x][y][z + 1].isActive();
 					}
+					else // block frontiers inter chunk
+					{
+						if(x == 0)
+						{
+							if(ch_X_neg == NULL)
+								lXNegative = false;
+							else
+								lXNegative = !(ch_X_neg->getBlock(max, y, z)->isActive());
 
-				}
-				
-				createCube(x, y, z, lXNegative, lXPositive, lYNegative, lYPositive, lZNegative, lZPositive, m_pBlocks[x][y][z].getType());
+							lXPositive = !m_pBlocks[x + 1][y][z].isActive();
+						}
+						else if(x == max)
+						{
+							if(ch_X_pos == NULL)
+								lXPositive = false;
+							else
+								lXPositive = !(ch_X_pos->getBlock(0, y, z)->isActive());
+
+							lXNegative = !m_pBlocks[x - 1][y][z].isActive();
+						}
+						else
+						{
+							lXNegative = !m_pBlocks[x - 1][y][z].isActive();
+							lXPositive = !m_pBlocks[x + 1][y][z].isActive();
+						}
+
+						if(y == 0)
+						{
+							if(ch_Y_neg == NULL)
+								lYNegative = false;
+							else
+								lYNegative = !(ch_Y_neg->getBlock(x, max, z)->isActive());
+
+							lYPositive = !m_pBlocks[x][y + 1][z].isActive();
+						}
+						else if(y == max)
+						{
+							if(ch_Y_pos == NULL)
+								lYPositive = false;
+							else
+								lYPositive = !(ch_Y_pos->getBlock(x, 0, z)->isActive());
+
+							lYNegative = !m_pBlocks[x][y - 1][z].isActive();
+						}
+						else
+						{
+							lYNegative = !m_pBlocks[x][y - 1][z].isActive();
+							lYPositive = !m_pBlocks[x][y + 1][z].isActive();
+						}
+
+						if(z == 0)
+						{
+							if(ch_Z_neg == NULL)
+								lZNegative = false;
+							else
+								lZNegative = !(ch_Z_neg->getBlock(x, y, max)->isActive());
+
+							lZPositive = !m_pBlocks[x][y][z + 1].isActive();
+						}
+						else if(z == max)
+						{
+							if(ch_Z_pos == NULL)
+								lZPositive = false;
+							else
+								lZPositive = !(ch_Z_pos->getBlock(x, y, 0)->isActive());
+
+							lZNegative = !m_pBlocks[x][y][z - 1].isActive();
+						}
+						else
+						{
+							lZNegative = !m_pBlocks[x][y][z - 1].isActive();
+							lZPositive = !m_pBlocks[x][y][z + 1].isActive();
+						}
+
+					}
+					
+					createCube(x, y, z, lXNegative, lXPositive, lYNegative, lYPositive, lZNegative, lZPositive, m_pBlocks[x][y][z].getType());}
 			}
 		}
 	}
 
 	m_pRenderer->finishVbo();
+	m_pRenderer->setVao();
 }
 
 void Chunk::destructBlock(const int &x, const int &y, const int &z)
@@ -854,8 +788,7 @@ void Chunk::save(const std::string &jsonFolderPath)
 
 void Chunk::unload(const std::string &jsonFolderPath)
 {
-	save(jsonFolderPath);
-	delete this;
+    save(jsonFolderPath);
 }
 
 void Chunk::updateShouldRenderFlags()
