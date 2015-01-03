@@ -195,10 +195,10 @@ int main(int argc, char** argv) {
 
 			// crowbar.draw(geoProgram, crowbar, viewMatrix, ffCam.getPosition(), glm::vec3(-0.3, -0.3, 0.5), glm::vec3(0.06, 0.06, 0.06), 44.4, glm::vec3(0.2, 1.0, 0.0));
 			// crowbar.draw(geoProgram, crowbar, viewMatrix, glm::vec3(ffCam.getPosition()+glm::vec3(-0.3, -0.3, 0.5)), glm::vec3(0.06, 0.06, 0.06), 1, glm::vec3(ffCam.getFrontVector()+glm::vec3(0.2, 1.0, 0.0)));
-			crowbar.draw(geoProgram, crowbar, viewMatrix, glm::vec3(ffCam.getPosition()), glm::vec3(-1, -1, 5), glm::vec3(0.06, 0.06, 0.06), 1, glm::vec3(ffCam.getFrontVector()));
+			//crowbar.draw(geoProgram, crowbar, viewMatrix, ffCam, ffCam.getPosition() + glm::vec3(0,0,1), glm::vec3(-1, -1, 5), glm::vec3(0.06, 0.06, 0.06), 1, glm::vec3(ffCam.getUpVector()));
 			//crowbar.draw(geoProgram, crowbar, viewMatrix, glm::vec3(ffCam.getPosition()), glm::vec3(-1, -1, 5), glm::vec3(0.06, 0.06, 0.06), ffCam.getFrontVector().x, glm::vec3(ffCam.getFrontVector().x, ffCam.getLeftVector().y, ffCam.getUpVector().z));
 			// crowbar.draw(geoProgram, crowbar, viewMatrix, ffCam.getFrontVector(), glm::vec3(0, 0, 1), glm::vec3(0.06, 0.06, 0.06), 44.4, glm::vec3(0.2, 1.0, 0.0));
-			
+			crowbar.draw(geoProgram, crowbar, ffCam);
 
 			// engineblock.draw(geoProgram, engineblock, viewMatrix, glm::vec3(50, 0, 50), glm::vec3(1, 1, 1));
 			//screws.draw(geoProgram, screws, viewMatrix, glm::vec3(5, 5, 5), glm::vec3(0.001, 0.001, 0.001), windowManager.getTime(), glm::vec3(0.0, 1.0, 0.0));

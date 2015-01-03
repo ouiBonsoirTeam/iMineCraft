@@ -249,15 +249,71 @@ void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const std::strin
     glBindVertexArray(0);
 }
 
-void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix, const glm::vec3 &transCAM, const glm::vec3 &trans, const glm::vec3 &scal, const float &angle, const glm::vec3 &rot)
+//void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam, const glm::mat4 &viewMatrix, const glm::vec3 &transCAM, const glm::vec3 &trans, const glm::vec3 &scal, const float &angle, const glm::vec3 &rot)
+void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam)
 {
     //render pour l'obj
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0), transCAM);
-    modelMatrix = glm::rotate(modelMatrix, angle, rot);
-    modelMatrix = glm::translate(modelMatrix, trans);
-    modelMatrix = glm::scale(modelMatrix, scal);
+    glm::mat4 modelMatrix = glm::mat4(1.0);
+
     
-    glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+    glm::vec3 rightVector = glm::vec3(1,0,0);
+    glm::vec3 upVector = glm::vec3(0,1,0);
+    glm::vec3 lookAtVector = glm::vec3(0,0,1);
+
+    glm::vec3 posCam = ffCam.getPosition();
+    glm::vec3 posObj = ffCam.getPosition() + glm::vec3(ffCam.getFrontVector().x * 0.2,ffCam.getFrontVector().y * 0.2,ffCam.getFrontVector().z * 0.2 );
+
+    glm::vec3 objToCamProj = posCam - posObj;
+    objToCamProj[1] = 0;
+
+    objToCamProj = glm::normalize(objToCamProj);
+
+    float angleCosine = glm::dot(objToCamProj, lookAtVector);
+
+    float angle = glm::acos(angleCosine);
+
+    glm::vec3 upAux = glm::cross(objToCamProj, lookAtVector);
+
+    //glm::mat4 modelMatrix = glm::mat4(1.0);
+
+    modelMatrix = glm::translate(modelMatrix, posObj);
+
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+
+
+    if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
+    {
+        if (upAux[1] < 0)
+            modelMatrix = glm::rotate(modelMatrix, angle, ffCam.getUpVector());
+        else
+            modelMatrix = glm::rotate(modelMatrix, angle, -ffCam.getUpVector());
+    }
+
+
+    glm::vec3 objToCam = posCam - posObj;
+
+    objToCam = glm::normalize(objToCam);
+
+    angleCosine = glm::dot(objToCamProj,objToCam);
+
+    angle = glm::acos(angleCosine);
+
+    if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
+    {
+        if (objToCam[1] < 0)
+            modelMatrix = glm::rotate(modelMatrix, angle, -ffCam.getLeftVector());
+        else
+            modelMatrix = glm::rotate(modelMatrix, angle, ffCam.getLeftVector());
+    }
+
+    modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(-1,0,0));
+    modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(0,-1,0));
+    modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(0,0,-1));
+    modelMatrix = glm::translate(modelMatrix, -glm::vec3(0,5,3));
+
+
+
+    glm::mat4 modelViewMatrix = ffCam.getViewMatrix() * modelMatrix;
 
     // A sortir de la classe : Identique dans tout le programme
     glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);

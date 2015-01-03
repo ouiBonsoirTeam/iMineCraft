@@ -88,7 +88,8 @@ public:
 
     void init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, bool loadTextures, const std::string& texture);
 
-    void draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix, const glm::vec3 &transCAM, const glm::vec3 &trans, const glm::vec3 &scal, const float &angleR, const glm::vec3 &rot);
+    //void draw(GeometryProgram &geoProgram, Geometry &obj,const FreeFlyCamera& ffCam, const glm::mat4 &viewMatrix, const glm::vec3 &transCAM, const glm::vec3 &trans, const glm::vec3 &scal, const float &angleR, const glm::vec3 &rot);
+    void draw (GeometryProgram &geoProgram, Geometry &obj,const FreeFlyCamera& ffCam);
 
     void destruct();
 
