@@ -295,7 +295,7 @@ void ChunkManager::updateRenderList()
         
 }
 
-void ChunkManager::render(GeneralProgram &program, const glm::mat4 viewMatrix){
+void ChunkManager::render(DirectionalLightProgram &program, const glm::mat4 viewMatrix){
     ChunkList::iterator iterator;
 
     for(iterator = m_vpChunkRenderList.begin(); iterator != m_vpChunkRenderList.end(); ++iterator)

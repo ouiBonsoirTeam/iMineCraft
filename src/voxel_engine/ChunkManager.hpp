@@ -52,7 +52,7 @@ public:
 	void updateVisibilityList(glm::vec3 cameraPosition);
 	void updateUnloadList();
 	void updateRenderList();
-	void render(GeneralProgram &program, const glm::mat4 viewMatrix);
+	void render(DirectionalLightProgram &program, const glm::mat4 viewMatrix);
 
 	void addChunkToRebuildList(Chunk * chunk);
 

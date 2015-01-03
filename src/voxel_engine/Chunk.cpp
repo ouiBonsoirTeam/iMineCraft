@@ -436,7 +436,7 @@ void Chunk::createLandscape(PerlinNoise *pn)
     }
 }
 
-void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
+void Chunk::render(DirectionalLightProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
 	m_pRenderer->setVao();
 

@@ -24,7 +24,7 @@ namespace glimac
 		}
 	};
 
-	struct pointLightProgram
+	struct PointLightProgram
 	{
 		Program m_Program;
 
@@ -36,8 +36,9 @@ namespace glimac
 		GLint uKd;
 		GLint uLightPos_vs;
 		GLint uLightIntensity;
+		GLint uTexture;
 
-		pointLightProgram(const FilePath& applicationPath):
+		PointLightProgram(const FilePath& applicationPath):
 			m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/pointlight.fs.glsl"))
 		{
 			uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
@@ -48,6 +49,38 @@ namespace glimac
 			uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
 			uLightPos_vs = glGetUniformLocation(m_Program.getGLId(), "uLightPos_vs");
 			uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
+			uTexture = glGetUniformLocation(m_Program.getGLId(), "uTexture");
+
+		}
+	};
+
+	struct DirectionalLightProgram
+	{
+		Program m_Program;
+
+		GLint uMVPMatrix;
+		GLint uMVMatrix;
+		GLint uNormalMatrix;
+		GLint uShininess;
+		GLint uKs;
+		GLint uKd;
+		GLint uLightDir_vs;
+		GLint uLightIntensity;
+		GLint uTexture;
+
+		DirectionalLightProgram(const FilePath& applicationPath):
+			m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl", applicationPath.dirPath() + "shaders/directionallight.fs.glsl"))
+		{
+			uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
+			uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
+			uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
+			uShininess = glGetUniformLocation(m_Program.getGLId(), "uShininess");
+			uKs = glGetUniformLocation(m_Program.getGLId(), "uKs");
+			uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
+			uLightDir_vs = glGetUniformLocation(m_Program.getGLId(), "uLightDir_vs");
+			uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
+			uTexture = glGetUniformLocation(m_Program.getGLId(), "uTexture");
+
 		}
 	};
 

@@ -18,6 +18,7 @@
 #include "voxel_engine/ChunkManager.hpp"
 #include "physics/Event_manager.hpp"
 #include "Skybox.hpp"
+#include "Light.hpp"
 
 using namespace glimac;
 
@@ -56,12 +57,9 @@ int main(int argc, char** argv) {
 	//glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
 	GeneralProgram gProgram(applicationPath);
-	pointLightProgram lProgram(applicationPath);
+	PointLightProgram lProgram(applicationPath);
 	SkyboxProgram skyProg(applicationPath);
-
-	// gProgram.m_Program.use();
-	// lProgram.m_Program.use();
-	// skyProg.m_Program.use();
+	DirectionalLightProgram sunProg(applicationPath);
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
@@ -87,11 +85,6 @@ int main(int argc, char** argv) {
 	ChunkManager chunkmanager;
 	chunkmanager.initialize("bin/assets/saves");
 
-	// Chunk chunk;
-	// chunk.init();
-
-	// chunk.buildMesh();
-
 	//initialisation angle
 	float angleX = 0;
 	float angleY = 0;
@@ -108,9 +101,16 @@ int main(int argc, char** argv) {
 	Skybox skybox;
 	skybox.init(skyProg);
 
-	// // make me a torch
-	// Torch torch;
+	//make me a sun
+	Light sun = Light(glm::vec3(1,1,1), glm::vec3(-0.5,0.5,-0.5));
+
+	// make me a torch
+	Torch torch(glm::vec3(5,8,5));
+
+	// define current BlockType
 	BlockType currentBlockType = BlockType_Earth;
+
+	// make me an inventory
 	Inventory invent;
 
 	// Application loop:
@@ -140,9 +140,6 @@ int main(int argc, char** argv) {
 		    lastTime += 1.0;
 		}
 
-		//std::cout<<"currentTime - lastTime2 : "<< (currentTime - lastTime2) << std::endl;
-		//std::cout<<"1/max_fps : "<< (1.f/max_fps) << std::endl;
-		//std::cout<<"diff : "<< (1.f/max_fps) - (currentTime - lastTime2) << std::endl;
 		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
 		{
 			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
@@ -153,8 +150,6 @@ int main(int argc, char** argv) {
 		/*********************************
 		 * HERE SHOULD COME THE RENDERING CODE
 		 *********************************/
-		
-		// glClear(GL_COLOR_BUFFER_BIT);
 
 		glm::mat4 viewMatrix = ffCam.getViewMatrix();
 
@@ -164,14 +159,11 @@ int main(int argc, char** argv) {
 		skyProg.m_Program.use();
 			skybox.draw(skyProg, viewMatrix);
 
-		gProgram.m_Program.use();
-			// torch.draw(lProgram, viewMatrix);
+		sunProg.m_Program.use();
+			sun.initMaterial(glm::vec3(1,1,1), glm::vec3(1,1,1), 2.f);
+			sun.computeLight(sunProg, ffCam.getViewMatrix());
 
-		
-		chunkmanager.render(gProgram, ffCam.getViewMatrix());
-
-
-		// chunk.render(gProgram, viewMatrix, idTexture);
+		chunkmanager.render(sunProg, ffCam.getViewMatrix());
 
 		// Update the display
 		windowManager.swapBuffers();
