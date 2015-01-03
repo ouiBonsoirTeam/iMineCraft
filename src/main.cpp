@@ -19,6 +19,8 @@
 #include "physics/Event_manager.hpp"
 #include "voxel_engine/Block.hpp"
 #include "Skybox.hpp"
+#include "Helmet.hpp"
+
 
 using namespace glimac;
 
@@ -101,6 +103,10 @@ int main(int argc, char** argv) {
 
 	glEnable(GL_DEPTH_TEST);
 
+	//For transparency
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	//Chargement des shaders
     FilePath applicationPath(argv[0]);
 
@@ -110,6 +116,7 @@ int main(int argc, char** argv) {
 	GeneralProgram gProgram(applicationPath);
 	pointLightProgram lProgram(applicationPath);
 	SkyboxProgram skyProg(applicationPath);
+	HelmetProgram hellProg(applicationPath);
 
 	// gProgram.m_Program.use();
 	// lProgram.m_Program.use();
@@ -171,6 +178,9 @@ int main(int argc, char** argv) {
 	BlockType currentBlockType = BlockType_Earth;
 	Inventory invent;
 
+	// make me a helmet
+	Helmet helmet;
+
 	// Application loop:
 	bool done = false;
 	while(!done) {
@@ -222,6 +232,12 @@ int main(int argc, char** argv) {
 
 		
 		chunkmanager.render(gProgram, ffCam.getViewMatrix());
+
+
+
+		hellProg.m_Program.use();
+			helmet.setPosition(ffCam.getPosition() + glm::vec3(ffCam.getFrontVector().x * 0.2, ffCam.getFrontVector().y * 0.2, ffCam.getFrontVector().z * 0.2 ));
+			helmet.drawBillboard(hellProg, ffCam);
 
 
 		// chunk.render(gProgram, viewMatrix, idTexture);
