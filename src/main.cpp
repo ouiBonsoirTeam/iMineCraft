@@ -92,6 +92,8 @@ int main(int argc, char** argv) {
 	float angleY = 0;
 	float angleYfinal = 0;
 
+	int crouch = 0;
+
 	const float CAMERA_ROT_FACTOR = 0.05f;
 
 	int max_fps = 60;
@@ -115,7 +117,7 @@ int main(int argc, char** argv) {
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType);
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, crouch, currentBlockType);
 
 		// Measure speed
 		float currentTime = windowManager.getTime();

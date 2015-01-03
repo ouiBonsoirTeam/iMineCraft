@@ -44,6 +44,7 @@ void event_manager(SDLWindowManager& windowManager,
 				   bool& done,
 				   ChunkManager& chunkmanager,
 				   Inventory& inventory,
+				   int& crouch,
 				   BlockType& currentBlockType){
 
 	// INIT
@@ -102,7 +103,13 @@ void event_manager(SDLWindowManager& windowManager,
 			if (e.key.keysym.sym == 232) //è
 			{
 				currentBlockType=BlockType_Ice;
-			}			
+			}	
+
+			if (e.key.keysym.sym == SDLK_LCTRL && crouch == 1) 
+			{
+				ffCam.slide(glm::vec3(0,+1,0));
+				crouch = 0;		
+			}
 		}
 
 		//souris
@@ -250,8 +257,15 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 	// sol
-	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive())
+
+	
+	if(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() || crouch == 1)
 	{
+		if(windowManager.isKeyPressed(SDLK_LCTRL) && crouch == 0)
+		{
+			ffCam.slide(glm::vec3(0,-1,0));
+			crouch = 1;
+		}
 		gravityFactor = 0.00f;
 		velocity.y=0;
 		ffCam.setInertia(glm::vec3(0,0,0));
@@ -340,12 +354,14 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 		BlockType bt;
-		if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->destructBlock(blockX,blockY,blockZ, bt) )
+		if (!getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->getType() == BlockType_Lava)
 		{
-			inventory.addBlock(bt);
-			chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
-		}
-
+			if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->destructBlock(blockX,blockY,blockZ, bt) )
+			{
+				inventory.addBlock(bt);
+				chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+			}
+		}		
 	}
 
 		std::cout << "currentBlockType : " << currentBlockType << std::endl;
@@ -379,6 +395,7 @@ void event_manager(SDLWindowManager& windowManager,
 		if (inventory.getNbBlock(bt) > 0)
 		{
 			if (!getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->isActive() && 
+
 				(	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(1,0,0))->isActive()
 				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(-1,0,0))->isActive()
 				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,1,0))->isActive()
