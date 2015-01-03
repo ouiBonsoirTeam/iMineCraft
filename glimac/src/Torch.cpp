@@ -10,7 +10,7 @@ namespace glimac
 	Torch::Torch(glm::vec3 position)
 	{
 		_position = position;
-		_intensity = glm::vec3(255, 153, 51);
+		_intensity = glm::vec3(25.5, 15.3, 5.1);
 
 		//chargement de la texture
 	    std::unique_ptr<Image> ptrTexture = loadImage("bin/assets/textures/light_test2.png");
@@ -117,8 +117,6 @@ namespace glimac
 	{
 		glm::vec4 lightPosTmp = glm::mat4(1.f) * glm::vec4(_position - glm::vec3(0,1,0), 1);
 		lightPosTmp = ffCam.getViewMatrix() * lightPosTmp;
-		//glm::vec3 lightPosDef = glm::vec3(ffCam.getViewMatrix() * glm::vec4(_position - glm::vec3(0,1,0), 0) );
-
 
 		glUniform3f(prog.uLightPos_vs, lightPosTmp.r, lightPosTmp.g, lightPosTmp.b);
 		glUniform3f(prog.uLightIntensity, _intensity.r, _intensity.g, _intensity.b);

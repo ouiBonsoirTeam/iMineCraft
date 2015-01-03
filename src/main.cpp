@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
 	skybox.init(skyProg);
 
 	//make me a sun
-	//Light sun = Light(glm::vec3(1,1,1), glm::vec3(-0.5,0.5,-0.5));
+	Light sun = Light(glm::vec3(1,1,1), glm::vec3(-0.5,0.5,-0.5));
 
 	// make me a torch
 	Torch torch(glm::vec3(5,8,5));
@@ -161,14 +161,14 @@ int main(int argc, char** argv) {
 		skyProg.m_Program.use();
 			skybox.draw(skyProg, viewMatrix);
 
-		// sunProg.m_Program.use();
-		// 	sun.initMaterial(glm::vec3(1,1,1), glm::vec3(1,1,1), 2.f);
-		// 	sun.computeLight(sunProg, ffCam.getViewMatrix());
-		// 	chunkmanager.render(sunProg, ffCam.getViewMatrix());
+		sunProg.m_Program.use();
+			sun.initMaterial(glm::vec3(1,1,1), glm::vec3(1,1,1), 2.f);
+			sun.computeLight(sunProg, ffCam.getViewMatrix());
+			chunkmanager.render(sunProg, ffCam.getViewMatrix());
 
-		lProgram.m_Program.use();
-			torch.computeLight(lProgram, ffCam);
-			chunkmanager.render(lProgram, ffCam.getViewMatrix());
+		// lProgram.m_Program.use();
+		// 	torch.computeLight(lProgram, ffCam);
+		// 	chunkmanager.render(lProgram, ffCam.getViewMatrix());
 
 		gProgram.m_Program.use();
 			torch.drawBillboard(gProgram, ffCam);

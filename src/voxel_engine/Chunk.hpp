@@ -66,6 +66,7 @@ public:
 
 	// render
 	void render(PointLightProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
+	void render(DirectionalLightProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
  
 	void update();
 
