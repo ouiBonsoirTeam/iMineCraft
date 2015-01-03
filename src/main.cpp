@@ -22,7 +22,7 @@ using namespace glimac;
 
 int main(int argc, char** argv) {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -51,10 +51,6 @@ int main(int argc, char** argv) {
 	pointLightProgram lProgram(applicationPath);
 	SkyboxProgram skyProg(applicationPath);
 
-	// gProgram.m_Program.use();
-	// lProgram.m_Program.use();
-	// skyProg.m_Program.use();
-
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
 	texturePointer = loadImage("../iMineCraft/assets/textures/glass_1024.png");
@@ -77,13 +73,8 @@ int main(int argc, char** argv) {
 
 	// // TEST
 	std::string savesFolder = "bin/assets/saves/";
-	ChunkManager chunkmanager;
-	chunkmanager.initialize(savesFolder);
-
-	// Chunk chunk;
-	// chunk.init();
-
-	// chunk.buildMesh();
+	ChunkManager * chunkmanager = new ChunkManager;
+	chunkmanager->initialize(savesFolder);
 
 	//initialisation angle
 	float angleX = 0;
@@ -108,10 +99,10 @@ int main(int argc, char** argv) {
 	bool done = false;
 	while(!done) {
 
-		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+		chunkmanager->update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,*chunkmanager.getChunk(0,0,0));			
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,*chunkmanager->getChunk(0,0,0));			
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
@@ -123,9 +114,6 @@ int main(int argc, char** argv) {
 		    lastTime += 1.0;
 		}
 
-		//std::cout<<"currentTime - lastTime2 : "<< (currentTime - lastTime2) << std::endl;
-		//std::cout<<"1/max_fps : "<< (1.f/max_fps) << std::endl;
-		//std::cout<<"diff : "<< (1.f/max_fps) - (currentTime - lastTime2) << std::endl;
 		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
 		{
 			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
@@ -151,10 +139,7 @@ int main(int argc, char** argv) {
 			// torch.draw(lProgram, viewMatrix);
 
 		
-		chunkmanager.render(gProgram, ffCam.getViewMatrix());
-
-
-		// chunk.render(gProgram, viewMatrix, idTexture);
+		chunkmanager->render(gProgram, ffCam.getViewMatrix());
 
 		// Update the display
 		windowManager.swapBuffers();
@@ -162,6 +147,8 @@ int main(int argc, char** argv) {
 	}
 
 	skybox.destruct();
+	delete chunkmanager;
+	glDeleteTextures(1, &idTexture);
 
 	return EXIT_SUCCESS;
 }

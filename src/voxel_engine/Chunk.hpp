@@ -42,10 +42,8 @@ public:
 
 	// Getter
 	Block*** getBlocks() const;
+
 	Block* getBlock(const int & x, const int & y, const int & z) const;
-	
-	// Create the world chunk model
-	void init();
 
 	// Occlusion management
 	bool blockExist(int x, int y, int z);
