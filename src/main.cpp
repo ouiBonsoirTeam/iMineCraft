@@ -111,10 +111,6 @@ int main(int argc, char** argv) {
 	pointLightProgram lProgram(applicationPath);
 	SkyboxProgram skyProg(applicationPath);
 
-	// gProgram.m_Program.use();
-	// lProgram.m_Program.use();
-	// skyProg.m_Program.use();
-
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
 	texturePointer = loadImage("../iMineCraft/assets/textures/glass_1024.png");
@@ -134,19 +130,15 @@ int main(int argc, char** argv) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,  0);
 
-	
-
-	// Initialisation chunkmanager
+	std::string savesFolder = "bin/assets/saves/";
 	ChunkManager chunkmanager;
-	chunkmanager.initialize("bin/assets/saves");
-
+	chunkmanager.initialize(savesFolder);
 
 	//Initialisation camera freefly
 	FreeFlyCamera ffCam;
 	chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 	
 	ffCam.setPosition(glm::vec3(5,chunkmanager.getNoiseValue(5,5)+5,5));
-
 
 	//initialisation angle
 	float angleX = 0;
@@ -193,9 +185,6 @@ int main(int argc, char** argv) {
 		    lastTime += 1.0;
 		}
 
-		//std::cout<<"currentTime - lastTime2 : "<< (currentTime - lastTime2) << std::endl;
-		//std::cout<<"1/max_fps : "<< (1.f/max_fps) << std::endl;
-		//std::cout<<"diff : "<< (1.f/max_fps) - (currentTime - lastTime2) << std::endl;
 		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
 		{
 			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
@@ -223,22 +212,24 @@ int main(int argc, char** argv) {
 		
 		chunkmanager.render(gProgram, ffCam.getViewMatrix());
 
-
-		// chunk.render(gProgram, viewMatrix, idTexture);
-
 		// SDL_BlitSurface(pImage,NULL,SDL_GetWindowSurface(pWindow),NULL);
 		// SDL_BlitSurface(pFontSurface,NULL,SDL_GetWindowSurface(pWindow),NULL);
 		// SDL_UpdateWindowSurface(pWindow);
+
 		// Update the display
 		windowManager.swapBuffers();
 
 	}
 
+	// Unload and save the displayed map
+	chunkmanager.unloadWorld();
+	
 	skybox.destruct();
+	glDeleteTextures(1, &idTexture);
 	deletesound(mix_chunk, music);
 	// SDL_FreeSurface(pFontSurface);
 	// TTF_CloseFont(pFont);
 	// SDL_FreeSurface(pImage);
-	
+
 	return EXIT_SUCCESS;
 }

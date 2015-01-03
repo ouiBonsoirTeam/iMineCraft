@@ -21,7 +21,7 @@ private:
 	//postition
 	glm::vec3 m_position;
 
-	Json::Value m_blocksData;
+	Json::Value m_Added_Deleted_Blocks;
 
 
 public:
@@ -29,22 +29,21 @@ public:
 	Chunk(glm::vec3 position);
 	~Chunk();
 
-	glm::vec3 getPosition(){ return m_position; }
+	glm::vec3 getPosition() const { return m_position; };
 	int getX(){ return m_position[0]; }
 	int getY(){ return m_position[1]; }
 	int getZ(){ return m_position[2]; }
 	bool isEmpty() { return m_emptyChunk; }
 
-	static const int CHUNK_SIZE = 10;
+	static const int CHUNK_SIZE = 24;
 	static const int TAILLE_X_TEXTURE = 16;
 
 	static const int TAILLE_Y_TEXTURE = 24;
 
 	// Getter
 	Block*** getBlocks() const;
-	
-	// Create the world chunk model
-	void init();
+
+	Block* getBlock(const int & x, const int & y, const int & z) const;
 
 	// Occlusion management
 	bool blockExist(int x, int y, int z);
@@ -73,7 +72,7 @@ public:
 
 	bool isSetup();
 
-	void buildMesh(); 
+	void buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chunk * ch_Y_neg, const Chunk * ch_Y_pos, const Chunk * ch_Z_neg, const Chunk * ch_Z_pos);
 
 	bool destructBlock(const int &x, const int &y, const int &z, BlockType& type);
 
@@ -83,10 +82,10 @@ public:
 
 	void load(const Json::Value &chunkData);
 
-	void unload();
+	void save(const std::string &jsonFolderPath);
+	void unload(const std::string &jsonFolderPath);
 
 	void updateShouldRenderFlags();
-
 
 	void createHeightMap();
 };
