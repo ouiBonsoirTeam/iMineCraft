@@ -781,7 +781,6 @@ void Chunk::save(const std::string &jsonFolderPath)
 void Chunk::unload(const std::string &jsonFolderPath)
 {
     save(jsonFolderPath);
-    delete this;
 }
 
 void Chunk::updateShouldRenderFlags()

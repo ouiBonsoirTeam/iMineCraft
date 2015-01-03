@@ -245,7 +245,7 @@ void ChunkManager::updateUnloadList()
         if(pChunk->isLoaded())
         {
             pChunk->unload("bin/assets/saves/");
-
+            delete pChunk;
             m_forceVisibilityUpdate = true;
         }
     }
