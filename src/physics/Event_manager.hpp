@@ -160,7 +160,7 @@ void event_manager(SDLWindowManager& windowManager,
 			angleX -= e.motion.xrel * CAMERA_ROT_FACTOR;
 			angleY -= e.motion.yrel * CAMERA_ROT_FACTOR;
 			angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
-			angleYfinal = std::min(90.0f, std::max(-90.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
+			angleYfinal = std::min(87.0f, std::max(-87.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
 		}
 
 		if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -176,7 +176,7 @@ void event_manager(SDLWindowManager& windowManager,
 		}
 	}
 	ffCam.rotateLeft(angleX);
-	if (angleYfinal != 90 && angleYfinal !=-90) ffCam.rotateUp(angleY);
+	if (angleYfinal != 87 && angleYfinal !=-87) ffCam.rotateUp(angleY);
 	angleY = 0;
 	angleX = 0;
 	

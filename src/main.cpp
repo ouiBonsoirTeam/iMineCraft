@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
 
 
 		hellProg.m_Program.use();
-			helmet.setPosition(ffCam.getPosition() + glm::vec3(ffCam.getFrontVector().x * 0.2, ffCam.getFrontVector().y * 0.2, ffCam.getFrontVector().z * 0.2 ));
+			helmet.setPosition(ffCam.getPosition() + glm::vec3(ffCam.getFrontVector().x * 0.15, ffCam.getFrontVector().y * 0.15, ffCam.getFrontVector().z * 0.15 ));
 			helmet.drawBillboard(hellProg, ffCam);
 
 

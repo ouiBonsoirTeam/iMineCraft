@@ -6,7 +6,7 @@ Helmet::Helmet()
 {
 
 	//chargement de la texture
-    std::unique_ptr<Image> ptrTexture = loadImage("bin/assets/textures/glass_1024.png");
+    std::unique_ptr<Image> ptrTexture = loadImage("bin/assets/textures/helmet_cross.png");
     if (ptrTexture == NULL)
         std::cout << "Error while charging texture!" << std::endl;
 
@@ -39,12 +39,12 @@ Helmet::Helmet()
 	glm::vec4 vertices2[] = { 
 
 		glm::vec4(0, 0, 0, 0),// premier sommet
-		glm::vec4(1, 0, 1/24, 0), // deuxième sommet
-		glm::vec4(1, 1, 1/24, 1/16), // troisième sommet
+		glm::vec4(1, 0, 0, 0), // deuxième sommet
+		glm::vec4(1, 1, 0, 0), // troisième sommet
 		//deuxieme triangle
 		glm::vec4(0, 0, 0, 0), // premier sommet
-		glm::vec4(0, 1, 0, 1/16),// deuxième sommet
-		glm::vec4(1, 1, 1/24, 1/16)// troisième sommet
+		glm::vec4(0, 1, 0, 0),// deuxième sommet
+		glm::vec4(1, 1, 0, 0)// troisième sommet
 	};
 
 	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(glm::vec4), vertices2, GL_STATIC_DRAW);
@@ -128,7 +128,7 @@ void Helmet::drawBillboard(HelmetProgram & prog, FreeFlyCamera &ffCam)
 
 	matrixM = glm::translate(glm::mat4(1.0), _position);
 
-	if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
+	if ((angleCosine < 0.99999) && (angleCosine > -0.99999))
 		matrixM = glm::rotate(matrixM, angle, -upAux);
 
 
