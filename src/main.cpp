@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 	FreeFlyCamera ffCam;
 	chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 	
-	ffCam.setPosition(glm::vec3(5,chunkmanager.getNoiseValue(5,5)+5,5));
+	ffCam.setPosition(glm::vec3(0,chunkmanager.getNoiseValue(0,0)+5,0));
 
 
 	//initialisation angle
@@ -196,37 +196,21 @@ int main(int argc, char** argv) {
 
 		geoProgram.m_Program.use();
 			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-4,glm::round(chunkmanager.getNoiseValue(-4,-4))+0.5,-4), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-3,glm::round(chunkmanager.getNoiseValue(-3,-3))+0.5,-3), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-2,glm::round(chunkmanager.getNoiseValue(-2,-2))+0.5,-2), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-1,glm::round(chunkmanager.getNoiseValue(-1,-1))+0.5,-1), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(0,glm::round(chunkmanager.getNoiseValue(0,0))+0.5,0), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(1,glm::round(chunkmanager.getNoiseValue(1,1))+0.5,1), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(2,glm::round(chunkmanager.getNoiseValue(2,2))+0.5,2), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(3,glm::round(chunkmanager.getNoiseValue(3,3))+0.5,3), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,4))+0.5,4), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(5,glm::round(chunkmanager.getNoiseValue(5,5))+0.5,5), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));	
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(6,glm::round(chunkmanager.getNoiseValue(6,6))+0.5,6), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(7,glm::round(chunkmanager.getNoiseValue(7,7))+0.5,7), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(8,glm::round(chunkmanager.getNoiseValue(8,8))+0.5,8), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(9,glm::round(chunkmanager.getNoiseValue(9,9))+0.5,9), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(10,glm::round(chunkmanager.getNoiseValue(10,10))+0.5,10), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(11,glm::round(chunkmanager.getNoiseValue(11,11))+0.5,11), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
-			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(12,glm::round(chunkmanager.getNoiseValue(12,12))+0.5,12), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			
 			// for (int i = 0; i < 20; ++i)
 			// {
 			// 	veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3((std::rand() % 100) + 1, 0, (std::rand() % 100) + 1), glm::vec3(0.01, 0.01, 0.01));
 			// }
-			//lander.draw(geoProgram, lander, viewMatrix, glm::vec3(20, 0, 20), glm::vec3(1, 1, 1));
+			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
 			crowbar.drawCrowbar(geoProgram, crowbar, ffCam);
 
 			//engineblock.draw(geoProgram, engineblock, viewMatrix, glm::vec3(50, 0, 50), glm::vec3(1, 1, 1));
-			//screws.draw(geoProgram, screws, viewMatrix, glm::vec3(15, 5, 5), glm::vec3(0.001, 0.001, 0.001), windowManager.getTime(), glm::vec3(0.0, 1.0, 0.0));
+			//screws.draw(geoProgram, screws, viewMatrix, glm::vec3(15, 5, 5), glm::vec3(0.001, 0.001, 0.001), windowManager.getTime(), glm::4ec3(0.0, 1.0, 0.0));
 
-		
+		gProgram.m_Program.use();
 		chunkmanager.render(gProgram, ffCam.getViewMatrix());
 
 
-		gProgram.m_Program.use();
 
 		// Update the display
 		windowManager.swapBuffers();
