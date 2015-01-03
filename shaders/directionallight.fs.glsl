@@ -35,8 +35,8 @@ vec3 blinnPhong()
 
 void main() {
 
-	vec4 textCaisse = texture(uTexture, vFragTexture.xy);
+	vec4 textMain = texture(uTexture, vFragTexture.xy);
 	vec4 textOcclu = vec4(1, 1, 1, 1) - texture(uTexture, vFragTexture.zw);
-	fFragColor = vec3(textCaisse - textOcclu * 0.5) - (vec3(1,1,1) - blinnPhong());
+	fFragColor = vec3(textMain - textOcclu * 0.5) - (vec3(1,1,1) - blinnPhong());
 
 };

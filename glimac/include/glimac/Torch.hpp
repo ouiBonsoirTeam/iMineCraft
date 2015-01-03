@@ -29,7 +29,9 @@ namespace glimac
 			glm::vec3 getIntensity(){ return _intensity; };
 
 			// Methods
-			void draw(PointLightProgram & prog, glm::mat4 & matrixV, FreeFlyCamera &ffCam);
+			void computeLight(PointLightProgram & prog, FreeFlyCamera &ffCam);
+
+			void drawBillboard(GeneralProgram & prog, FreeFlyCamera &ffCam);
 	};
 	
 }

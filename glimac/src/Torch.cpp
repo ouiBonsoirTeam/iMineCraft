@@ -10,10 +10,10 @@ namespace glimac
 	Torch::Torch(glm::vec3 position)
 	{
 		_position = position;
-		_intensity = glm::vec3(100, 100, 100);
+		_intensity = glm::vec3(255, 153, 51);
 
 		//chargement de la texture
-	    std::unique_ptr<Image> ptrTexture = loadImage("bin/assets/textures/soleil.jpg");
+	    std::unique_ptr<Image> ptrTexture = loadImage("bin/assets/textures/light_test2.png");
 	    if (ptrTexture == NULL)
 	        std::cout << "Error while charging texture!" << std::endl;
 
@@ -113,9 +113,23 @@ namespace glimac
 	    glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+	void Torch::computeLight(PointLightProgram & prog, FreeFlyCamera &ffCam)
+	{
+		glm::vec4 lightPosTmp = glm::mat4(1.f) * glm::vec4(_position - glm::vec3(0,1,0), 1);
+		lightPosTmp = ffCam.getViewMatrix() * lightPosTmp;
+		//glm::vec3 lightPosDef = glm::vec3(ffCam.getViewMatrix() * glm::vec4(_position - glm::vec3(0,1,0), 0) );
 
 
-	void Torch::draw(PointLightProgram & prog, glm::mat4 & matrixV, FreeFlyCamera &ffCam)
+		glUniform3f(prog.uLightPos_vs, lightPosTmp.r, lightPosTmp.g, lightPosTmp.b);
+		glUniform3f(prog.uLightIntensity, _intensity.r, _intensity.g, _intensity.b);
+
+		glUniform3f(prog.uKd, 1, 1, 1);
+		glUniform3f(prog.uKs, 1, 1, 1);
+
+	}
+
+
+	void Torch::drawBillboard(GeneralProgram & prog, FreeFlyCamera &ffCam)
 	{
 		glm::vec3 rightVector = glm::vec3(1,0,0);
 		glm::vec3 upVector = glm::vec3(0,1,0);
@@ -139,12 +153,7 @@ namespace glimac
 		matrixM = glm::translate(glm::mat4(1.0), _position);
 
 		if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
-		{
-			if (upAux[1] < 0)
-				matrixM = glm::rotate(matrixM, angle, upAux);
-			else
-			 	matrixM = glm::rotate(matrixM, angle, -upAux);
-		}
+			matrixM = glm::rotate(matrixM, angle, -upAux);
 
 
 		glm::vec3 objToCam = posCam - _position;
@@ -163,7 +172,7 @@ namespace glimac
 				matrixM = glm::rotate(matrixM, angle, -rightVector);
 		}
 
-		glm::mat4 matrixMV = matrixV * matrixM;
+		glm::mat4 matrixMV = ffCam.getViewMatrix() * matrixM;
 
 		glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
@@ -176,15 +185,6 @@ namespace glimac
 		glUniformMatrix4fv(prog.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
 		glUniformMatrix4fv(prog.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
 		glUniformMatrix4fv(prog.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
-
-
-		glm::vec3 lightPos = glm::vec3(matrixV * glm::vec4(_position, 0));
-		glUniform3f(prog.uLightPos_vs, lightPos.r, lightPos.g, lightPos.b);
-		glUniform3f(prog.uLightIntensity, _intensity.r, _intensity.g, _intensity.b);
-
-		glUniform3f(prog.uKd, 1, 1, 1);
-		glUniform3f(prog.uKs, 1, 1, 1);
-
 
 		//bind de la texture
 	    glBindTexture(GL_TEXTURE_2D, _texture);
