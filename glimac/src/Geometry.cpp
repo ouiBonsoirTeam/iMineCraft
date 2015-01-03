@@ -249,15 +249,57 @@ void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const std::strin
     glBindVertexArray(0);
 }
 
-//void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam, const glm::mat4 &viewMatrix, const glm::vec3 &transCAM, const glm::vec3 &trans, const glm::vec3 &scal, const float &angle, const glm::vec3 &rot)
-void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam)
+void Geometry::draw(GeometryProgram &geoProgram, 
+                    Geometry &obj,
+                    const glm::mat4 &viewMatrix, 
+                    const glm::vec3 &trans, 
+                    const glm::vec3 &scal, 
+                    const float &angleR, 
+                    const glm::vec3 &rot)
+{
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), trans);
+    modelMatrix = glm::rotate(modelMatrix, angleR, rot);
+    modelMatrix = glm::scale(modelMatrix, scal);
+
+
+    glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+
+    // A sortir de la classe : Identique dans tout le programme
+    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+
+    glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
+
+    // Normale
+    glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
+
+    glUniformMatrix4fv(geoProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+    glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+    glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+
+    glBindVertexArray(m_vao);
+
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+    glUniform1i(geoProgram.uTexture, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+
+
+    glDrawElements(GL_TRIANGLES, obj.getIndexCount(), GL_UNSIGNED_INT, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glBindVertexArray(0);
+}
+
+void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam)
 {
     //render pour l'obj
     glm::mat4 modelMatrix = glm::mat4(1.0);
 
-    
-    glm::vec3 rightVector = glm::vec3(1,0,0);
-    glm::vec3 upVector = glm::vec3(0,1,0);
     glm::vec3 lookAtVector = glm::vec3(0,0,1);
 
     glm::vec3 posCam = ffCam.getPosition();
@@ -310,6 +352,7 @@ void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCam
     modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(0,-1,0));
     modelMatrix = glm::rotate(modelMatrix, 45.f, glm::vec3(0,0,-1));
     modelMatrix = glm::translate(modelMatrix, -glm::vec3(0,5,3));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.8, 0.8, 0.8));
 
 
 
@@ -326,101 +369,6 @@ void Geometry::draw(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCam
     glUniformMatrix4fv(geoProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
     glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
     glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-
-
-
-
-    // glm::vec3 rightVector = glm::vec3(1,0,0);
-    // glm::vec3 upVector = glm::vec3(0,1,0);
-    // glm::vec3 lookAtVector = glm::vec3(0,0,1);
-
-    // glm::vec3 posCam = ffCam.getPosition();
-
-    // glm::vec3 objToCamProj = posCam - trans;
-    // objToCamProj[1] = 0;
-
-    // objToCamProj = glm::normalize(objToCamProj);
-
-    // float angleCosine = glm::dot(objToCamProj, lookAtVector);
-
-    // float angle = glm::acos(angleCosine); //* 180/3.14;
-
-    // glm::vec3 upAux = glm::cross(objToCamProj, lookAtVector);
-
-    // glm::mat4 matrixM = glm::mat4(1.0);
-
-    // matrixM = glm::translate(glm::mat4(1.0), trans);
-
-    // if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
-    //     if (upAux[1] < 0)
-    //         matrixM = glm::rotate(matrixM, angle, upAux);
-    //     else
-    //         matrixM = glm::rotate(matrixM, angle, -upAux);
-
-
-    // glm::vec3 objToCam = posCam - trans;
-
-    // objToCam = glm::normalize(objToCam);
-
-    // angleCosine = glm::dot(objToCamProj,objToCam);
-
-    // angle = glm::acos(angleCosine);
-
-    // if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
-    //     if (objToCam[1] < 0)
-    //         matrixM = glm::rotate(matrixM, angle, rightVector);
-    //     else
-    //         matrixM = glm::rotate(matrixM, angle, -rightVector);
-    
-
-    // //matrixM = glm::translate(matrixM, trans);
-    // //matrixM = glm::scale(matrixM, scal);
-
-    // glm::mat4 modelViewMatrix = viewMatrix * matrixM;
-
-    // // A sortir de la classe : Identique dans tout le programme
-    // glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
-    // glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
-
-    // // Normale
-    // glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
-
-    // glUniformMatrix4fv(geoProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-    // glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
-    // glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-
-    // glm::mat4 matrixMV = matrixV * matrixM;
-
-    // glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
-
-
-    // //calcul de la matrixViewProjetée
-    // glm::mat4 matrixMVP = matrixP * matrixMV;
-
-
-    // //²calcul de la normal matrix = (MVinverse)Transposée
-    // glm::mat4 normalMatrix = glm::transpose(glm::inverse(matrixMV));
-
-    // glUniformMatrix4fv(prog.uMVMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMV));
-    // glUniformMatrix4fv(prog.uMVPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixMVP));
-    // glUniformMatrix4fv(prog.uNormalMatrix, 1, GL_FALSE,  glm::value_ptr(normalMatrix));
-    // glUniformMatrix4fv(prog.uPMatrix, 1, GL_FALSE,  glm::value_ptr(matrixP));
-
-
-    // glm::vec3 lightPos = glm::vec3(matrixV * glm::vec4(trans, 0));
-    // //glm::vec3 lightPos = _position;
-    // glUniform3f(prog.uLightPos_vs, lightPos.r, lightPos.g, lightPos.b);
-    // glUniform3f(prog.uLightIntensity, _intensity.r, _intensity.g, _intensity.b);
-
-    // glUniform3f(prog.uKd, 1, 1, 1);
-    // glUniform3f(prog.uKs, 1, 1, 1);
-
-
-
-
-
-
 
 
     glBindVertexArray(m_vao);
