@@ -57,7 +57,7 @@ SDLWindowManager::SDLWindowManager(const char* title, bool fullscreen) {
             return;
         }
     }
-
+    //std::cout << "Depuis SDLWM" << m_pWindow->w << std::endl;
 
     m_Context = SDL_GL_CreateContext(m_pWindow);
     std::cerr << SDL_GetError() << std::endl;
@@ -97,6 +97,10 @@ void SDLWindowManager::swapBuffers() {
 
 float SDLWindowManager::getTime() const {
     return 0.001f * SDL_GetTicks();
+}
+
+SDL_Window* SDLWindowManager::getWindow() const {
+    return m_pWindow;
 }
 
 }

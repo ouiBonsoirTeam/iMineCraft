@@ -1,4 +1,6 @@
 #include <GL/glew.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <unistd.h>
 #include <glimac/SDLWindowManager.hpp>
@@ -25,6 +27,11 @@ int main(int argc, char** argv) {
 	// Initialize SDL and open a window
 	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
+	// const unsigned int windowWidth = windowManager.getWindow()->width;
+	// const unsigned int windowHeight = windowManager.getWindow()->height;
+	// const unsigned int windowWidth = 800;
+ //    const unsigned int windowHeight = 600;
+
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
 	GLenum glewInitError = glewInit();
@@ -39,6 +46,54 @@ int main(int argc, char** argv) {
 	/*********************************
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
+
+	// SDL_Window* pWindow = NULL;
+	// SDL_Surface* pImage = NULL;
+	// int imgFlags = IMG_INIT_JPG|IMG_INIT_PNG|IMG_INIT_TIF;
+	// const char* imagePath = "./bin/assets/textures/caisse.jpg";
+
+	// SDL_Rect blitDestination;
+	// TTF_Font* pFont = NULL;
+ //    const char* fontPath = "./bin/assets/font/callme.ttf";
+ //    SDL_Color fontColor = {99, 140, 222};
+ //    SDL_Surface* pFontSurface = NULL;
+ //    SDL_Rect texteDestination;
+ //    IMG_Init(imgFlags);
+ //    TTF_Init();
+
+ //    pImage = IMG_Load(imagePath);
+ //    if ( pImage == NULL )
+ //        {
+ //            fprintf(stderr,"Erreur de chargement de l'image %s : %s\n",imagePath,IMG_GetError());
+ //        }
+ //    pFont = TTF_OpenFont(fontPath,32);
+ //    if ( pFont == NULL )
+ //        {
+ //            fprintf(stderr,"Erreur de chargement de la police %s : %s\n",fontPath,TTF_GetError());
+ //        }
+ //    pFontSurface = TTF_RenderText_Solid(pFont,"LOL",fontColor);
+ //    if ( !pFontSurface )
+ //        {
+ //            fprintf(stderr,"Erreur pour generer le texte '%s'\n",TTF_GetError());
+ //        }
+ //    // Une fois l'image chargée, nous pouvons calculer une position relative à celle-ci
+ //    // Nous centrons l'image dans la fenêtre
+ //    blitDestination.x = windowWidth/2 - pImage->w/2;
+ //    blitDestination.y = windowHeight/2 - pImage->h/2;
+ //    blitDestination.w = pImage->w;
+ //    blitDestination.h = pImage->h;
+ //    std::cout << pImage->w << std::endl;
+ //    std::cout << pImage->h << std::endl;
+ //    // Nous avons notre surface pour le texte donc nous calculons la position relative
+ //    // Le texte est à un quart de la hauteur de l'ecran
+ //    texteDestination.x = windowWidth/2 - pFontSurface->w/2;
+ //    texteDestination.y = windowHeight/4;
+ //    texteDestination.w = pFontSurface->w;
+ //    texteDestination.h = pFontSurface->h;
+ //    std::cout << pFontSurface->w << std::endl;
+ //    std::cout << pFontSurface->h << std::endl;
+
+
 
 	Mix_Music *music = nullptr;
 	std::vector<Mix_Chunk*> mix_chunk = initsound(music);
@@ -70,8 +125,10 @@ int main(int argc, char** argv) {
 	GLuint idTexture;
 	glGenTextures(1, &idTexture);
 	glBindTexture(GL_TEXTURE_2D,  idTexture);
+	std::cout << "Bison" << std::endl;
 	glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
 					texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
+	std::cout << "Rat" << std::endl;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,  0);
@@ -112,12 +169,7 @@ int main(int argc, char** argv) {
 	// Application loop:
 	bool done = false;
 	while(!done) {
-		// Play the music
-        // if(playing == 0)
-        // {
-        //     playMusic(systeme, NULL, "./bin/assets/sound/SOR_TFM_Atmos_65.mp3");
-        // }
-
+	
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
@@ -169,6 +221,9 @@ int main(int argc, char** argv) {
 
 		// chunk.render(gProgram, viewMatrix, idTexture);
 
+		// SDL_BlitSurface(pImage,NULL,SDL_GetWindowSurface(pWindow),NULL);
+		// SDL_BlitSurface(pFontSurface,NULL,SDL_GetWindowSurface(pWindow),NULL);
+		// SDL_UpdateWindowSurface(pWindow);
 		// Update the display
 		windowManager.swapBuffers();
 
@@ -176,6 +231,9 @@ int main(int argc, char** argv) {
 
 	skybox.destruct();
 	deletesound(mix_chunk, music);
+	// SDL_FreeSurface(pFontSurface);
+	// TTF_CloseFont(pFont);
+	// SDL_FreeSurface(pImage);
 	
 	return EXIT_SUCCESS;
 }
