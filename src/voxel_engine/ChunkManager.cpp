@@ -12,7 +12,7 @@ void ChunkManager::initialize(const std::string& saveFolder)
 
     srand(time(NULL));
     double _randomseed = rand() % 1990;
-    m_PerlinNoise = PerlinNoise(_persistence, _frequency, _amplitude, _octaves, 77);
+    m_PerlinNoise = PerlinNoise(_persistence, _frequency, _amplitude, _octaves, _randomseed);
 
     m_pathJson = saveFolder;
 }

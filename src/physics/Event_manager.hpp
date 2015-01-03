@@ -31,7 +31,7 @@ Block* getBlockFromChunk(ChunkManager& chunkmanager, glm::vec3 position, glm::ve
 	int blockZ = (int)glm::round(position.z + direction.z) - Chunk::CHUNK_SIZE * chunkZ;
 		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
 
-	
+
 
 	return &chunkmanager.getChunk(chunkX, chunkY, chunkZ)->getBlocks()[blockX][blockY][blockZ];
 }

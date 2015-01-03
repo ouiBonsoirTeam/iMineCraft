@@ -13,6 +13,7 @@
 #include "voxel_engine/Chunk.hpp"
 #include "voxel_engine/ChunkManager.hpp"
 #include "physics/Event_manager.hpp"
+#include "voxel_engine/Block.hpp"
 #include "Skybox.hpp"
 
 
@@ -72,17 +73,19 @@ int main(int argc, char** argv) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,  0);
 
-	//Initialisation camera freefly
-	FreeFlyCamera ffCam;
+	
 
-	// // TEST
+	// Initialisation chunkmanager
 	ChunkManager chunkmanager;
 	chunkmanager.initialize("bin/assets/saves");
 
-	// Chunk chunk;
-	// chunk.init();
 
-	// chunk.buildMesh();
+	//Initialisation camera freefly
+	FreeFlyCamera ffCam;
+	chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+	
+	ffCam.setPosition(glm::vec3(5,chunkmanager.getNoiseValue(5,5)+5,5));
+
 
 	//initialisation angle
 	float angleX = 0;
