@@ -89,6 +89,8 @@ file(GLOB_RECURSE SRC_FILES src/*.cpp) # get all sources files
 file(GLOB_RECURSE SHADER_FILES shaders/*.glsl) # get all shaders
 file(GLOB_RECURSE ASSET_FILES assets/*) # get all the assets
 
+file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/assets/saves) # create the saves directory
+
 add_executable(${EXECUTABLE_NAME} ${SRC_FILES} ${HEADER_FILES} ${SHADER_FILES} ${ASSET_FILES}) # add the executable
 target_link_libraries(${EXECUTABLE_NAME} ${ALL_LIBRARIES}) # and link  to the libraries
 
