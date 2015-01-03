@@ -644,6 +644,8 @@ void Chunk::setup(PerlinNoise *pn)
 
 void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chunk * ch_Y_neg, const Chunk * ch_Y_pos, const Chunk * ch_Z_neg, const Chunk * ch_Z_pos)
 {
+	m_pRenderer->clean();
+
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int y = 0; y < CHUNK_SIZE; y++)
@@ -756,14 +758,21 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 	m_pRenderer->setVao();
 }
 
-void Chunk::destructBlock(const int &x, const int &y, const int &z)
+bool Chunk::destructBlock(const int &x, const int &y, const int &z, BlockType & bt)
 {
-	m_pBlocks[x][y][z].setInactive();
+	if (m_pBlocks[x][y][z].isActive()){
+		bt = m_pBlocks[x][y][z].getType();
+		m_pBlocks[x][y][z].setInactive();
+		return true;
+	}
+	return false;
 }
 
-void Chunk::constructBlock(const int &x, const int &y, const int &z)
-{
+bool Chunk::constructBlock(const int &x, const int &y, const int &z, BlockType type)
+{	
 	m_pBlocks[x][y][z].setActive();
+	m_pBlocks[x][y][z].setType(type);
+	return true;
 }
 
 void Chunk::save(const std::string &jsonFolderPath)

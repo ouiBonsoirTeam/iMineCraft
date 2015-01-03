@@ -98,7 +98,7 @@ namespace glimac
 
 	glm::vec3 FreeFlyCamera::getFrontVector() const
 	{
-		return glm::vec3(m_FrontVector.x,0,m_FrontVector.z);
+		return m_FrontVector;
 	}
 
 	glm::vec3 FreeFlyCamera::getLeftVector() const

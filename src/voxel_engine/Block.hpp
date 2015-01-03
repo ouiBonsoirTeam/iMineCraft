@@ -14,11 +14,12 @@ enum BlockType {
 	BlockType_Count
 };
 
+
 class Block{
 
 private:
 	bool m_active = false;
-	BlockType m_blockType = BlockType_Lava;
+	BlockType m_blockType = BlockType_Grass;
 
 public:
 	static const int BLOCK_RENDER_SIZE = 1;

@@ -52,6 +52,8 @@ public:
 	void updateRenderList();
 	void render(GeneralProgram &program, const glm::mat4 viewMatrix);
 
+	void addChunkToRebuildList(Chunk * chunk);
+
 
 	void saveTerrain(const unsigned int & perlin_seed);
 	int loadTerrain(const std::string & saveFolder);

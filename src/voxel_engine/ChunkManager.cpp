@@ -472,3 +472,8 @@ Chunk* ChunkManager::getChunk(const glm::vec3 &pos)
 
     return NULL;
 }
+
+void ChunkManager::addChunkToRebuildList(Chunk * chunk)
+{
+    m_vpChunkRebuildList.push_back(chunk);
+}

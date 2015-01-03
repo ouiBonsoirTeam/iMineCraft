@@ -28,7 +28,7 @@ public:
 
 	FreeFlyCamera()
 	{
-		m_Position = glm::vec3(5,5,5);
+		m_Position = glm::vec3(5,8,5);
 		m_Inertia = glm::vec3(0,0,0);
 		m_fPhi = 0;
 		m_fTheta = 0.f;

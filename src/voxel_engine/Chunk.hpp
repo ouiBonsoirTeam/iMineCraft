@@ -35,7 +35,7 @@ public:
 	int getZ(){ return m_position[2]; }
 	bool isEmpty() { return m_emptyChunk; }
 
-	static const int CHUNK_SIZE = 24;
+	static const int CHUNK_SIZE = 10;
 	static const int TAILLE_X_TEXTURE = 16;
 
 	static const int TAILLE_Y_TEXTURE = 24;
@@ -74,9 +74,9 @@ public:
 
 	void buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chunk * ch_Y_neg, const Chunk * ch_Y_pos, const Chunk * ch_Z_neg, const Chunk * ch_Z_pos);
 
-	void destructBlock(const int &x, const int &y, const int &z);
+	bool destructBlock(const int &x, const int &y, const int &z, BlockType& type);
 
-	void constructBlock(const int &x, const int &y, const int &z);
+	bool constructBlock(const int &x, const int &y, const int &z, BlockType type);
 
 	void setup(PerlinNoise *pn);
 
@@ -86,7 +86,6 @@ public:
 	void unload(const std::string &jsonFolderPath);
 
 	void updateShouldRenderFlags();
-
 
 	void createHeightMap();
 };
