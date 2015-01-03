@@ -221,6 +221,9 @@ int main(int argc, char** argv) {
 
 	}
 
+	// Unload and save the displayed map
+	chunkmanager.unloadWorld();
+	
 	skybox.destruct();
 	glDeleteTextures(1, &idTexture);
 	deletesound(mix_chunk, music);

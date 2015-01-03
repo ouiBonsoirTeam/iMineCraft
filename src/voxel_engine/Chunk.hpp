@@ -35,7 +35,7 @@ public:
 	int getZ(){ return m_position[2]; }
 	bool isEmpty() { return m_emptyChunk; }
 
-	static const int CHUNK_SIZE = 10;
+	static const int CHUNK_SIZE = 24;
 	static const int TAILLE_X_TEXTURE = 16;
 
 	static const int TAILLE_Y_TEXTURE = 24;

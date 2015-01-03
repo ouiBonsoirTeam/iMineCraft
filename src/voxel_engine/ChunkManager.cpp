@@ -42,35 +42,36 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
         chunkCameraPosition[i] = (int)cameraPosition[i] / Chunk::CHUNK_SIZE;
     }
 
-    int chunkAreaLimit = 1;
-    int unloadLimit = chunkAreaLimit + 1;
-
-    for (int i = -unloadLimit; i <= unloadLimit; ++i)
+    int chunkAreaLimit = 2;
+    for (int i = -chunkAreaLimit; i <= chunkAreaLimit; ++i)
     {
-        for (int j = -unloadLimit; j <= unloadLimit; ++j)
+        for (int j = -chunkAreaLimit; j <= chunkAreaLimit; ++j)
         {
-            for (int k = -unloadLimit; k <= unloadLimit; ++k)
+            for (int k = -chunkAreaLimit; k <= chunkAreaLimit; ++k)
             {
                 glm::vec3 position(chunkCameraPosition[0] + i, chunkCameraPosition[1] + j, chunkCameraPosition[2] + k);
 
-                if(     i >= -chunkAreaLimit && i <= chunkAreaLimit
-                    &&  j >= -chunkAreaLimit && j <= chunkAreaLimit
-                    &&  k >= -chunkAreaLimit && k <= chunkAreaLimit)
-                {
-                    
-                    if(!chunkExist(position)){
-                        m_vpChunkLoadList.push_back(new Chunk(position));
-                    }
-                }
-                else
-                {
-                    if(chunkExist(position))
-                        m_vpChunkUnloadList.push_back(getChunk(position));
-                }
+                if(!chunkExist(position))
+                    m_vpChunkLoadList.push_back(new Chunk(position));
             }
         }
     }
-}
+
+    int unloadLimite = chunkAreaLimit + 1;
+    for (int i = -unloadLimite; i <= unloadLimite; ++i)
+    {
+        for (int j = -unloadLimite; j <= unloadLimite; ++j)
+        {
+            for (int k = -unloadLimite; k <= unloadLimite; ++k)
+            {
+                glm::vec3 position(chunkCameraPosition[0] + i, chunkCameraPosition[1] + j, chunkCameraPosition[2] + k);
+                
+                if(chunkExist(position) && (i > chunkAreaLimit || j > chunkAreaLimit || k > chunkAreaLimit))
+                    m_vpChunkUnloadList.push_back(getChunk(position));
+            }
+        }
+    }
+} 
 
 bool ChunkManager::chunkExist(const glm::vec3 &position)
 {
@@ -228,17 +229,14 @@ void ChunkManager::updateFlagsList(){
 
         if(pChunk->isLoaded() && pChunk->isSetup())
         {
-            // if(lNumUpdateFlagsThisFrame != NUM_CHUNKS_PER_FRAME)
-            // {
-                pChunk->updateShouldRenderFlags();
+            pChunk->updateShouldRenderFlags();
 
-                m_vpChunkVisibilityList.push_back(pChunk);
+            m_vpChunkVisibilityList.push_back(pChunk);
 
-                // Only rebuild a certain number of chunks per frame
-                lNumUpdateFlagsThisFrame++;
+            // Only rebuild a certain number of chunks per frame
+            lNumUpdateFlagsThisFrame++;
 
-                m_forceVisibilityUpdate = true;
-            // }
+            m_forceVisibilityUpdate = true;
         }
     }
     // Clear the rebuild list
@@ -254,10 +252,24 @@ void ChunkManager::updateUnloadList()
     {
         Chunk* pChunk = (*iterator);
 
-        if(pChunk->isLoaded())
-        {
-            pChunk->unload("bin/assets/saves/");
-            delete pChunk;
+        if(pChunk->isLoaded() && chunkExist(pChunk->getPosition()))
+        { 
+            pChunk->unload(m_pathJson);
+
+            ChunkList::iterator iterator2 = m_vpGlobalChunkList.begin();
+            bool chunkFound = false;
+
+            while(iterator2 != m_vpGlobalChunkList.end() && !chunkFound)
+            {
+                Chunk* pChunk2 = (*iterator2);
+                if (pChunk2 == pChunk)
+                {
+                    m_vpGlobalChunkList.erase(iterator2);
+                    chunkFound = true;
+                }
+                ++iterator2;
+            }
+
             m_forceVisibilityUpdate = true;
         }
     }
