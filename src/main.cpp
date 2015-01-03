@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
 			skybox.draw(skyProg, viewMatrix);
 
 		lightsProg.m_Program.use();
-			//torch.translatePos(glm::sin(windowManager.getTime()) * glm::vec3(0,00000.1,0));
+			torch.translatePos(glm::sin(windowManager.getTime()) * glm::vec3(0,0.02,0));
 			torch.computeLight(lightsProg, ffCam);
 			sun.initMaterial(glm::vec3(1,1,1), glm::vec3(1,1,1), 2.f);
 			sun.computeLight(lightsProg, ffCam.getViewMatrix());
