@@ -29,7 +29,7 @@ public:
 	Chunk(glm::vec3 position);
 	~Chunk();
 
-	glm::vec3 getPosition(){ return m_position; }
+	glm::vec3 getPosition() const { return m_position; };
 	int getX(){ return m_position[0]; }
 	int getY(){ return m_position[1]; }
 	int getZ(){ return m_position[2]; }
@@ -42,6 +42,8 @@ public:
 
 	// Getter
 	Block*** getBlocks() const;
+
+	Block* getBlock(const int & x, const int & y, const int & z) const;
 
 	// Occlusion management
 	bool blockExist(int x, int y, int z);
@@ -70,7 +72,7 @@ public:
 
 	bool isSetup();
 
-	void buildMesh(); 
+	void buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chunk * ch_Y_neg, const Chunk * ch_Y_pos, const Chunk * ch_Z_neg, const Chunk * ch_Z_pos);
 
 	void destructBlock(const int &x, const int &y, const int &z);
 
@@ -79,8 +81,6 @@ public:
 	void setup(PerlinNoise *pn);
 
 	void load(const Json::Value &chunkData);
-
-	Block*** getBlocks();
 
 	void save(const std::string &jsonFolderPath);
 	void unload(const std::string &jsonFolderPath);
