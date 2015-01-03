@@ -103,70 +103,70 @@ void event_manager(SDLWindowManager& windowManager,
 
 	// COLLISION
 	
-	// if(blocks[(int)glm::round(ffCam.getPosition().x)]
-	// 	     [(int)glm::round(ffCam.getPosition().y-1.5)]
-	// 	     [(int)glm::round(ffCam.getPosition().z)]
-	// 	     .isActive())
-	// {
-	// 	gravityFactor = 0.00f;
-	// 	ffCam.setInertia(glm::vec3(0,0,0));
-	// }
+	if(blocks[(int)glm::round(ffCam.getPosition().x)]
+		     [(int)glm::round(ffCam.getPosition().y-1.5)]
+		     [(int)glm::round(ffCam.getPosition().z)]
+		     .isActive())
+	{
+		gravityFactor = 0.00f;
+		ffCam.setInertia(glm::vec3(0,0,0));
+	}
 
-	// if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
-	// 		 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-	// 		 [(int)glm::round((ffCam.getPosition()+velocity).z)]
-	// 		 .isActive())
-	// {
-	// 	if(windowManager.isKeyPressed(SDLK_z))
-	// 	{
-	// 		velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
-	// 	}
-	// 	else velocity=glm::vec3(0,0,0);
-	// 	ffCam.setInertia(glm::vec3(0,0,0));
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x+0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
+			 .isActive())
+	{
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
+		}
+		else velocity=glm::vec3(0,0,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
 
-	// }
+	}
 
-	// if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.2)]
-	// 		 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-	// 		 [(int)glm::round((ffCam.getPosition()+velocity).z)]
-	// 		 .isActive())
-	// {
-	// 	if(windowManager.isKeyPressed(SDLK_z))
-	// 	{
-	// 		velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
-	// 	}
-	// 	else velocity=glm::vec3(0,0,0);
-	// 	ffCam.setInertia(glm::vec3(0,0,0));
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x-0.2)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z)]
+			 .isActive())
+	{
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(0,0,ffCam.getFrontVector().z*playerSpeed);
+		}
+		else velocity=glm::vec3(0,0,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
 
-	// }
+	}
 
-	// if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
-	// 		 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-	// 		 [(int)glm::round((ffCam.getPosition()+velocity).z+0.2)]
-	// 		 .isActive())
-	// {
-	// 	if(windowManager.isKeyPressed(SDLK_z))
-	// 	{
-	// 		velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
-	// 	}
-	// 	else velocity=glm::vec3(0,0,0);
-	// 	ffCam.setInertia(glm::vec3(0,0,0));
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z+0.2)]
+			 .isActive())
+	{
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
+		}
+		else velocity=glm::vec3(0,0,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
 
-	// }
+	}
 
-	// if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
-	// 		 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
-	// 		 [(int)glm::round((ffCam.getPosition()+velocity).z-0.2)]
-	// 		 .isActive())
-	// {
-	// 	if(windowManager.isKeyPressed(SDLK_z))
-	// 	{
-	// 		velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
-	// 	}
-	// 	else velocity=glm::vec3(0,0,0);
-	// 	ffCam.setInertia(glm::vec3(0,0,0));
+	if(blocks[(int)glm::round((ffCam.getPosition()+velocity).x)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).y-1)]
+			 [(int)glm::round((ffCam.getPosition()+velocity).z-0.2)]
+			 .isActive())
+	{
+		if(windowManager.isKeyPressed(SDLK_z))
+		{
+			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,0,0);
+		}
+		else velocity=glm::vec3(0,0,0);
+		ffCam.setInertia(glm::vec3(0,0,0));
 
-	// }
+	}
 
 
 
