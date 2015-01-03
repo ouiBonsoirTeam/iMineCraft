@@ -360,7 +360,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 		BlockType bt;
-		if (!getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->getType() == BlockType_Lava)
+		if (!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector())->getType() == BlockType_Lava))
 		{
 			if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->destructBlock(blockX,blockY,blockZ, bt) )
 			{
