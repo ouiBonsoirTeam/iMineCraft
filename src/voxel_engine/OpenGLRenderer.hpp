@@ -58,4 +58,7 @@ public:
 
 	void renderMesh(GLuint idTexture);
 	void getMeshInformation(int &numVerts);
+
+	void clean();
+
 };

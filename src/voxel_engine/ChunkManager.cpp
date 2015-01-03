@@ -12,7 +12,7 @@ void ChunkManager::initialize(const std::string& saveFolder)
 
     srand(time(NULL));
     double _randomseed = rand() % 1990;
-    m_PerlinNoise = PerlinNoise(_persistence, _frequency, _amplitude, _octaves, _randomseed);
+    m_PerlinNoise = PerlinNoise(_persistence, _frequency, _amplitude, _octaves, 77);
 
     m_pathJson = saveFolder;
 }
@@ -30,7 +30,7 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
 
     for (int i = -chunkAreaLimit; i <= chunkAreaLimit; ++i)
     {
-        for (int j = -1; j <= chunkAreaLimit; ++j)
+        for (int j = -chunkAreaLimit; j <= chunkAreaLimit; ++j)
         {
             for (int k = -chunkAreaLimit; k <= chunkAreaLimit; ++k)
             {
@@ -366,4 +366,9 @@ Chunk* ChunkManager::getChunk(const int &x, const int &y, const int &z){
     }
 
     return NULL;
+}
+
+void ChunkManager::addChunkToRebuildList(Chunk * chunk)
+{
+    m_vpChunkRebuildList.push_back(chunk);
 }

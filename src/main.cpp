@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     FilePath applicationPath(argv[0]);
 
 	//comme P ne change jamais on peut la declarer a l'initialisation
-	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+	//glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
 	GeneralProgram gProgram(applicationPath);
 	pointLightProgram lProgram(applicationPath);
@@ -110,6 +110,8 @@ int main(int argc, char** argv) {
 
 	// // make me a torch
 	// Torch torch;
+	BlockType currentBlockType = BlockType_Earth;
+	Inventory invent;
 
 	// Application loop:
 	bool done = false;
@@ -124,7 +126,7 @@ int main(int argc, char** argv) {
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,*chunkmanager.getChunk(0,0,0));			
+		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, currentBlockType);
 
 		// Measure speed
 		float currentTime = windowManager.getTime();
@@ -132,6 +134,8 @@ int main(int argc, char** argv) {
 		if ( currentTime - lastTime >= 1.0 )
 		{ 
 		    std::cout << "fps : " << nbFrames << std::endl;
+		    std::cout << "invent : " << std::endl;
+		    invent.affiche();
 		    nbFrames = 0;
 		    lastTime += 1.0;
 		}

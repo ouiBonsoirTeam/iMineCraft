@@ -35,7 +35,7 @@ public:
 	int getZ(){ return m_position[2]; }
 	bool isEmpty() { return m_emptyChunk; }
 
-	static const int CHUNK_SIZE = 24;
+	static const int CHUNK_SIZE = 10;
 	static const int TAILLE_X_TEXTURE = 16;
 
 	static const int TAILLE_Y_TEXTURE = 24;
@@ -75,15 +75,13 @@ public:
 
 	void buildMesh(); 
 
-	void destructBlock(const int &x, const int &y, const int &z);
+	bool destructBlock(const int &x, const int &y, const int &z, BlockType& type);
 
-	void constructBlock(const int &x, const int &y, const int &z);
+	bool constructBlock(const int &x, const int &y, const int &z, BlockType type);
 
 	void setup(PerlinNoise *pn);
 
 	void load(const Json::Value &chunkData);
-
-	Block*** getBlocks();
 
 	void unload();
 
