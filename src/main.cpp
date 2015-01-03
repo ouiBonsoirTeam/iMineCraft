@@ -3,6 +3,10 @@
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <unistd.h>
+
+#include <stdlib.h>
+#include <time.h>
+
 #include <glimac/SDLWindowManager.hpp>
 #include <SDL2/SDL_mixer.h>
 #include <glimac/Program.hpp>
@@ -12,13 +16,17 @@
 #include <glimac/CustomProgram.hpp>
 #include <glimac/FreeFlyCamera.hpp>
 #include <glimac/Torch.hpp>
+#include <glimac/Geometry.hpp>
 #include <glimac/Sound.hpp>
+
 
 #include "voxel_engine/Chunk.hpp"
 #include "voxel_engine/ChunkManager.hpp"
 #include "physics/Event_manager.hpp"
 #include "voxel_engine/Block.hpp"
 #include "Skybox.hpp"
+
+#include "../glimac/src/tiny_obj_loader.h"
 
 using namespace glimac;
 
@@ -48,52 +56,6 @@ int main(int argc, char** argv) {
 	 * HERE SHOULD COME THE INITIALIZATION CODE
 	 *********************************/
 
-	// SDL_Window* pWindow = NULL;
-	// SDL_Surface* pImage = NULL;
-	// int imgFlags = IMG_INIT_JPG|IMG_INIT_PNG|IMG_INIT_TIF;
-	// const char* imagePath = "./bin/assets/textures/caisse.jpg";
-
-	// SDL_Rect blitDestination;
-	// TTF_Font* pFont = NULL;
- //    const char* fontPath = "./bin/assets/font/callme.ttf";
- //    SDL_Color fontColor = {99, 140, 222};
- //    SDL_Surface* pFontSurface = NULL;
- //    SDL_Rect texteDestination;
- //    IMG_Init(imgFlags);
- //    TTF_Init();
-
- //    pImage = IMG_Load(imagePath);
- //    if ( pImage == NULL )
- //        {
- //            fprintf(stderr,"Erreur de chargement de l'image %s : %s\n",imagePath,IMG_GetError());
- //        }
- //    pFont = TTF_OpenFont(fontPath,32);
- //    if ( pFont == NULL )
- //        {
- //            fprintf(stderr,"Erreur de chargement de la police %s : %s\n",fontPath,TTF_GetError());
- //        }
- //    pFontSurface = TTF_RenderText_Solid(pFont,"LOL",fontColor);
- //    if ( !pFontSurface )
- //        {
- //            fprintf(stderr,"Erreur pour generer le texte '%s'\n",TTF_GetError());
- //        }
- //    // Une fois l'image chargée, nous pouvons calculer une position relative à celle-ci
- //    // Nous centrons l'image dans la fenêtre
- //    blitDestination.x = windowWidth/2 - pImage->w/2;
- //    blitDestination.y = windowHeight/2 - pImage->h/2;
- //    blitDestination.w = pImage->w;
- //    blitDestination.h = pImage->h;
- //    std::cout << pImage->w << std::endl;
- //    std::cout << pImage->h << std::endl;
- //    // Nous avons notre surface pour le texte donc nous calculons la position relative
- //    // Le texte est à un quart de la hauteur de l'ecran
- //    texteDestination.x = windowWidth/2 - pFontSurface->w/2;
- //    texteDestination.y = windowHeight/4;
- //    texteDestination.w = pFontSurface->w;
- //    texteDestination.h = pFontSurface->h;
- //    std::cout << pFontSurface->w << std::endl;
- //    std::cout << pFontSurface->h << std::endl;
-
 
 
 	Mix_Music *music = nullptr;
@@ -104,17 +66,13 @@ int main(int argc, char** argv) {
 	//Chargement des shaders
     FilePath applicationPath(argv[0]);
 
-	//comme P ne change jamais on peut la declarer a l'initialisation
-	//glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
 
 	GeneralProgram gProgram(applicationPath);
 	pointLightProgram lProgram(applicationPath);
-	SkyboxProgram skyProg(applicationPath);
+	SkyboxProgram skyProgram(applicationPath);
+	GeometryProgram geoProgram(applicationPath);
 
-	// gProgram.m_Program.use();
-	// lProgram.m_Program.use();
-	// skyProg.m_Program.use();
-
+	
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
 	texturePointer = loadImage("../iMineCraft/assets/textures/glass_1024.png");
@@ -145,7 +103,7 @@ int main(int argc, char** argv) {
 	FreeFlyCamera ffCam;
 	chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 	
-	ffCam.setPosition(glm::vec3(5,chunkmanager.getNoiseValue(5,5)+5,5));
+	ffCam.setPosition(glm::vec3(0,chunkmanager.getNoiseValue(0,0)+5,0));
 
 
 	//initialisation angle
@@ -164,12 +122,27 @@ int main(int argc, char** argv) {
 	
 	//make me a skybox
 	Skybox skybox;
-	skybox.init(skyProg);
 
-	// // make me a torch
-	// Torch torch;
+	skybox.init(skyProgram);
+
+	Geometry veget1;
+	Geometry lander;
+	Geometry crowbar;
+	Geometry engineblock;
+	Geometry screws;
+	veget1.init(geoProgram, veget1, "Hyophorbe_lagenicaulis.obj", true, "Hyophorbe_lagenicaulis_dif.jpg");
+	lander.init(geoProgram, lander, "Lander.obj", true, "Lander.png");
+	crowbar.init(geoProgram, crowbar, "crowbar.obj", true, "metal01.jpg");
+	engineblock.init(geoProgram, engineblock, "Engine_Block.obj", true, "Engine_Block.tga");
+	screws.init(geoProgram, screws, "screw.obj", true, "screws.jpg");
+
+
+	srand(time(NULL));
+
+
 	BlockType currentBlockType = BlockType_Earth;
 	Inventory invent;
+
 
 	// Application loop:
 	bool done = false;
@@ -198,6 +171,7 @@ int main(int argc, char** argv) {
 		//std::cout<<"diff : "<< (1.f/max_fps) - (currentTime - lastTime2) << std::endl;
 		if (currentTime - lastTime2 < (1.f/max_fps) && currentTime - lastTime2 > 0)
 		{
+
 			usleep( (unsigned int)(((1.f/max_fps) - (currentTime - lastTime2))*2000000) ) ;
 		}
 
@@ -213,32 +187,43 @@ int main(int argc, char** argv) {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		skyProgram.m_Program.use();
+			skybox.draw(skyProgram, viewMatrix);
 
-		skyProg.m_Program.use();
-			skybox.draw(skyProg, viewMatrix);
+
+
+
+
+		geoProgram.m_Program.use();
+			veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3(-4,glm::round(chunkmanager.getNoiseValue(-4,-4))+0.5,-4), glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
+			
+			// for (int i = 0; i < 20; ++i)
+			// {
+			// 	veget1.draw(geoProgram, veget1, viewMatrix, glm::vec3((std::rand() % 100) + 1, 0, (std::rand() % 100) + 1), glm::vec3(0.01, 0.01, 0.01));
+			// }
+			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
+			crowbar.drawCrowbar(geoProgram, crowbar, ffCam);
+
+			//engineblock.draw(geoProgram, engineblock, viewMatrix, glm::vec3(50, 0, 50), glm::vec3(1, 1, 1));
+			//screws.draw(geoProgram, screws, viewMatrix, glm::vec3(15, 5, 5), glm::vec3(0.001, 0.001, 0.001), windowManager.getTime(), glm::4ec3(0.0, 1.0, 0.0));
 
 		gProgram.m_Program.use();
-			// torch.draw(lProgram, viewMatrix);
-
-		
 		chunkmanager.render(gProgram, ffCam.getViewMatrix());
 
 
-		// chunk.render(gProgram, viewMatrix, idTexture);
 
-		// SDL_BlitSurface(pImage,NULL,SDL_GetWindowSurface(pWindow),NULL);
-		// SDL_BlitSurface(pFontSurface,NULL,SDL_GetWindowSurface(pWindow),NULL);
-		// SDL_UpdateWindowSurface(pWindow);
 		// Update the display
 		windowManager.swapBuffers();
 
 	}
 
 	skybox.destruct();
+
+	crowbar.destruct();
+
+
 	deletesound(mix_chunk, music);
-	// SDL_FreeSurface(pFontSurface);
-	// TTF_CloseFont(pFont);
-	// SDL_FreeSurface(pImage);
-	
+
+
 	return EXIT_SUCCESS;
 }
