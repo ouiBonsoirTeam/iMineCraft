@@ -43,10 +43,16 @@ OpenGLRenderer::~OpenGLRenderer(){
 	glDeleteVertexArrays(1, &m_vao);
 }
 
-void OpenGLRenderer::addTriangle(unsigned int index_1, unsigned int index_2, unsigned int index_3){
-	m_index.push_back(index_1);
-	m_index.push_back(index_2);
-	m_index.push_back(index_3);
+// void OpenGLRenderer::addTriangle(unsigned int index_1, unsigned int index_2, unsigned int index_3){
+// 	m_index.push_back(index_1);
+// 	m_index.push_back(index_2);
+// 	m_index.push_back(index_3);
+// }
+
+void OpenGLRenderer::addTriangle(const glm::vec3 &position_1, const glm::vec3 &position_2, const glm::vec3 &position_3){
+	m_index.push_back(position_1);
+	m_index.push_back(position_2);
+	m_index.push_back(position_3);
 }
 
 void OpenGLRenderer::addPosition(glm::vec3 position){
@@ -124,21 +130,16 @@ void OpenGLRenderer::setVao(){
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[CUBE_VERT_VB]);
 	glVertexAttribPointer(CUBE_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
-	glBindBuffer(GL_ARRAY_BUFFER, 0); 
-
 
 	glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[POS_VB]);
 	glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));  
     glVertexAttribDivisor(VERTEX_ATTR_POSITION, 1); 
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
-
 
 	glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[NORMAL_VB]);
 	glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)(0));
 	glVertexAttribDivisor(VERTEX_ATTR_NORMAL, 1); 
-	glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
 	// if(m_textures.size() != 0)
 	// {
@@ -160,7 +161,7 @@ void OpenGLRenderer::renderMesh(GLuint idTexture){
 
 	//glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
-	glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0, visibleBlockCount);
+	glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0, m_positions.size());
 
 	// glBindTexture(GL_TEXTURE_2D, 0);
 
