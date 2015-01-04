@@ -775,6 +775,8 @@ void Chunk::update_Added_Deleted_Blocks(const int &x, const int &y, const int &z
 			m_Added_Deleted_Blocks[cpt]["type"] = Json::Value(m_pBlocks[x][y][z].getType());
 
 			blockFound = true;
+
+			std::cerr << ">>>>>>>>> UPDATE" << std::endl;
 		}
 
 		++cpt;
@@ -791,7 +793,11 @@ void Chunk::update_Added_Deleted_Blocks(const int &x, const int &y, const int &z
 	    jsonValue["type"] = Json::Value(m_pBlocks[x][y][z].getType());
 
         m_Added_Deleted_Blocks.append(jsonValue);
+
+        std::cerr << ">>>>>>>>> APPEND" << std::endl;
 	}
+
+	std::cerr << ">>>>>>>>> SIZE = " << m_Added_Deleted_Blocks.size() << std::endl;
 }
 
 bool Chunk::destructBlock(const int &x, const int &y, const int &z, BlockType & bt)
@@ -840,6 +846,8 @@ void Chunk::unload(const std::string &jsonFolderPath)
 {
     if(!m_Added_Deleted_Blocks.empty())
     	save(jsonFolderPath);
+
+    std::cerr << ">>>>>>>>> SAVE SIZE = " << m_Added_Deleted_Blocks.size() << std::endl;
 
     //delete this;
 }
