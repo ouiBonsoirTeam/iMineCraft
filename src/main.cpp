@@ -125,7 +125,7 @@ int main(int argc, char** argv)
 
 	Light sun = Light(glm::vec3(1,1,1), glm::vec3(-0.5,0.5,-0.5));
 
-	Torch torch(glm::vec3(3,glm::round(chunkmanager.getNoiseValue(3,6))+2,6));
+	Torch torch(glm::vec3(3,glm::round(chunkmanager.getNoiseValue(3,4))+5,4));
 
 	// define current BlockType
 	BlockType currentBlockType = BlockType_Earth;
