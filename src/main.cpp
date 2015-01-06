@@ -30,7 +30,7 @@ using namespace glimac;
 int main(int argc, char** argv) 
 {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -97,10 +97,8 @@ int main(int argc, char** argv)
 	
 	ffCam.setPosition(glm::vec3(0,chunkmanager.getNoiseValue(0,0)+5,0));
 
-	//initialisation angle
-	float angleX = 0;
-	float angleY = 0;
-	float angleYfinal = 0;
+
+	float angleYCurrent = 0;
 
 	int crouch = 0;
 	float breakCube = 0;
@@ -142,7 +140,7 @@ int main(int argc, char** argv)
 		chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 		
 		// Event loop:
-		event_manager(windowManager,ffCam,angleX,angleY,angleYfinal,CAMERA_ROT_FACTOR,done,chunkmanager, invent, crouch, currentBlockType, 
+		event_manager(windowManager,ffCam,angleYCurrent,CAMERA_ROT_FACTOR,done,chunkmanager, invent, crouch, currentBlockType, 
 						mix_chunk, breakCube);
 
 		// Measure speed
@@ -150,7 +148,7 @@ int main(int argc, char** argv)
 		nbFrames++;
 		if ( currentTime - lastTime >= 1.0 )
 		{ 
-		    std::cout << "fps : " << nbFrames << std::endl;
+		    //std::cout << "fps : " << nbFrames << std::endl;
 		    nbFrames = 0;
 		    lastTime += 1.0;
 		}

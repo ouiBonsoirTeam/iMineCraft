@@ -80,6 +80,12 @@ namespace glimac
 		computeDirectionVectors();
 	}
 
+	void FreeFlyCamera::setTheta(float degrees)
+	{
+		m_fTheta = glm::radians(degrees);
+		computeDirectionVectors();
+	}
+
 	void FreeFlyCamera::setPosition(glm::vec3 vec)
 	{
 		m_Position = vec;

@@ -57,6 +57,8 @@ public:
 
 	void rotateUp(float degrees);
 
+	void setTheta(float degrees);
+
 	void setPosition(glm::vec3 vec);
 
 

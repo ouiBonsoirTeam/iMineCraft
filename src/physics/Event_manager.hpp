@@ -39,7 +39,7 @@ Block* getBlockFromChunk(ChunkManager& chunkmanager, glm::vec3 position, glm::ve
 
 void event_manager(SDLWindowManager& windowManager,
 				   FreeFlyCamera& ffCam,
-				   float& angleX,float& angleY,float& angleYfinal,
+				   float& angleYCurrent,
 				   float CAMERA_ROT_FACTOR,
 				   bool& done,
 				   ChunkManager& chunkmanager,
@@ -53,10 +53,10 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 	const float INERTIA_FACTOR = 1.004;
-	const float INERTIA_JUMP_FACTOR = 1.05;
+	const float INERTIA_JUMP_FACTOR = 1.02;
 
 
-	float gravityFactor = 0.03f;
+	float gravityFactor = 0.05f;
 	float playerSpeed = 0.05f;
 
 
@@ -64,6 +64,9 @@ void event_manager(SDLWindowManager& windowManager,
 
 	bool leftClick = false;
 	bool rightClick = false;
+
+	float angleX = 0;
+	float angleY = 0;
 
 
 	// EVENTS
@@ -89,7 +92,6 @@ void event_manager(SDLWindowManager& windowManager,
 			}
 
 		}
-		//std::cerr << e.key.keysym.sym << std::endl;
 		if (e.type == SDL_KEYUP)
 		{
 			if (e.key.keysym.sym == SDLK_AMPERSAND)
@@ -151,8 +153,11 @@ void event_manager(SDLWindowManager& windowManager,
 
 			if (e.key.keysym.sym == SDLK_LCTRL && crouch == 1) 
 			{
-				ffCam.slide(glm::vec3(0,+1,0));
-				crouch = 0;		
+				if(!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0,0.5,0))->isActive()))
+				{
+					ffCam.slide(glm::vec3(0,+1,0));
+					crouch = 0;	
+				}
 			}
 		}
 
@@ -161,8 +166,8 @@ void event_manager(SDLWindowManager& windowManager,
 		{
 			angleX -= e.motion.xrel * CAMERA_ROT_FACTOR;
 			angleY -= e.motion.yrel * CAMERA_ROT_FACTOR;
-			angleYfinal -= e.motion.yrel * CAMERA_ROT_FACTOR;
-			angleYfinal = std::min(87.0f, std::max(-87.0f, angleYfinal)); //pour pas passer sa tête entre ses jambes
+			angleYCurrent -= e.motion.yrel * CAMERA_ROT_FACTOR;
+			angleYCurrent = std::min(87.0f, std::max(-87.0f, angleYCurrent)); //pour pas passer sa tête entre ses jambes
 		}
 
 		if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -178,11 +183,12 @@ void event_manager(SDLWindowManager& windowManager,
 		}
 	}
 	ffCam.rotateLeft(angleX);
-	if (angleYfinal != 87 && angleYfinal !=-87) ffCam.rotateUp(angleY);
-	angleY = 0;
-	angleX = 0;
-	
-	
+	if (angleYCurrent < 87 && angleYCurrent >-87)
+		ffCam.rotateUp(angleY);
+	if (angleYCurrent == 87)
+		ffCam.setTheta(87);
+	if (angleYCurrent == -87)
+		ffCam.setTheta(-87);
 	
 			
 	if(windowManager.isKeyPressed(SDLK_z)) 
@@ -191,7 +197,7 @@ void event_manager(SDLWindowManager& windowManager,
 		if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
 		{
 			//run
-			if(Mix_Playing(0) == 0 && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive() == 1)
+			if(Mix_Playing(0) == 0 && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive())
 			{
 				Mix_PlayChannelTimed(7,mix_chunk[0],0, 450);
 			}
@@ -230,15 +236,15 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 
-	if(windowManager.isKeyPressed(SDLK_SPACE)) 
+	if(windowManager.isKeyPressed(SDLK_SPACE)  && crouch ==0) 
 	{
 		//jetpack
 		if(Mix_Playing(0) == 0)
 		{
 			Mix_PlayChannelTimed(8,mix_chunk[5],0, 450);
 		}
-		velocity+=glm::vec3(0,1,0)*(1.5f*playerSpeed);
-		ffCam.setJumpInertia(glm::vec3(0,1,0)*(1.5f*playerSpeed));
+		velocity+=glm::vec3(0,1,0)*(2.f*playerSpeed);
+		ffCam.setJumpInertia(glm::vec3(0,1,0)*(2.f*playerSpeed));
 	}
 
 
@@ -320,8 +326,10 @@ void event_manager(SDLWindowManager& windowManager,
 	{
 		
 		gravityFactor = 0.00f;
+		ffCam.setJumpInertia(glm::vec3(0,0,0));
 		velocity.y=0;
-		ffCam.setInertia(glm::vec3(0,0,0));
+		if(!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow))
+			ffCam.setInertia(glm::vec3(0,0,0));
 		if(Mix_Playing(0) == 0)
 		{
 			//grass
@@ -369,7 +377,7 @@ void event_manager(SDLWindowManager& windowManager,
 	// gravity
 	ffCam.moveUp(-gravityFactor);
 	// y inertia
-	if (ffCam.getJumpInertia().y > 0.001
+	if (ffCam.getJumpInertia().y > 0.005
 		&& !windowManager.isKeyPressed(SDLK_SPACE)
 		)
 	{
@@ -388,6 +396,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 		ffCam.slide(ffCam.getInertia());
 	}
+
 
 	int chunkX = (int) glm::round(ffCam.getPosition().x) / Chunk::CHUNK_SIZE;
 			if (ffCam.getPosition().x < 0) chunkX += -1;
