@@ -295,7 +295,10 @@ void event_manager(SDLWindowManager& windowManager,
 			velocity=glm::vec3(0,velocity.y,ffCam.getFrontVector().z*playerSpeed);
 		}
 		else velocity=glm::vec3(0,velocity.y,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
+			ffCam.setInertia(glm::vec3(0,0,0));
+
+		if ( ffCam.getPosition().x-floor(ffCam.getPosition().x) > 0.4  && ffCam.getPosition().x-floor(ffCam.getPosition().x) < 0.5)
+			ffCam.setPosition(glm::vec3(floor(ffCam.getPosition().x)+0.4,ffCam.getPosition().y,ffCam.getPosition().z));
 	}
 
 
@@ -309,7 +312,10 @@ void event_manager(SDLWindowManager& windowManager,
 			velocity=glm::vec3(0,velocity.y,ffCam.getFrontVector().z*playerSpeed);
 		}
 		else velocity=glm::vec3(0,velocity.y,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
+			ffCam.setInertia(glm::vec3(0,0,0));
+
+		if ( ffCam.getPosition().x-floor(ffCam.getPosition().x) < 0.6  && ffCam.getPosition().x-floor(ffCam.getPosition().x) > 0.5)
+			ffCam.setPosition(glm::vec3(floor(ffCam.getPosition().x)+0.6,ffCam.getPosition().y,ffCam.getPosition().z));
 	}
 
 	// +z
@@ -322,7 +328,10 @@ void event_manager(SDLWindowManager& windowManager,
 			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,velocity.y,0);
 		}
 		else velocity=glm::vec3(0,velocity.y,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
+			ffCam.setInertia(glm::vec3(0,0,0));
+
+		if ( ffCam.getPosition().z-floor(ffCam.getPosition().z) > 0.4  && ffCam.getPosition().z-floor(ffCam.getPosition().z) < 0.5)
+			ffCam.setPosition(glm::vec3(ffCam.getPosition().x,ffCam.getPosition().y,floor(ffCam.getPosition().z)+0.4));
 	}
 
 	// -z
@@ -335,7 +344,10 @@ void event_manager(SDLWindowManager& windowManager,
 			velocity=glm::vec3(ffCam.getFrontVector().x*playerSpeed,velocity.y,0);
 		}
 		else velocity=glm::vec3(0,velocity.y,0);
-		ffCam.setInertia(glm::vec3(0,0,0));
+			ffCam.setInertia(glm::vec3(0,0,0));
+
+		if ( ffCam.getPosition().z-floor(ffCam.getPosition().z) < 0.6  && ffCam.getPosition().z-floor(ffCam.getPosition().z) > 0.5)
+			ffCam.setPosition(glm::vec3(ffCam.getPosition().x,ffCam.getPosition().y,floor(ffCam.getPosition().z)+0.6));
 	}
 
 	if(countCollision > 1) velocity=glm::vec3(0,velocity.y,0);
@@ -347,10 +359,16 @@ void event_manager(SDLWindowManager& windowManager,
 	{
 		
 		gravityFactor = 0.00f;
-		ffCam.setJumpInertia(glm::vec3(0,0,0));
 		velocity.y=0;
+		ffCam.setJumpInertia(glm::vec3(0,0,0));
 		if(!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow))
 			ffCam.setInertia(glm::vec3(0,0,0));
+		
+		/* bug collision y
+		if ( ffCam.getPosition().y-floor(ffCam.getPosition().y) > 0.5  && ffCam.getPosition().y-floor(ffCam.getPosition().y) < 0.95)
+			ffCam.setPosition(glm::vec3(ffCam.getPosition().x,floor(ffCam.getPosition().y)+0.95,ffCam.getPosition().z));
+		else ffCam.setJumpInertia(glm::vec3(0,0,0));
+		*/
 		if(Mix_Playing(0) == 0)
 		{
 			//grass
@@ -422,6 +440,7 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 
+	//std::cout<<"ffCam.getPosition.y : "<<ffCam.getPosition().y-floor(ffCam.getPosition().y)<<std::endl;
 
 	int chunkX = (int) glm::round(ffCam.getPosition().x) / Chunk::CHUNK_SIZE;
 			if (ffCam.getPosition().x < 0) chunkX += -1;
