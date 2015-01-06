@@ -151,9 +151,9 @@ void event_manager(SDLWindowManager& windowManager,
 				currentBlockType=BlockType_Ice;
 			}	
 
-			if (e.key.keysym.sym == SDLK_LCTRL && crouch == 1) 
+			if (e.key.keysym.sym == SDLK_LCTRL) 
 			{
-				if(!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0,0.5,0))->isActive()))
+				if(!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0,1.5,0))->isActive()) && crouch == 1)
 				{
 					ffCam.slide(glm::vec3(0,+1,0));
 					crouch = 0;	
@@ -194,7 +194,7 @@ void event_manager(SDLWindowManager& windowManager,
 	if(windowManager.isKeyPressed(SDLK_z)) 
 	{
 		ffCam.setInertia(ffCam.getFrontVector()*playerSpeed);
-		if(windowManager.isKeyPressed(SDLK_LSHIFT)) 
+		if(windowManager.isKeyPressed(SDLK_LSHIFT)  && crouch ==0) 
 		{
 			//run
 			if(Mix_Playing(0) == 0 && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive())
@@ -209,7 +209,7 @@ void event_manager(SDLWindowManager& windowManager,
 			velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed*3.f,0,ffCam.getFrontVector().z*playerSpeed*3.f);
 
 		}
-		if(windowManager.isKeyPressed(SDLK_LCTRL)) 
+		if(crouch ==1) 
 		{
 			velocity+=glm::vec3(ffCam.getFrontVector().x*playerSpeed*0.3f,0,ffCam.getFrontVector().z*playerSpeed*0.3f);
 		}
@@ -218,21 +218,42 @@ void event_manager(SDLWindowManager& windowManager,
 	
 	else if(windowManager.isKeyPressed(SDLK_s)) 
 	{
-		velocity+=glm::vec3(ffCam.getFrontVector().x*(-playerSpeed),0,ffCam.getFrontVector().z*(-playerSpeed));
+		if(crouch ==1) 
+		{
+			velocity+=glm::vec3(ffCam.getFrontVector().x*(-playerSpeed*0.2f),0,ffCam.getFrontVector().z*(-playerSpeed*0.2f));
+		}
+		else 
+		{
+		velocity+=glm::vec3(ffCam.getFrontVector().x*(-playerSpeed*0.5f),0,ffCam.getFrontVector().z*(-playerSpeed*0.5f));
 		ffCam.setInertia(ffCam.getFrontVector()*(-playerSpeed));
+		}
 	}
 
 
 	if(windowManager.isKeyPressed(SDLK_q)) 
 	{
-		velocity+=ffCam.getLeftVector()*playerSpeed;
-		ffCam.setInertia(ffCam.getLeftVector()*playerSpeed);
+		if(crouch ==1) 
+		{
+			velocity+=ffCam.getLeftVector()*playerSpeed*0.3f;
+		}
+		else 
+		{
+			velocity+=ffCam.getLeftVector()*playerSpeed;
+			ffCam.setInertia(ffCam.getLeftVector()*playerSpeed);
+		}
 	}
 
 	else if(windowManager.isKeyPressed(SDLK_d)) 
 	{
+		if(crouch ==1) 
+		{
+			velocity+=ffCam.getLeftVector()*(-playerSpeed*0.3f);
+		}
+		else
+		{
 		velocity+=ffCam.getLeftVector()*(-playerSpeed);
 		ffCam.setInertia(ffCam.getLeftVector()*(-playerSpeed));
+		}
 	}
 
 
@@ -365,8 +386,11 @@ void event_manager(SDLWindowManager& windowManager,
 		}
 	}
 
-
-
+	if (!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0.1,1.5,0))->isActive()) && crouch == 1 && !windowManager.isKeyPressed(SDLK_LCTRL))
+		{
+			ffCam.slide(glm::vec3(ffCam.getFrontVector().x*playerSpeed*1.f,+1,ffCam.getFrontVector().z*playerSpeed*1.f));
+			crouch = 0;
+		}
 
 
 
@@ -396,6 +420,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 		ffCam.slide(ffCam.getInertia());
 	}
+
 
 
 	int chunkX = (int) glm::round(ffCam.getPosition().x) / Chunk::CHUNK_SIZE;
