@@ -373,6 +373,15 @@ void Chunk::createLandscape(PerlinNoise *pn)
 						m_pBlocks[x][y_bis][z].setType(BlockType_Ice);
 				}
 			}
+			if (m_position[1]==-1){
+				m_pBlocks[x][2][z].setType(BlockType_Lava);
+				m_pBlocks[x][2][z].setActive();
+				m_pBlocks[x][1][z].setType(BlockType_Lava);
+				m_pBlocks[x][1][z].setActive();
+				m_pBlocks[x][0][z].setType(BlockType_Lava);
+				m_pBlocks[x][0][z].setActive();
+			}
+			
 		}
 	}
 }

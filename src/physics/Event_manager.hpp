@@ -52,7 +52,7 @@ void event_manager(SDLWindowManager& windowManager,
 	// INIT
 
 
-	const float INERTIA_FACTOR = 1.01;
+	const float INERTIA_FACTOR = 1.004;
 	const float INERTIA_JUMP_FACTOR = 1.05;
 
 
@@ -196,7 +196,7 @@ void event_manager(SDLWindowManager& windowManager,
 				Mix_PlayChannelTimed(7,mix_chunk[0],0, 450);
 			}
 			//jetpack avec shift
-			if(Mix_Playing(0) == 0)
+			else if(Mix_Playing(0) == 0)
 			{
 				Mix_PlayChannelTimed(18,mix_chunk[5],0, 450);
 			}
