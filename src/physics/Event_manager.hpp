@@ -604,6 +604,26 @@ void event_manager(SDLWindowManager& windowManager,
 				inventory.addBlock(bt);
 				chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
 
+				// Test if the deleted cube is in a chunk fronter, then add the other chunk to the rebuild list
+				// X
+				if(blockX == 0)
+					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX - 1,chunkY,chunkZ));
+				else if(blockX == Chunk::CHUNK_SIZE -1)
+					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX + 1,chunkY,chunkZ));
+
+				// Y
+				if(blockY == 0)
+					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY - 1,chunkZ));
+				else if(blockY == Chunk::CHUNK_SIZE -1)
+					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY + 1,chunkZ));
+
+				// Z
+				if(blockZ == 0)
+					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ - 1));
+				else if(blockZ == Chunk::CHUNK_SIZE -1)
+					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ + 1));
+
+
 				//delete cube
 				if(Mix_Playing(0) == 0)
 				{
