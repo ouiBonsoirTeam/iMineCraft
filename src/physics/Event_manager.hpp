@@ -94,7 +94,7 @@ void event_manager(SDLWindowManager& windowManager,
 				}
 			}
 
-			if (e.key.keysym.sym == SDLK_t)
+			if (e.key.keysym.sym == SDLK_e)
 			{
 				torch.setPosition(ffCam.getPosition()+ffCam.getFrontVector()*2.f);
 			}

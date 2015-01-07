@@ -34,7 +34,7 @@ std::vector<Mix_Chunk*> initsound(Mix_Music *music)
 
 void deletesound(std::vector<Mix_Chunk*> mix_chunk, Mix_Music *music)
 {
-    for (int i = 0; i < mix_chunk.size(); ++i)
+    for (unsigned int i = 0; i < mix_chunk.size(); ++i)
     {
         Mix_FreeChunk(mix_chunk[i]);
     }

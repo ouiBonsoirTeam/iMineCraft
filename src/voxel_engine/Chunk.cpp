@@ -405,16 +405,19 @@ void Chunk::createLandscape(PerlinNoise *pn)
 		int x = 1+rand()%(CHUNK_SIZE-2);
 		int z = 1+rand()%(CHUNK_SIZE-2);
 		int y = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
-		while (y<0)
+		if (y>-20 && y < 15)
 		{
-			if(y < 0)
-					y += CHUNK_SIZE;
+			while (y<0)
+			{
+				if(y < 0)
+						y += CHUNK_SIZE;
+			}
+			if (y<CHUNK_SIZE-4 && m_pBlocks[x][y][z].isActive())
+			{
+				this->createTree(glm::vec3(x,y,z));
+			}
 		}
-		if (y<CHUNK_SIZE-4 && m_pBlocks[x][y][z].isActive())
-		{
-			this->createTree(glm::vec3(x,y,z));
-		}
-	}
+	}	
 }
 
 void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
