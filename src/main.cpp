@@ -91,16 +91,15 @@ int main(int argc, char** argv)
 	ChunkManager chunkmanager;
 	chunkmanager.initialize(savesFolder);
 
-	//Initialisation camera freefly
 	FreeFlyCamera ffCam;
 	chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
-	
-	ffCam.setPosition(glm::vec3(0,chunkmanager.getNoiseValue(0,0)+5,0));
 
+	ffCam.setPosition(glm::vec3(0,chunkmanager.getNoiseValue(0,0)+5,0));
 
 	float angleYCurrent = 0;
 
 	int crouch = 0;
+
 	float breakCube = 0;
 
 	const float CAMERA_ROT_FACTOR = 0.05f;

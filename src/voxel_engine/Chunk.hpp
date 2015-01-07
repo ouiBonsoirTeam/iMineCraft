@@ -62,6 +62,7 @@ public:
 
 	// Prepare the render of seen Triangles
 	void createMesh();
+	void createTree(glm::vec3 position);
 	void createLandscape(PerlinNoise *pn);
 
 	// render
