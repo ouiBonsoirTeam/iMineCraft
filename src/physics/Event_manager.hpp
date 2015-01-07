@@ -286,8 +286,8 @@ void event_manager(SDLWindowManager& windowManager,
 	int countCollision =0;
 
 	// +x
-	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, -1.0, 0))->isActive() && crouch == 0)
-		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, 0, 0))->isActive() )
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, -1.45, 0))->isActive() && crouch == 0)
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x + 0.1, -0.45, 0))->isActive() )
 	{
 		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
@@ -303,8 +303,8 @@ void event_manager(SDLWindowManager& windowManager,
 
 
 	// -x
-	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, -1.0, 0))->isActive() && crouch == 0)
-		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, 0, 0))->isActive() )
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, -1.45, 0))->isActive() && crouch == 0)
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(velocity.x - 0.1, -0.45, 0))->isActive() )
 	{
 		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
@@ -319,8 +319,8 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 	// +z
-	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z + 0.1))->isActive() && crouch == 0)
-		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z + 0.1))->isActive())
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.45, velocity.z + 0.1))->isActive() && crouch == 0)
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -0.45, velocity.z + 0.1))->isActive())
 	{
 		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
@@ -335,8 +335,8 @@ void event_manager(SDLWindowManager& windowManager,
 	}
 
 	// -z
-	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.0, velocity.z - 0.1))->isActive() && crouch == 0)
-		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, 0, velocity.z - 0.1))->isActive())
+	if((getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -1.45, velocity.z - 0.1))->isActive() && crouch == 0)
+		|| getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, -0.45, velocity.z - 0.1))->isActive())
 	{
 		countCollision += 1;
 		if(windowManager.isKeyPressed(SDLK_z))
@@ -364,11 +364,7 @@ void event_manager(SDLWindowManager& windowManager,
 		if(!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow))
 			ffCam.setInertia(glm::vec3(0,0,0));
 		
-		/* bug collision y
-		if ( ffCam.getPosition().y-floor(ffCam.getPosition().y) > 0.5  && ffCam.getPosition().y-floor(ffCam.getPosition().y) < 0.95)
-			ffCam.setPosition(glm::vec3(ffCam.getPosition().x,floor(ffCam.getPosition().y)+0.95,ffCam.getPosition().z));
-		else ffCam.setJumpInertia(glm::vec3(0,0,0));
-		*/
+		
 		if(Mix_Playing(0) == 0)
 		{
 			//grass
@@ -406,7 +402,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 	if (!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0.1,1.5,0))->isActive()) && crouch == 1 && !windowManager.isKeyPressed(SDLK_LCTRL))
 		{
-			ffCam.slide(glm::vec3(ffCam.getFrontVector().x*playerSpeed*1.f,+1,ffCam.getFrontVector().z*playerSpeed*1.f));
+			ffCam.slide(glm::vec3(0,+1,0));
 			crouch = 0;
 		}
 
