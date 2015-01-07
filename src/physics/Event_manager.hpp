@@ -361,7 +361,7 @@ void event_manager(SDLWindowManager& windowManager,
 		gravityFactor = 0.00f;
 		velocity.y=0;
 		ffCam.setJumpInertia(glm::vec3(0,0,0));
-		if(!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow))
+		if(!(getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Ice))
 			ffCam.setInertia(glm::vec3(0,0,0));
 		
 		
@@ -396,6 +396,11 @@ void event_manager(SDLWindowManager& windowManager,
 			if (getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Lava)
 			{
 				Mix_PlayChannelTimed(14,mix_chunk[4],0, 450);
+			}
+			//lava
+			if (getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Ice)
+			{
+				Mix_PlayChannelTimed(19,mix_chunk[2],0, 450);
 			}
 		}
 	}
