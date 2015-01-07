@@ -39,7 +39,7 @@ public:
 
 	static const int TAILLE_X_TEXTURE = 16;
 
-	static const int TAILLE_Y_TEXTURE = 24;
+	static const int TAILLE_Y_TEXTURE = 25;
 
 	// Getter
 	Block*** getBlocks() const;

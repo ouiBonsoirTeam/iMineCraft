@@ -24,6 +24,9 @@ namespace glimac
 			Torch();
 			Torch(glm::vec3 position);
 
+			// Setter
+			void setPosition(glm::vec3 pos){ _position=pos; };
+
 			// Getters
 			glm::vec3 getPosition(){ return _position; };
 			glm::vec3 getIntensity(){ return _intensity; };

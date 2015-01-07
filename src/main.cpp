@@ -141,7 +141,7 @@ int main(int argc, char** argv)
 		
 		// Event loop:
 		event_manager(windowManager,ffCam,angleYCurrent,CAMERA_ROT_FACTOR,done,chunkmanager, invent, crouch, currentBlockType, 
-						mix_chunk, breakCube);
+						mix_chunk, breakCube, torch);
 
 		// Measure speed
 		float currentTime = windowManager.getTime();

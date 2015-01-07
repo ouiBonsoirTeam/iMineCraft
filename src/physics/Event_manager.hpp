@@ -4,6 +4,7 @@
 #include <cmath>
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/FreeFlyCamera.hpp>
+#include <glimac/Torch.hpp>
 #include "../voxel_engine/Chunk.hpp"
 #include "../voxel_engine/ChunkManager.hpp"
 #include "../voxel_engine/Block.hpp"
@@ -37,6 +38,89 @@ Block* getBlockFromChunk(ChunkManager& chunkmanager, glm::vec3 position, glm::ve
 	return &chunkmanager.getChunk(chunkX, chunkY, chunkZ)->getBlocks()[blockX][blockY][blockZ];
 }
 
+void creatTree(ChunkManager& chunkmanager, glm::vec3 position)
+{
+	int chunkX = glm::round(position.x) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.x) < 0) chunkX += -1;
+
+	int chunkY = glm::round(position.y) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.y) < 0) chunkY += -1;
+
+	int chunkZ = glm::round(position.z) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.z) < 0) chunkZ += -1;
+
+
+	int blockX =  (glm::round(position.x) - Chunk::CHUNK_SIZE * chunkX);
+		if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+
+	int blockY =  (glm::round(position.y) - Chunk::CHUNK_SIZE * chunkY);
+		if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+
+	int blockZ =  (glm::round(position.z) - Chunk::CHUNK_SIZE * chunkZ);
+		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,blockY,blockZ, BlockType_Wood);
+
+	chunkY = glm::round(position.y+1) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.y+1) < 0) chunkY += -1;
+	blockY =  (glm::round(position.y+1) - Chunk::CHUNK_SIZE * chunkY);
+		if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,(blockY)%Chunk::CHUNK_SIZE,blockZ, BlockType_Wood);
+	
+	chunkY = glm::round(position.y+2) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.y+2) < 0) chunkY += -1;
+	blockY =  (glm::round(position.y+2) - Chunk::CHUNK_SIZE * chunkY);
+		if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,(blockY)%Chunk::CHUNK_SIZE,blockZ, BlockType_Wood);
+	
+	chunkY = glm::round(position.y+3) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.y+3) < 0) chunkY += -1;
+	blockY =  (glm::round(position.y+3) - Chunk::CHUNK_SIZE * chunkY);
+		if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,(blockY)%Chunk::CHUNK_SIZE,blockZ, BlockType_Wood);
+
+	chunkX = glm::round(position.x+1) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.x+1) < 0) chunkX += -1;
+	blockX =  (glm::round(position.x+1) - Chunk::CHUNK_SIZE * chunkX);
+		if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock((blockX)%Chunk::CHUNK_SIZE,(blockY)%Chunk::CHUNK_SIZE,blockZ, BlockType_Leaf);
+	
+	chunkX = glm::round(position.x-1) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.x-1) < 0) chunkX += -1;
+	blockX =  (glm::round(position.x-1) - Chunk::CHUNK_SIZE * chunkX);
+		if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock((blockX)%Chunk::CHUNK_SIZE,(blockY)%Chunk::CHUNK_SIZE,blockZ, BlockType_Leaf);
+	
+	chunkX = glm::round(position.x) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.x) < 0) chunkX += -1;
+	blockX =  (glm::round(position.x) - Chunk::CHUNK_SIZE * chunkX);
+		if (blockX == Chunk::CHUNK_SIZE) blockX = Chunk::CHUNK_SIZE -1;
+	chunkZ = glm::round(position.z+1) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.z+1) < 0) chunkZ += -1;
+	blockZ =  (glm::round(position.z+1) - Chunk::CHUNK_SIZE * chunkZ);
+		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,(blockY)%Chunk::CHUNK_SIZE,(blockZ)%Chunk::CHUNK_SIZE, BlockType_Leaf);
+	
+	chunkZ = glm::round(position.z-1) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.z-1) < 0) chunkZ += -1;
+	blockZ =  (glm::round(position.z-1) - Chunk::CHUNK_SIZE * chunkZ);
+		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,(blockY)%Chunk::CHUNK_SIZE,(blockZ)%Chunk::CHUNK_SIZE, BlockType_Leaf);
+	
+	chunkZ = glm::round(position.z) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.z) < 0) chunkZ += -1;
+	blockZ =  (glm::round(position.z) - Chunk::CHUNK_SIZE * chunkZ);
+		if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
+	chunkY = glm::round(position.y+4) / Chunk::CHUNK_SIZE;
+		if (glm::round(position.y+4) < 0) chunkY += -1;
+	blockY =  (glm::round(position.y+4) - Chunk::CHUNK_SIZE * chunkY);
+		if (blockY == Chunk::CHUNK_SIZE) blockY = Chunk::CHUNK_SIZE -1;
+	chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,(blockY)%Chunk::CHUNK_SIZE,(blockZ)%Chunk::CHUNK_SIZE, BlockType_Leaf);
+	
+	//chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
+
+}
+
 
 void event_manager(SDLWindowManager& windowManager,
 				   FreeFlyCamera& ffCam,
@@ -48,7 +132,8 @@ void event_manager(SDLWindowManager& windowManager,
 				   int& crouch,
 				   BlockType& currentBlockType,
 				   std::vector<Mix_Chunk*> mix_chunk,
-				   float &breackCube){
+				   float &breackCube,
+				   Torch& torch){
 
 	// INIT
 
@@ -92,6 +177,16 @@ void event_manager(SDLWindowManager& windowManager,
 				}
 			}
 
+			if (e.key.keysym.sym == SDLK_t)
+			{
+				torch.setPosition(ffCam.getPosition()+ffCam.getFrontVector()*2.f);
+			}
+
+			if (e.key.keysym.sym == SDLK_y)
+			{
+				creatTree(chunkmanager,ffCam.getPosition()+ffCam.getFrontVector()*2.f);
+			}
+
 		}
 		if (e.type == SDL_KEYUP)
 		{
@@ -101,7 +196,7 @@ void event_manager(SDLWindowManager& windowManager,
 				{
 					Mix_PlayChannelTimed(17,mix_chunk[6],0, 450);
 				}
-				currentBlockType=BlockType_Lava;
+				currentBlockType=BlockType_Wood;
 			}
 			if (e.key.keysym.sym == 233) //é
 			{
