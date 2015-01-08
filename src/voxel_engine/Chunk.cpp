@@ -881,22 +881,19 @@ void Chunk::save(const std::string &jsonFolderPath)
 		file.close();
 
 	}
-	else std::cerr << "Unable to open file" << std::endl;
-	exit(1);  
+	else
+	{
+		std::cerr << "Unable to open file" << std::endl;
+		exit(1);
+	}
 }
 
 void Chunk::unload(const std::string &jsonFolderPath)
 {
     if(!m_Added_Deleted_Blocks.empty())
     	save(jsonFolderPath);
-<<<<<<< HEAD
 
-    std::cerr << ">>>>>>>>> SAVE SIZE = " << m_Added_Deleted_Blocks.size() << std::endl;
-
-    //delete this;
-=======
     delete this;
->>>>>>> 380c024f4c4434d8d945959f63556f4456f8d064
 }
 
 void Chunk::updateShouldRenderFlags()
