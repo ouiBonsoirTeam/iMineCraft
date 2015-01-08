@@ -806,8 +806,7 @@ void Chunk::unload(const std::string &jsonFolderPath)
 {
     if(!m_Added_Deleted_Blocks.empty())
     	save(jsonFolderPath);
-
-    //delete this;
+    delete this;
 }
 
 void Chunk::updateShouldRenderFlags()

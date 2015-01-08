@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 		nbFrames++;
 		if ( currentTime - lastTime >= 1.0 )
 		{ 
-		    //std::cout << "fps : " << nbFrames << std::endl;
+		    std::cout << "fps : " << nbFrames << std::endl;
 		    nbFrames = 0;
 		    lastTime += 1.0;
 		}
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
 			sun.initMaterial(glm::vec3(1,1,1), glm::vec3(1,1,1), 2.f);
 			sun.computeLight(lightsProg, ffCam.getViewMatrix());
 
-			chunkmanager.render(lightsProg, ffCam.getViewMatrix());
+			chunkmanager.render(lightsProg, ffCam.getViewMatrix());		
 
 		gProgram.m_Program.use();
 			torch.drawBillboard(gProgram, ffCam);
