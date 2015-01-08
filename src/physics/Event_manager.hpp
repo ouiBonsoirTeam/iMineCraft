@@ -569,6 +569,25 @@ void event_manager(SDLWindowManager& windowManager,
 		blockZ = (int)glm::round(ffCam.getPosition().z + ffCam.getFrontVector().z) - Chunk::CHUNK_SIZE * chunkZ;
 			if (blockZ == Chunk::CHUNK_SIZE) blockZ = Chunk::CHUNK_SIZE -1;
 
+		int currentChunkX = (int) glm::round(ffCam.getPosition().x) / Chunk::CHUNK_SIZE;
+			if (glm::round(ffCam.getPosition().x) < 0) currentChunkX += -1;
+
+		int currentChunkY = (int) glm::round(ffCam.getPosition().y) / Chunk::CHUNK_SIZE;
+			if (glm::round(ffCam.getPosition().y) < 0) currentChunkY += -1;
+
+		int currentChunkZ = (int) glm::round(ffCam.getPosition().z) / Chunk::CHUNK_SIZE;
+			if (glm::round(ffCam.getPosition().z) < 0) currentChunkZ += -1;
+
+
+		int currentBlockX = (int) glm::round(ffCam.getPosition().x) - Chunk::CHUNK_SIZE * currentChunkX;
+			if (currentBlockX == Chunk::CHUNK_SIZE) currentBlockX = Chunk::CHUNK_SIZE -1;
+
+		int currentBlockY = (int)glm::round(ffCam.getPosition().y) - Chunk::CHUNK_SIZE * currentChunkY;
+			if (currentBlockY == Chunk::CHUNK_SIZE) currentBlockY = Chunk::CHUNK_SIZE -1;
+
+		int currentBlockZ = (int)glm::round(ffCam.getPosition().z) - Chunk::CHUNK_SIZE * currentChunkZ;
+			if (currentBlockZ == Chunk::CHUNK_SIZE) currentBlockZ = Chunk::CHUNK_SIZE -1;
+
 
 
 		BlockType bt = currentBlockType;
@@ -584,15 +603,19 @@ void event_manager(SDLWindowManager& windowManager,
 				 ||	getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector() + glm::vec3(0,0,-1))->isActive()
 				 ))
 			{
-				if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,blockY,blockZ, bt) )
+				if (glm::vec3(currentBlockX,currentBlockY,currentBlockZ) != glm::vec3(blockX,blockY,blockZ)
+					&& glm::vec3(currentBlockX,currentBlockY-1,currentBlockZ) != glm::vec3(blockX,blockY,blockZ))
 				{
-					//add cube
-					if(Mix_Playing(0) == 0)
+					if (chunkmanager.getChunk(chunkX,chunkY,chunkZ)->constructBlock(blockX,blockY,blockZ, bt) )
 					{
-						Mix_PlayChannelTimed(16,mix_chunk[7],0, 450);
+						//add cube
+						if(Mix_Playing(0) == 0)
+						{
+							Mix_PlayChannelTimed(16,mix_chunk[7],0, 450);
+						}
+						inventory.deleteBlock(bt);
+						chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
 					}
-					inventory.deleteBlock(bt);
-					chunkmanager.addChunkToRebuildList(chunkmanager.getChunk(chunkX,chunkY,chunkZ));
 				}
 			}
 		}
