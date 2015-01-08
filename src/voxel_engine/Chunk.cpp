@@ -341,7 +341,7 @@ void Chunk::createTree(glm::vec3 position)
 	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z-1), BlockType_Leaf);
 }
 
-void Chunk::createLandscape(PerlinNoise *pn)
+void Chunk::createLandscape(PerlinNoise *pn, const bool & generateTrees)
 {
 	for(int x = 0; x < CHUNK_SIZE; ++x)
 	{
@@ -398,26 +398,29 @@ void Chunk::createLandscape(PerlinNoise *pn)
 		}
 	}
 
-	int nbTree = rand()%10;
-
-	for (int i = 0; i < nbTree; ++i)
+	if(generateTrees)
 	{
-		int x = 1+rand()%(CHUNK_SIZE-2);
-		int z = 1+rand()%(CHUNK_SIZE-2);
-		int y = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
-		if (y>-20 && y < 15)
+		int nbTree = rand()%30;
+
+		for (int i = 0; i < nbTree; ++i)
 		{
-			while (y<0)
+			int x = 1+rand()%(CHUNK_SIZE-2);
+			int z = 1+rand()%(CHUNK_SIZE-2);
+			int y = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
+			if (y>-20 && y < 15)
 			{
-				if(y < 0)
-						y += CHUNK_SIZE;
-			}
-			if (y<CHUNK_SIZE-4 && m_pBlocks[x][y][z].isActive())
-			{
-				this->createTree(glm::vec3(x,y,z));
+				while (y<0)
+				{
+					if(y < 0)
+							y += CHUNK_SIZE;
+				}
+				if (y<CHUNK_SIZE-4 && m_pBlocks[x][y][z].isActive() && !m_pBlocks[x][y + 1][z].isActive())
+				{
+					this->createTree(glm::vec3(x,y,z));
+				}
 			}
 		}
-	}	
+	}
 }
 
 void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
@@ -659,7 +662,7 @@ void Chunk::setup(PerlinNoise *pn)
 		}
 	}
 
-	createLandscape(pn);
+	createLandscape(pn, !m_loaded);
 
 	if (m_loaded)
 	{
@@ -818,8 +821,6 @@ void Chunk::update_Added_Deleted_Blocks(const int &x, const int &y, const int &z
 			m_Added_Deleted_Blocks[cpt]["type"] = Json::Value(m_pBlocks[x][y][z].getType());
 
 			blockFound = true;
-
-			std::cerr << ">>>>>>>>> UPDATE" << std::endl;
 		}
 
 		++cpt;
@@ -836,11 +837,7 @@ void Chunk::update_Added_Deleted_Blocks(const int &x, const int &y, const int &z
 	    jsonValue["type"] = Json::Value(m_pBlocks[x][y][z].getType());
 
         m_Added_Deleted_Blocks.append(jsonValue);
-
-        std::cerr << ">>>>>>>>> APPEND" << std::endl;
 	}
-
-	std::cerr << ">>>>>>>>> SIZE = " << m_Added_Deleted_Blocks.size() << std::endl;
 }
 
 bool Chunk::destructBlock(const int &x, const int &y, const int &z, BlockType & bt)
