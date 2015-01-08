@@ -30,7 +30,7 @@ using namespace glimac;
 int main(int argc, char** argv) 
 {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -118,6 +118,7 @@ int main(int argc, char** argv)
 	Geometry crowbar;
 		crowbar.init(geoProgram, crowbar, "crowbar.obj", true, "metal01.jpg");
 
+/*
 	Geometry horse0;
 		horse0.init(geoProgram, horse0, "horse_obj_0.obj", true, "horse_texture.png");
 	Geometry horse1;
@@ -166,6 +167,14 @@ int main(int argc, char** argv)
 		horse22.init(geoProgram, horse22, "horse_obj_22.obj", true, "horse_texture.png");
 	Geometry horse23;
 		horse23.init(geoProgram, horse23, "horse_obj_23.obj", true, "horse_texture.png");
+*/
+
+	Geometry sheep01;
+		sheep01.init(geoProgram, sheep01, "sheep01.obj", true, "white.png");
+	Geometry sheep02;
+		sheep02.init(geoProgram, sheep02, "sheep02.obj", true, "white.png");
+	Geometry sheep03;
+		sheep03.init(geoProgram, sheep03, "sheep03.obj", true, "white.png");
 
 	srand(time(NULL));
 
@@ -226,6 +235,7 @@ int main(int argc, char** argv)
 			crowbar.drawCrowbar(geoProgram, crowbar, ffCam, breakCube);
 			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
 			
+			/*
 			if (horseCurrent==0)
 				horse0.draw(geoProgram, horse0, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
 			if (horseCurrent==1)
@@ -274,10 +284,18 @@ int main(int argc, char** argv)
 				horse22.draw(geoProgram, horse22, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
 			if (horseCurrent==23)
 				horse23.draw(geoProgram, horse23, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			*/
 
-			if (cnt==2)
+			if (horseCurrent==0)
+				sheep01.draw(geoProgram, sheep01, viewMatrix, glm::vec3(ffCam.getPosition().x+1,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+1,ffCam.getPosition().z+1))+1,ffCam.getPosition().z+1), glm::vec3(0.5, 0.5, 0.5), ffCam.getPhi()-45, glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==1)
+				sheep02.draw(geoProgram, sheep02, viewMatrix, glm::vec3(ffCam.getPosition().x+1,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+1,ffCam.getPosition().z+1))+1,ffCam.getPosition().z+1), glm::vec3(0.5, 0.5, 0.5), ffCam.getPhi()-45, glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==2)
+				sheep03.draw(geoProgram, sheep03, viewMatrix, glm::vec3(ffCam.getPosition().x+1,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+1,ffCam.getPosition().z+1))+1,ffCam.getPosition().z+1), glm::vec3(0.5, 0.5, 0.5), ffCam.getPhi()-45, glm::vec3(0.0, 1.0, 0.0));
+			
+			if (cnt==7)
 			{
-				horseCurrent = (horseCurrent+1)%24;
+				horseCurrent = (horseCurrent+1)%3;
 				cnt =0;
 			}
 			else ++cnt;
