@@ -30,7 +30,7 @@ using namespace glimac;
 int main(int argc, char** argv) 
 {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support

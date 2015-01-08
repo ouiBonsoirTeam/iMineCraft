@@ -190,7 +190,7 @@ void ChunkManager::updateRebuildList()
             Chunk* pChunkZMinus = getChunk(pChunk->getX(), pChunk->getY(), pChunk->getZ()-1);
             Chunk* pChunkZPlus = getChunk(pChunk->getX(), pChunk->getY(), pChunk->getZ()+1);
 
-            pChunk->buildMesh( pChunkXMinus, pChunkXPlus, pChunkYMinus, pChunkYPlus, pChunkZMinus, pChunkZPlus );
+            pChunk->buildMesh( pChunkXMinus, pChunkXPlus, pChunkYMinus, pChunkYPlus, pChunkZMinus, pChunkZPlus);
 
             m_vpChunkUpdateFlagsList.push_back(pChunk);
 
