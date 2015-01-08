@@ -28,8 +28,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "tiny_obj_loader.h"
-
+#include <glimac/tiny_obj_loader.h>
 namespace tinyobj {
 
 struct vertex_index {
@@ -624,7 +623,7 @@ std::string LoadObj(
       token += 7;
       sscanf(token, "%s", namebuf);
 
-      bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt, faceGroup, material, name, false);
+      //bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt, faceGroup, material, name, false);
       faceGroup.clear();
 
       if (material_map.find(namebuf) != material_map.end()) {

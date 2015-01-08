@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <string>
+#include <glimac/CustomProgram.hpp>
+#include <glimac/FreeFlyCamera.hpp>
 #include "Image.hpp"
 #include "FilePath.hpp"
 #include "BBox.hpp"
@@ -50,6 +52,11 @@ private:
     std::vector<Material> m_Materials;
     BBox3f m_BBox;
 
+    GLuint m_texture;
+    GLuint m_vao;
+    GLuint m_vbo;
+    GLuint m_ibo;
+
     void generateNormals(unsigned int meshIndex);
 
 public:
@@ -77,7 +84,14 @@ public:
         return m_MeshBuffer.size();
     }
 
-    bool loadOBJ(const FilePath& filepath, const FilePath& mtlBasePath, bool loadTextures = true);
+    bool loadOBJ(const std::string& filepath, const std::string& mtlBasePath, bool loadTextures = true);
+
+    void init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, bool loadTextures, const std::string& texture);
+
+    void draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix, const glm::vec3 &trans, const glm::vec3 &scal, const float &angleR, const glm::vec3 &rot);
+    void drawCrowbar(GeometryProgram &geoProgram, Geometry &obj,const FreeFlyCamera& ffCam, float &breakCube);
+
+    void destruct();
 
     const BBox3f& getBoundingBox() const {
         return m_BBox;

@@ -14,10 +14,28 @@ uniform vec3 uKs;
 uniform float uShininess;
 
 //info sur la lumiere
-uniform vec3 uLightPos_vs;
-uniform vec3 uLightIntensity;	//Li
+uniform vec3 uLightDir_vs; 	//wi
+uniform vec3 uLightPos_vs; 	//wi
+uniform vec3 uLightIntensityPoint;	//Li
+uniform vec3 uLightIntensityDir;	//Li
 
-vec3 blinnPhong()
+vec3 blinnPhongDirec()
+{
+	vec3 uLightDir_vsNORME = normalize(uLightDir_vs);
+	vec3 vFragViewNormaleNORME = normalize(vFragViewNormale);
+	vec3 vFragViewCoordNORME = normalize(-vFragViewCoord);
+
+	vec3 halfVector = normalize((vFragViewCoordNORME + uLightDir_vsNORME ) / 2.0);
+
+	return uLightIntensityDir 
+				* ( uKd 
+				* max(0, dot(uLightDir_vsNORME, vFragViewNormaleNORME))
+				+ uKs 
+				* pow( ( max(0, dot(halfVector, vFragViewNormaleNORME))), uShininess)
+				 );
+}
+
+vec3 blinnPhongPoint()
 {
 	vec3 uLightPos_vsNORME = normalize(uLightPos_vs);
 	vec3 vFragViewNormaleNORME = normalize(vFragViewNormale);
@@ -29,7 +47,7 @@ vec3 blinnPhong()
 
 	float d = distance(uLightPos_vs, vFragViewCoord);
 
-	return (uLightIntensity 
+	return (uLightIntensityPoint 
 				* ( uKd 
 				* max(0, dot(uLightPos_vsNORME, vFragViewNormaleNORME))
 				+ uKs 
@@ -37,20 +55,14 @@ vec3 blinnPhong()
 				 ) ) / (d*d) ;
 }
 
-void main() {
-
+void main() 
+{
 	vec4 textMain = texture(uTexture, vFragTexture.xy);
 	vec4 textOcclu = vec4(1, 1, 1, 1) - texture(uTexture, vFragTexture.zw);
 	vec4 tex = textMain - textOcclu * 0.5;
 
-	vec3 invLight = vec3(1,1,1) - blinnPhong();
+	vec3 light = blinnPhongPoint() + 0.6 * blinnPhongDirec();
+	vec3 invLight = vec3(1,1,1) - light;
 
-	fFragColor = vec4(vec3(tex) - invLight , 1);
-
-
-
-	//fFragColor.rgb = blinnPhong();
-
-
-
+	fFragColor = vec4(vec3(tex) - 0.4 * invLight, 1); 
 }

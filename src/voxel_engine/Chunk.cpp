@@ -327,6 +327,19 @@ void Chunk::createMesh()
 	}
 }
 
+void Chunk::createTree(glm::vec3 position)
+{
+	this->constructBlock(glm::round(position.x),glm::round(position.y),glm::round(position.z), BlockType_Wood);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+1),glm::round(position.z), BlockType_Wood);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+2),glm::round(position.z), BlockType_Wood);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z), BlockType_Wood);
+
+	this->constructBlock(glm::round(position.x),glm::round(position.y+4),glm::round(position.z), BlockType_Leaf);	
+	this->constructBlock(glm::round(position.x+1),glm::round(position.y+3),glm::round(position.z), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x-1),glm::round(position.y+3),glm::round(position.z), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z+1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z-1), BlockType_Leaf);
+}
 
 void Chunk::createLandscape(PerlinNoise *pn)
 {
@@ -373,11 +386,41 @@ void Chunk::createLandscape(PerlinNoise *pn)
 						m_pBlocks[x][y_bis][z].setType(BlockType_Ice);
 				}
 			}
+			if (m_position[1]==-1){
+				m_pBlocks[x][2][z].setType(BlockType_Lava);
+				m_pBlocks[x][2][z].setActive();
+				m_pBlocks[x][1][z].setType(BlockType_Lava);
+				m_pBlocks[x][1][z].setActive();
+				m_pBlocks[x][0][z].setType(BlockType_Lava);
+				m_pBlocks[x][0][z].setActive();
+			}
+			
 		}
 	}
+
+	int nbTree = rand()%10;
+
+	for (int i = 0; i < nbTree; ++i)
+	{
+		int x = 1+rand()%(CHUNK_SIZE-2);
+		int z = 1+rand()%(CHUNK_SIZE-2);
+		int y = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
+		if (y>-20 && y < 15)
+		{
+			while (y<0)
+			{
+				if(y < 0)
+						y += CHUNK_SIZE;
+			}
+			if (y<CHUNK_SIZE-4 && m_pBlocks[x][y][z].isActive())
+			{
+				this->createTree(glm::vec3(x,y,z));
+			}
+		}
+	}	
 }
 
-void Chunk::render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
+void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
     glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
@@ -846,10 +889,14 @@ void Chunk::unload(const std::string &jsonFolderPath)
 {
     if(!m_Added_Deleted_Blocks.empty())
     	save(jsonFolderPath);
+<<<<<<< HEAD
 
     std::cerr << ">>>>>>>>> SAVE SIZE = " << m_Added_Deleted_Blocks.size() << std::endl;
 
     //delete this;
+=======
+    delete this;
+>>>>>>> 380c024f4c4434d8d945959f63556f4456f8d064
 }
 
 void Chunk::updateShouldRenderFlags()

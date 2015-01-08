@@ -43,9 +43,29 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
     }
 
     int chunkAreaLimit = 2;
+    int unloadLimit = chunkAreaLimit + 1;
+
+    for (int i = -unloadLimit; i <= unloadLimit; ++i)
+    {
+        for (int j = -unloadLimit; j <= unloadLimit; ++j)
+        {
+            for (int k = -unloadLimit; k <= unloadLimit; ++k)
+            {
+                if(abs(i) >= unloadLimit || abs(j) >= unloadLimit || abs(k) >= unloadLimit)
+                {
+                    glm::vec3 position(chunkCameraPosition[0] + i, chunkCameraPosition[1] + j, chunkCameraPosition[2] + k);
+                
+                    if(chunkExist(position)){
+                         m_vpChunkUnloadList.push_back(getChunk(position));
+                    }
+                }
+            }
+        }
+    }
+
     for (int i = -chunkAreaLimit; i <= chunkAreaLimit; ++i)
     {
-        for (int j = -chunkAreaLimit; j <= chunkAreaLimit; ++j)
+        for (int j = -1; j <= chunkAreaLimit; ++j)
         {
             for (int k = -chunkAreaLimit; k <= chunkAreaLimit; ++k)
             {
@@ -53,21 +73,6 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
 
                 if(!chunkExist(position))
                     m_vpChunkLoadList.push_back(new Chunk(position));
-            }
-        }
-    }
-
-    int unloadLimite = chunkAreaLimit + 1;
-    for (int i = -unloadLimite; i <= unloadLimite; ++i)
-    {
-        for (int j = -unloadLimite; j <= unloadLimite; ++j)
-        {
-            for (int k = -unloadLimite; k <= unloadLimite; ++k)
-            {
-                glm::vec3 position(chunkCameraPosition[0] + i, chunkCameraPosition[1] + j, chunkCameraPosition[2] + k);
-                
-                if(chunkExist(position) && (i > chunkAreaLimit || j > chunkAreaLimit || k > chunkAreaLimit))
-                    m_vpChunkUnloadList.push_back(getChunk(position));
             }
         }
     }
@@ -118,6 +123,7 @@ void ChunkManager::updateLoadList()
 
 void ChunkManager::update(/*float dt, */glm::vec3 cameraPosition, glm::vec3 cameraView)
 {
+
     updateAsyncChunker(cameraPosition, cameraView);
 
     updateLoadList();
@@ -131,12 +137,11 @@ void ChunkManager::update(/*float dt, */glm::vec3 cameraPosition, glm::vec3 came
     updateUnloadList();
 
     updateVisibilityList(cameraPosition);
-	
+
     // Test if camera have moved
     if(m_cameraPosition != cameraPosition || m_cameraView != cameraView)
     {
         updateRenderList();
-        
         m_cameraPosition = cameraPosition;
         m_cameraView = cameraView;
     }
@@ -170,7 +175,7 @@ void ChunkManager::updateRebuildList()
 {
     // Rebuild any chunks that are in the rebuild chunk list
     ChunkList::iterator iterator;
-    int lNumRebuiltChunkThisFrame = 0;
+
     for(iterator = m_vpChunkRebuildList.begin(); iterator != m_vpChunkRebuildList.end(); ++iterator)
     {
         Chunk* pChunk = (*iterator);
@@ -208,9 +213,6 @@ void ChunkManager::updateRebuildList()
 
             if(pChunkZPlus != NULL) 
                 m_vpChunkUpdateFlagsList.push_back(pChunkZPlus);
-            
-            // Only rebuild a certain number of chunks per frame
-            lNumRebuiltChunkThisFrame++;
 
             m_forceVisibilityUpdate = true;
         }
@@ -222,7 +224,7 @@ void ChunkManager::updateRebuildList()
 
 void ChunkManager::updateFlagsList(){
     ChunkList::iterator iterator;
-    int lNumUpdateFlagsThisFrame = 0;
+
     for(iterator = m_vpChunkUpdateFlagsList.begin(); iterator != m_vpChunkUpdateFlagsList.end(); ++iterator)
     {
         Chunk* pChunk = (*iterator);
@@ -231,10 +233,21 @@ void ChunkManager::updateFlagsList(){
         {
             pChunk->updateShouldRenderFlags();
 
-            m_vpChunkVisibilityList.push_back(pChunk);
+            ChunkList::iterator iterator2 = m_vpChunkVisibilityList.begin();
+            bool chunkFound = false;
 
-            // Only rebuild a certain number of chunks per frame
-            lNumUpdateFlagsThisFrame++;
+            while(iterator2 != m_vpChunkVisibilityList.end() && !chunkFound)
+            {
+                Chunk* pChunk2 = (*iterator2);
+                if (pChunk2 == pChunk)
+                {
+                    chunkFound = true;
+                }
+                ++iterator2;
+            }
+
+            if(!chunkFound)
+                m_vpChunkVisibilityList.push_back(pChunk);
 
             m_forceVisibilityUpdate = true;
         }
@@ -252,12 +265,24 @@ void ChunkManager::updateUnloadList()
     {
         Chunk* pChunk = (*iterator);
 
-        if(pChunk->isLoaded() && chunkExist(pChunk->getPosition()))
+        if(pChunk->isLoaded() && pChunk->isSetup() && chunkExist(pChunk->getPosition()))
         { 
-            pChunk->unload(m_pathJson);
+            ChunkList::iterator iterator3 = m_vpChunkVisibilityList.begin();
+            bool chunkFound = false;
+
+            while(iterator3 != m_vpChunkVisibilityList.end() && !chunkFound)
+            {
+                Chunk* pChunk3 = (*iterator3);
+                if (pChunk3 == pChunk)
+                {
+                    m_vpChunkVisibilityList.erase(iterator3);
+                    chunkFound = true;
+                }
+                ++iterator3;
+            }
 
             ChunkList::iterator iterator2 = m_vpGlobalChunkList.begin();
-            bool chunkFound = false;
+            chunkFound = false;
 
             while(iterator2 != m_vpGlobalChunkList.end() && !chunkFound)
             {
@@ -272,6 +297,7 @@ void ChunkManager::updateUnloadList()
 
             m_forceVisibilityUpdate = true;
         }
+        pChunk->unload(m_pathJson);
     }
     // Clear the unload list (every frame)
     m_vpChunkUnloadList.clear();
@@ -401,7 +427,7 @@ void ChunkManager::updateRenderList()
         
 }
 
-void ChunkManager::render(GeneralProgram &program, const glm::mat4 viewMatrix){
+void ChunkManager::render(LightsProgram &program, const glm::mat4 viewMatrix){
     ChunkList::iterator iterator;
 
     for(iterator = m_vpChunkRenderList.begin(); iterator != m_vpChunkRenderList.end(); ++iterator)

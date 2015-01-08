@@ -36,9 +36,10 @@ public:
 	bool isEmpty() { return m_emptyChunk; }
 
 	static const int CHUNK_SIZE = 24;
+
 	static const int TAILLE_X_TEXTURE = 16;
 
-	static const int TAILLE_Y_TEXTURE = 24;
+	static const int TAILLE_Y_TEXTURE = 25;
 
 	// Getter
 	Block*** getBlocks() const;
@@ -61,10 +62,11 @@ public:
 
 	// Prepare the render of seen Triangles
 	void createMesh();
+	void createTree(glm::vec3 position);
 	void createLandscape(PerlinNoise *pn);
 
 	// render
-	void render(GeneralProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
+	void render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture);
  
 	void update();
 

@@ -10,6 +10,8 @@ enum BlockType {
 	BlockType_1st_Snow,
 	BlockType_Snow,
 	BlockType_Ice,
+	BlockType_Wood,
+	BlockType_Leaf,
 
 	BlockType_Count
 };

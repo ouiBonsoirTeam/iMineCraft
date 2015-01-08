@@ -36,6 +36,11 @@ void OpenGLRenderer::addTexture(glm::vec4 texPos_1, glm::vec4 texPos_2, glm::vec
 
 void OpenGLRenderer::addNormal(glm::vec3 n){
 	m_normals.push_back(n);
+	m_normals.push_back(n);
+	m_normals.push_back(n);
+	m_normals.push_back(n);
+	m_normals.push_back(n);
+	m_normals.push_back(n);
 }
 
 void OpenGLRenderer::finishVboPosition(){
@@ -57,7 +62,7 @@ void OpenGLRenderer::finishVboTexture(){
 void OpenGLRenderer::finishVboNormal(){
 	glBindBuffer(GL_ARRAY_BUFFER, m_buffer[NORMAL]);
 
-	glBufferData(GL_ARRAY_BUFFER, m_normals.size() * sizeof(glm::vec2), m_normals.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_normals.size() * sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
