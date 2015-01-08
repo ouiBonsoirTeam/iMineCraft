@@ -76,8 +76,8 @@ public:
 
 	void buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chunk * ch_Y_neg, const Chunk * ch_Y_pos, const Chunk * ch_Z_neg, const Chunk * ch_Z_pos);
 
+	void update_Added_Deleted_Blocks(const int &x, const int &y, const int &z, const bool & active);
 	bool destructBlock(const int &x, const int &y, const int &z, BlockType& type);
-
 	bool constructBlock(const int &x, const int &y, const int &z, BlockType type);
 
 	void setup(PerlinNoise *pn);

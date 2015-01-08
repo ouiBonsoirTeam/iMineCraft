@@ -41,7 +41,7 @@ public:
 	void initialize(const std::string& saveFolder);
 	void updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 cameraView);
 	bool chunkExist(const glm::vec3 &position);
-	void update(/*float dt, */glm::vec3 cameraPosition, glm::vec3 cameraView);
+	void update(glm::vec3 cameraPosition, glm::vec3 cameraView);
 	void updateLoadList();
 	void updateUnLoadList();
 	void updateSetupList();
