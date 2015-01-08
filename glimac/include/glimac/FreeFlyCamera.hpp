@@ -76,6 +76,8 @@ public:
 
 	glm::vec3 getJumpInertia() const;
 
+	float getPhi() const;
+
 
 };
 

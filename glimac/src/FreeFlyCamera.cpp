@@ -127,4 +127,9 @@ namespace glimac
 		return m_JumpInertia;
 	}
 
+	float FreeFlyCamera::getPhi() const
+	{
+		return m_fPhi;
+	}
+
 }

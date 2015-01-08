@@ -118,6 +118,55 @@ int main(int argc, char** argv)
 	Geometry crowbar;
 		crowbar.init(geoProgram, crowbar, "crowbar.obj", true, "metal01.jpg");
 
+	Geometry horse0;
+		horse0.init(geoProgram, horse0, "horse_obj_0.obj", true, "horse_texture.png");
+	Geometry horse1;
+		horse1.init(geoProgram, horse1, "horse_obj_1.obj", true, "horse_texture.png");
+	Geometry horse2;
+		horse2.init(geoProgram, horse2, "horse_obj_2.obj", true, "horse_texture.png");
+	Geometry horse3;
+		horse3.init(geoProgram, horse3, "horse_obj_3.obj", true, "horse_texture.png");
+	Geometry horse4;
+		horse4.init(geoProgram, horse4, "horse_obj_4.obj", true, "horse_texture.png");
+	Geometry horse5;
+		horse5.init(geoProgram, horse5, "horse_obj_5.obj", true, "horse_texture.png");
+	Geometry horse6;
+		horse6.init(geoProgram, horse6, "horse_obj_6.obj", true, "horse_texture.png");
+	Geometry horse7;
+		horse7.init(geoProgram, horse7, "horse_obj_7.obj", true, "horse_texture.png");
+	Geometry horse8;
+		horse8.init(geoProgram, horse8, "horse_obj_8.obj", true, "horse_texture.png");
+	Geometry horse9;
+		horse9.init(geoProgram, horse9, "horse_obj_9.obj", true, "horse_texture.png");
+	Geometry horse10;
+		horse10.init(geoProgram, horse10, "horse_obj_10.obj", true, "horse_texture.png");
+	Geometry horse11;
+		horse11.init(geoProgram, horse11, "horse_obj_11.obj", true, "horse_texture.png");
+	Geometry horse12;
+		horse12.init(geoProgram, horse12, "horse_obj_12.obj", true, "horse_texture.png");
+	Geometry horse13;
+		horse13.init(geoProgram, horse13, "horse_obj_13.obj", true, "horse_texture.png");
+	Geometry horse14;
+		horse14.init(geoProgram, horse14, "horse_obj_14.obj", true, "horse_texture.png");
+	Geometry horse15;
+		horse15.init(geoProgram, horse15, "horse_obj_15.obj", true, "horse_texture.png");
+	Geometry horse16;
+		horse16.init(geoProgram, horse16, "horse_obj_16.obj", true, "horse_texture.png");
+	Geometry horse17;
+		horse17.init(geoProgram, horse17, "horse_obj_17.obj", true, "horse_texture.png");
+	Geometry horse18;
+		horse18.init(geoProgram, horse18, "horse_obj_18.obj", true, "horse_texture.png");
+	Geometry horse19;
+		horse19.init(geoProgram, horse19, "horse_obj_19.obj", true, "horse_texture.png");
+	Geometry horse20;
+		horse20.init(geoProgram, horse20, "horse_obj_20.obj", true, "horse_texture.png");
+	Geometry horse21;
+		horse21.init(geoProgram, horse21, "horse_obj_21.obj", true, "horse_texture.png");
+	Geometry horse22;
+		horse22.init(geoProgram, horse22, "horse_obj_22.obj", true, "horse_texture.png");
+	Geometry horse23;
+		horse23.init(geoProgram, horse23, "horse_obj_23.obj", true, "horse_texture.png");
+
 	srand(time(NULL));
 
 	Light sun = Light(glm::vec3(1,1,1), glm::vec3(-0.5,0.5,-0.5));
@@ -130,6 +179,9 @@ int main(int argc, char** argv)
 	Inventory invent;
 
 	Helmet helmet;
+
+	int horseCurrent =0;
+	int cnt =0;
 
 	// Application loop:
 	bool done = false;
@@ -171,8 +223,64 @@ int main(int argc, char** argv)
 			skybox.draw(skyProgram, viewMatrix);
 
 		geoProgram.m_Program.use();
-			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
 			crowbar.drawCrowbar(geoProgram, crowbar, ffCam, breakCube);
+			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
+			
+			if (horseCurrent==0)
+				horse0.draw(geoProgram, horse0, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==1)
+				horse1.draw(geoProgram, horse1, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==2)
+				horse2.draw(geoProgram, horse2, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==3)
+				horse3.draw(geoProgram, horse3, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==4)
+				horse4.draw(geoProgram, horse4, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==5)
+				horse5.draw(geoProgram, horse5, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==6)
+				horse6.draw(geoProgram, horse6, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==7)
+				horse7.draw(geoProgram, horse7, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==8)
+				horse8.draw(geoProgram, horse8, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==9)
+				horse9.draw(geoProgram, horse9, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==10)
+				horse10.draw(geoProgram, horse10, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==11)
+				horse11.draw(geoProgram, horse11, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==12)
+				horse12.draw(geoProgram, horse12, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==13)
+				horse13.draw(geoProgram, horse13, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==14)
+				horse14.draw(geoProgram, horse14, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==15)
+				horse15.draw(geoProgram, horse15, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==16)
+				horse16.draw(geoProgram, horse16, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==17)
+				horse17.draw(geoProgram, horse17, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==18)
+				horse18.draw(geoProgram, horse18, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==19)
+				horse19.draw(geoProgram, horse19, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==20)
+				horse20.draw(geoProgram, horse20, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==21)
+				horse21.draw(geoProgram, horse21, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==22)
+				horse22.draw(geoProgram, horse22, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+			if (horseCurrent==23)
+				horse23.draw(geoProgram, horse23, viewMatrix, glm::vec3(ffCam.getPosition().x+5,glm::round(chunkmanager.getNoiseValue(ffCam.getPosition().x+5,ffCam.getPosition().z+5))+0.5,ffCam.getPosition().z+5), glm::vec3(2, 2, 2), ffCam.getPhi(), glm::vec3(0.0, 1.0, 0.0));
+
+			if (cnt==2)
+			{
+				horseCurrent = (horseCurrent+1)%24;
+				cnt =0;
+			}
+			else ++cnt;
 
 		lightsProg.m_Program.use();
 			torch.translatePos(glm::sin(windowManager.getTime()) * glm::vec3(0,0.02,0));
