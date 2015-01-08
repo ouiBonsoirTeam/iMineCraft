@@ -4,6 +4,7 @@
 #include <cmath>
 #include <glimac/SDLWindowManager.hpp>
 #include <glimac/FreeFlyCamera.hpp>
+#include <glimac/Torch.hpp>
 #include "../voxel_engine/Chunk.hpp"
 #include "../voxel_engine/ChunkManager.hpp"
 #include "../voxel_engine/Block.hpp"
@@ -48,7 +49,8 @@ void event_manager(SDLWindowManager& windowManager,
 				   int& crouch,
 				   BlockType& currentBlockType,
 				   std::vector<Mix_Chunk*> mix_chunk,
-				   float &breackCube){
+				   float &breackCube,
+				   Torch& torch){
 
 	// INIT
 
@@ -92,6 +94,12 @@ void event_manager(SDLWindowManager& windowManager,
 				}
 			}
 
+			if (e.key.keysym.sym == SDLK_e)
+			{
+				torch.setPosition(ffCam.getPosition()+ffCam.getFrontVector()*2.f);
+			}
+
+
 		}
 		if (e.type == SDL_KEYUP)
 		{
@@ -101,7 +109,7 @@ void event_manager(SDLWindowManager& windowManager,
 				{
 					Mix_PlayChannelTimed(17,mix_chunk[6],0, 450);
 				}
-				currentBlockType=BlockType_Lava;
+				currentBlockType=BlockType_Wood;
 			}
 			if (e.key.keysym.sym == 233) //é
 			{

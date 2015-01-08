@@ -327,6 +327,19 @@ void Chunk::createMesh()
 	}
 }
 
+void Chunk::createTree(glm::vec3 position)
+{
+	this->constructBlock(glm::round(position.x),glm::round(position.y),glm::round(position.z), BlockType_Wood);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+1),glm::round(position.z), BlockType_Wood);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+2),glm::round(position.z), BlockType_Wood);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z), BlockType_Wood);
+
+	this->constructBlock(glm::round(position.x),glm::round(position.y+4),glm::round(position.z), BlockType_Leaf);	
+	this->constructBlock(glm::round(position.x+1),glm::round(position.y+3),glm::round(position.z), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x-1),glm::round(position.y+3),glm::round(position.z), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z+1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z-1), BlockType_Leaf);
+}
 
 void Chunk::createLandscape(PerlinNoise *pn)
 {
@@ -384,6 +397,27 @@ void Chunk::createLandscape(PerlinNoise *pn)
 			
 		}
 	}
+
+	int nbTree = rand()%10;
+
+	for (int i = 0; i < nbTree; ++i)
+	{
+		int x = 1+rand()%(CHUNK_SIZE-2);
+		int z = 1+rand()%(CHUNK_SIZE-2);
+		int y = (int) glm::round(pn->GetHeight(m_position[0] * CHUNK_SIZE + x, m_position[2] * CHUNK_SIZE + z));
+		if (y>-20 && y < 15)
+		{
+			while (y<0)
+			{
+				if(y < 0)
+						y += CHUNK_SIZE;
+			}
+			if (y<CHUNK_SIZE-4 && m_pBlocks[x][y][z].isActive())
+			{
+				this->createTree(glm::vec3(x,y,z));
+			}
+		}
+	}	
 }
 
 void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
