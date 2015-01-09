@@ -2,6 +2,9 @@
 #include <cmath>
 #include "glimac/common.hpp"
 #include "glimac/FreeFlyCamera.hpp"
+#include <json/json.h>
+#include <fstream>
+#include <iostream>
 
 namespace glimac 
 {
@@ -125,6 +128,76 @@ namespace glimac
 	glm::vec3 FreeFlyCamera::getJumpInertia() const
 	{
 		return m_JumpInertia;
+	}
+
+	void FreeFlyCamera::save(const std::string &jsonFolderPath)
+	{
+		std::ofstream file;
+		file.open(jsonFolderPath + "A_camera.json");
+
+		if (file.is_open())
+		{
+			Json::Value jsonValue;
+
+			jsonValue["pos_x"] = Json::Value(m_Position[0]);
+		    jsonValue["pos_y"] = Json::Value(m_Position[1]);
+		    jsonValue["pos_z"] = Json::Value(m_Position[2]);
+		    jsonValue["m_fTheta"] = Json::Value(m_fTheta);
+		    jsonValue["m_fPhi"] = Json::Value(m_fPhi);
+
+			Json::FastWriter l_writer;
+
+	        file << l_writer.write(jsonValue);
+
+	        file.close();
+
+		}
+		else
+		{
+			std::cerr << "Unable to open file" << std::endl;
+			exit(1);
+		}
+	}
+
+	bool FreeFlyCamera::load(const std::string & saveFolder)
+	{
+	    std::ifstream file;
+	    std::string filePath = saveFolder + "A_camera.json";
+	    file.open(filePath);
+	    std::string str, contents;
+
+	    if (file.is_open())
+	    {
+	        while (std::getline(file, str))
+	        {
+	            contents += str;
+	        }  
+	        file.close();
+
+	        Json::Value root;
+	        Json::Reader reader;
+
+	        bool parsingSuccessful = reader.parse(contents, root);
+	        if ( !parsingSuccessful )
+	        {
+	            // report to the user the failure and their locations in the document.
+	            std::cerr  << "Failed to parse configuration\n"
+	                       << reader.getFormattedErrorMessages();
+	            return false;
+	        }
+	        else
+	        {
+	        	m_fTheta = root["m_fTheta"].asFloat();
+	        	m_fPhi = root["m_fPhi"].asFloat();
+	            m_Position = glm::vec3(root["pos_x"].asFloat(), root["pos_y"].asFloat(), root["pos_z"].asFloat());
+
+	            computeDirectionVectors();
+
+	            return true;
+	        }
+	    }
+
+	    return false;
 	}
 
 }
