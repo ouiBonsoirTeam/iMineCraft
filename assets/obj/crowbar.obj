@@ -1,7 +1,7 @@
 # XSI Wavefront OBJ Export v3.0
 # File Created: Mon Feb 25 12:59:39 2013
 # XSI Version: 9.0.243.0
-o 9.0.243.0
+#o 9.0.243.0
 mtllib crowbar.mtl
 
 

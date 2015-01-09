@@ -52,9 +52,6 @@ int main(int argc, char** argv)
 	std::vector<Mix_Chunk*> mix_chunk = initsound(music);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	//For transparency
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -66,7 +63,7 @@ int main(int argc, char** argv)
 	LightsProgram lightsProg(applicationPath);
 	HelmetProgram hellProg(applicationPath);
 	SkyboxProgram skyProgram(applicationPath);
-	GeometryProgram geoProgram(applicationPath);
+	//GeometryProgram geoProgram(applicationPath);
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
@@ -113,10 +110,10 @@ int main(int argc, char** argv)
 		skybox.init(skyProgram);
 
 	Geometry lander;
-		lander.init(geoProgram, lander, "Lander.obj", true, "Lander.png");
+		lander.init(lightsProg, lander, "Lander.obj", true, "Lander.png");
 
 	Geometry crowbar;
-		crowbar.init(geoProgram, crowbar, "crowbar.obj", true, "metal01.jpg");
+		crowbar.init(lightsProg, crowbar, "crowbar.obj", true, "metal02.png");
 
 	srand(time(NULL));
 
@@ -170,11 +167,12 @@ int main(int argc, char** argv)
 		skyProgram.m_Program.use();
 			skybox.draw(skyProgram, viewMatrix);
 
-		geoProgram.m_Program.use();
-			lander.draw(geoProgram, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
-			crowbar.drawCrowbar(geoProgram, crowbar, ffCam, breakCube);
-
+		//geoProgram.m_Program.use();
 		lightsProg.m_Program.use();
+			lander.draw(lightsProg, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
+			crowbar.drawCrowbar(lightsProg, crowbar, ffCam, breakCube);
+
+		
 			torch.translatePos(glm::sin(windowManager.getTime()) * glm::vec3(0,0.02,0));
 			torch.computeLight(lightsProg, ffCam);
 			sun.initMaterial(glm::vec3(1,1,1), glm::vec3(1,1,1), 2.f);
