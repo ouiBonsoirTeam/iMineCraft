@@ -331,7 +331,6 @@ int ChunkManager::loadTerrain(const std::string & saveFolder)
         }
         else
         {
-            std::cout << "Fichier chargé" << std::endl;
             return root["perlin_seed"].asInt();
         }
 
