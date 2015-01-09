@@ -91,7 +91,8 @@ int main(int argc, char** argv)
 	FreeFlyCamera ffCam;
 	chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 
-	ffCam.setPosition(glm::vec3(0,chunkmanager.getNoiseValue(0,0)+5,0));
+	if(!ffCam.load(savesFolder))
+		ffCam.setPosition(glm::vec3(0,chunkmanager.getNoiseValue(0,0)+5,0));
 
 	float angleYCurrent = 0;
 
@@ -125,6 +126,7 @@ int main(int argc, char** argv)
 	BlockType currentBlockType = BlockType_Earth;
 
 	Inventory invent;
+	invent.load(savesFolder);
 
 	Helmet helmet;
 
@@ -193,6 +195,8 @@ int main(int argc, char** argv)
 
 	// Unload and save the displayed map
 	chunkmanager.unloadWorld();
+	ffCam.save(savesFolder);
+	invent.save(savesFolder);
 	
 	skybox.destruct();
 	crowbar.destruct();

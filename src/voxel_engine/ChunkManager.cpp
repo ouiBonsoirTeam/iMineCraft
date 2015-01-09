@@ -23,7 +23,7 @@ void ChunkManager::initialize(const std::string& saveFolder)
     srand(time(NULL));
     double randomseed = rand() % 1990;
 
-    if(jsonChunkExist(saveFolder + "terrain.json"))
+    if(jsonChunkExist(saveFolder + "A_terrain.json"))
         randomseed = loadTerrain(saveFolder);
 
     m_PerlinNoise = PerlinNoise(persistence, frequency, amplitude, octaves, randomseed);
@@ -306,7 +306,7 @@ void ChunkManager::updateUnloadList()
 int ChunkManager::loadTerrain(const std::string & saveFolder)
 {
     std::ifstream file;
-    std::string filePath = saveFolder + "terrain.json";
+    std::string filePath = saveFolder + "A_terrain.json";
     file.open(filePath);
     std::string str, contents;
 
@@ -345,7 +345,7 @@ int ChunkManager::loadTerrain(const std::string & saveFolder)
 void ChunkManager::saveTerrain(const unsigned int & perlin_seed)
 {
     std::ofstream file;
-    std::string filePath = m_pathJson + "terrain.json";
+    std::string filePath = m_pathJson + "A_terrain.json";
     file.open(filePath);
 
     if (file.is_open())
@@ -477,7 +477,6 @@ Json::Value ChunkManager::loadAndParseJsonFile(const std::string& fileName){
             exit(1);
         }
         else{
-            std::cout << "Fichier chargé" << std::endl;
             return root;
         }
 
