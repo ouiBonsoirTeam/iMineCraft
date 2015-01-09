@@ -30,7 +30,7 @@ using namespace glimac;
 int main(int argc, char** argv) 
 {
 	// Initialize SDL and open a window
-	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 0);
+	SDLWindowManager windowManager("iMineCraft Oui Bonsoir", 1);
 
 	glewExperimental = GL_TRUE;
 	// Initialize glew for OpenGL3+ support
@@ -52,9 +52,6 @@ int main(int argc, char** argv)
 	std::vector<Mix_Chunk*> mix_chunk = initsound(music);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	//For transparency
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
