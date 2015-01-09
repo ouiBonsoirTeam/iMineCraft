@@ -42,7 +42,7 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
         chunkCameraPosition[i] = (int)cameraPosition[i] / Chunk::CHUNK_SIZE;
     }
 
-    int chunkAreaLimit = 3;
+    int chunkAreaLimit = 2;
     int unloadLimit = chunkAreaLimit + 1;
 
     for (int i = -unloadLimit; i <= unloadLimit; ++i)
