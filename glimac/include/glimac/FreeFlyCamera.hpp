@@ -3,6 +3,7 @@
 #include <vector>
 #include "common.hpp"
 #include <cmath>
+#include <json/json.h>
 
 namespace glimac 
 {
@@ -76,7 +77,8 @@ public:
 
 	glm::vec3 getJumpInertia() const;
 
-
+	void save(const std::string &jsonFolderPath);
+	bool load(const std::string & saveFolder);
 };
 
 }
