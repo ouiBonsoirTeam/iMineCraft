@@ -71,6 +71,7 @@ void event_manager(SDLWindowManager& windowManager,
 	float angleX = 0;
 	float angleY = 0;
 
+	BlockType bt = currentBlockType;
 
 	// EVENTS
 	SDL_Event e;
@@ -189,6 +190,14 @@ void event_manager(SDLWindowManager& windowManager,
 			{
 				rightClick = true;
 			}
+			if (e.button.button == SDL_BUTTON_RIGHT && inventory.getNbBlock(bt) == 0)
+			{
+				//add cube fail 'cause no cube in inventory
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(12,mix_chunk[11],0, 450);
+				}
+			}
 		}
 	}
 	ffCam.rotateLeft(angleX);
@@ -208,7 +217,7 @@ void event_manager(SDLWindowManager& windowManager,
 			//run
 			if(Mix_Playing(0) == 0 && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->isActive())
 			{
-				Mix_PlayChannelTimed(7,mix_chunk[0],0, 450);
+				Mix_PlayChannelTimed(7,mix_chunk[0],1, 450);
 			}
 			//jetpack avec shift
 			else if(Mix_Playing(0) == 0)
@@ -387,7 +396,7 @@ void event_manager(SDLWindowManager& windowManager,
 			//grass
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Grass)
 			{
-				Mix_PlayChannelTimed(9,mix_chunk[1],0, 450);
+				Mix_PlayChannelTimed(10,mix_chunk[1],0, 450);
 			}
 			//earth
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Earth)
@@ -397,27 +406,32 @@ void event_manager(SDLWindowManager& windowManager,
 			//first snow
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_1st_Snow)
 			{
-				Mix_PlayChannelTimed(11,mix_chunk[2],0, 450);
+				Mix_PlayChannelTimed(10,mix_chunk[2],0, 450);
 			}
 			//snow
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Snow)
 			{
-				Mix_PlayChannelTimed(12,mix_chunk[2],0, 450);
+				Mix_PlayChannelTimed(10,mix_chunk[2],0, 450);
 			}
 			//stone
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Rock)
 			{
-				Mix_PlayChannelTimed(13,mix_chunk[3],0, 450);
+				Mix_PlayChannelTimed(10,mix_chunk[3],0, 450);
 			}
 			//lava
 			if (getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Lava)
 			{
-				Mix_PlayChannelTimed(14,mix_chunk[4],0, 450);
+				Mix_PlayChannelTimed(10,mix_chunk[4],0, 450);
 			}
-			//lava
+			//ice
 			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Ice)
 			{
-				Mix_PlayChannelTimed(19,mix_chunk[2],0, 450);
+				Mix_PlayChannelTimed(10,mix_chunk[9],0, 450);
+			}
+			//wood
+			if ( ( windowManager.isKeyPressed(SDLK_z) || windowManager.isKeyPressed(SDLK_s) || windowManager.isKeyPressed(SDLK_q) || windowManager.isKeyPressed(SDLK_d) ) && getBlockFromChunk(chunkmanager, ffCam.getPosition(), glm::vec3(0, velocity.y - 1.5, 0))->getType() == BlockType_Wood)
+			{
+				Mix_PlayChannelTimed(10,mix_chunk[10],0, 450);
 			}
 		}
 	}
@@ -589,8 +603,7 @@ void event_manager(SDLWindowManager& windowManager,
 			if (currentBlockZ == Chunk::CHUNK_SIZE) currentBlockZ = Chunk::CHUNK_SIZE -1;
 
 
-
-		BlockType bt = currentBlockType;
+		//BlockType bt = currentBlockType;
 
 		if (inventory.getNbBlock(bt) > 0)
 		{

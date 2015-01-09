@@ -22,6 +22,9 @@ std::vector<Mix_Chunk*> initsound(Mix_Music *music)
     mix_chunk.push_back(Mix_LoadWAV("./bin/assets/sound/cube_select.wav"));
     mix_chunk.push_back(Mix_LoadWAV("./bin/assets/sound/add.wav"));
     mix_chunk.push_back(Mix_LoadWAV("./bin/assets/sound/remove.wav"));
+    mix_chunk.push_back(Mix_LoadWAV("./bin/assets/sound/ice.wav"));
+    mix_chunk.push_back(Mix_LoadWAV("./bin/assets/sound/wood.wav"));
+    mix_chunk.push_back(Mix_LoadWAV("./bin/assets/sound/nocube.wav"));
 
     music = Mix_LoadMUS("./bin/assets/sound/ambiance.wav");
     if(!music) {

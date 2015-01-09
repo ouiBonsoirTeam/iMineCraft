@@ -11,6 +11,6 @@ uniform sampler2D uTexture;
 
 void main() {
 
-	vec4 textCaisse = texture(uTexture, -vFragTexture.xy);
+	vec4 textCaisse = texture(uTexture, vFragTexture.xy);
 	fFragColor = vec4(vec3(textCaisse*0.6), 1);
 }

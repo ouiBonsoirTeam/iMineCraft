@@ -86,10 +86,10 @@ public:
 
     bool loadOBJ(const std::string& filepath, const std::string& mtlBasePath, bool loadTextures = true);
 
-    void init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, bool loadTextures, const std::string& texture);
+    void init(LightsProgram &lightsProg, Geometry &obj, const std::string& filepath, bool loadTextures, const std::string& texture);
 
-    void draw(GeometryProgram &geoProgram, Geometry &obj, const glm::mat4 &viewMatrix, const glm::vec3 &trans, const glm::vec3 &scal, const float &angleR, const glm::vec3 &rot);
-    void drawCrowbar(GeometryProgram &geoProgram, Geometry &obj,const FreeFlyCamera& ffCam, float &breakCube);
+    void draw(LightsProgram &lightsProg, Geometry &obj, const glm::mat4 &viewMatrix, const glm::vec3 &trans, const glm::vec3 &scal, const float &angleR, const glm::vec3 &rot);
+    void drawCrowbar(LightsProgram &lightsProg, Geometry &obj,const FreeFlyCamera& ffCam, float &breakCube);
 
     void destruct();
 

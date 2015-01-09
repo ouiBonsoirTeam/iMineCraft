@@ -162,7 +162,7 @@ bool Geometry::loadOBJ(const std::string& filepath, const std::string& mtlBasePa
     return true;
 }
 
-void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const std::string& filepath, bool loadTextures, const std::string& texture)
+void Geometry::init(LightsProgram &lightsProg, Geometry &obj, const std::string& filepath, bool loadTextures, const std::string& texture)
 {
     //load obj
     if (!obj.loadOBJ("bin/assets/obj/"+filepath, "bin/assets/obj/mtl/", loadTextures))
@@ -230,7 +230,7 @@ void Geometry::init(GeometryProgram &geoProgram, Geometry &obj, const std::strin
     glBindVertexArray(0);
 }
 
-void Geometry::draw(GeometryProgram &geoProgram, 
+void Geometry::draw(LightsProgram &lightsProg, 
                     Geometry &obj,
                     const glm::mat4 &viewMatrix, 
                     const glm::vec3 &trans, 
@@ -253,15 +253,15 @@ void Geometry::draw(GeometryProgram &geoProgram,
     // Normale
     glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
 
-    glUniformMatrix4fv(geoProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-    glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
-    glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+    glUniformMatrix4fv(lightsProg.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+    glUniformMatrix4fv(lightsProg.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+    glUniformMatrix4fv(lightsProg.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
 
     glBindVertexArray(m_vao);
 
     glBindTexture(GL_TEXTURE_2D, m_texture);
-    glUniform1i(geoProgram.uTexture, 0);
+    glUniform1i(lightsProg.uTexture, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
@@ -276,7 +276,7 @@ void Geometry::draw(GeometryProgram &geoProgram,
     glBindVertexArray(0);
 }
 
-void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const FreeFlyCamera &ffCam, float &breakCube)
+void Geometry::drawCrowbar(LightsProgram &lightsProg, Geometry &obj, const FreeFlyCamera &ffCam, float &breakCube)
 {
     //render pour l'obj
     glm::mat4 modelMatrix = glm::mat4(1.0);
@@ -346,14 +346,14 @@ void Geometry::drawCrowbar(GeometryProgram &geoProgram, Geometry &obj, const Fre
     // Normale
     glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
 
-    glUniformMatrix4fv(geoProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-    glUniformMatrix4fv(geoProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
-    glUniformMatrix4fv(geoProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+    glUniformMatrix4fv(lightsProg.uMVMatrix, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+    glUniformMatrix4fv(lightsProg.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjMatrix));
+    glUniformMatrix4fv(lightsProg.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
     glBindVertexArray(m_vao);
 
     glBindTexture(GL_TEXTURE_2D, m_texture);
-    glUniform1i(geoProgram.uTexture, 0);
+    glUniform1i(lightsProg.uTexture, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
