@@ -159,6 +159,14 @@ void event_manager(SDLWindowManager& windowManager,
 					Mix_PlayChannelTimed(6,mix_chunk[6],0, 450);
 				}
 				currentBlockType=BlockType_Ice;
+			}
+			if (e.key.keysym.sym == SDLK_UNDERSCORE) //è
+			{
+				if(Mix_Playing(0) == 0)
+				{
+					Mix_PlayChannelTimed(13,mix_chunk[6],0, 450);
+				}
+				currentBlockType=BlockType_Wood2;
 			}	
 
 			if (e.key.keysym.sym == SDLK_LCTRL) 

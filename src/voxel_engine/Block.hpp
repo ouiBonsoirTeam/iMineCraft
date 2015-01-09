@@ -12,6 +12,8 @@ enum BlockType {
 	BlockType_Ice,
 	BlockType_Wood,
 	BlockType_Leaf,
+	BlockType_Wood2,
+	BlockType_Leaf2,
 
 	BlockType_Count
 };

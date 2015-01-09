@@ -334,11 +334,39 @@ void Chunk::createTree(glm::vec3 position)
 	this->constructBlock(glm::round(position.x),glm::round(position.y+2),glm::round(position.z), BlockType_Wood);
 	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z), BlockType_Wood);
 
-	this->constructBlock(glm::round(position.x),glm::round(position.y+4),glm::round(position.z), BlockType_Leaf);	
+		
 	this->constructBlock(glm::round(position.x+1),glm::round(position.y+3),glm::round(position.z), BlockType_Leaf);
 	this->constructBlock(glm::round(position.x-1),glm::round(position.y+3),glm::round(position.z), BlockType_Leaf);
 	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z+1), BlockType_Leaf);
 	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z-1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x+1),glm::round(position.y+3),glm::round(position.z+1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x+1),glm::round(position.y+3),glm::round(position.z-1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x-1),glm::round(position.y+3),glm::round(position.z+1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x-1),glm::round(position.y+3),glm::round(position.z-1), BlockType_Leaf);
+
+	this->constructBlock(glm::round(position.x),glm::round(position.y+4),glm::round(position.z), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x+1),glm::round(position.y+4),glm::round(position.z), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x-1),glm::round(position.y+4),glm::round(position.z), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+4),glm::round(position.z+1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+4),glm::round(position.z-1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x+1),glm::round(position.y+4),glm::round(position.z+1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x+1),glm::round(position.y+4),glm::round(position.z-1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x-1),glm::round(position.y+4),glm::round(position.z+1), BlockType_Leaf);
+	this->constructBlock(glm::round(position.x-1),glm::round(position.y+4),glm::round(position.z-1), BlockType_Leaf);
+
+}
+
+void Chunk::createTreeSnow(glm::vec3 position)
+{
+	this->constructBlock(glm::round(position.x),glm::round(position.y+1),glm::round(position.z), BlockType_Wood2);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+2),glm::round(position.z), BlockType_Wood2);
+
+	this->constructBlock(glm::round(position.x),glm::round(position.y+3),glm::round(position.z), BlockType_Leaf2);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+4),glm::round(position.z), BlockType_Leaf2);
+	this->constructBlock(glm::round(position.x+1),glm::round(position.y+2),glm::round(position.z), BlockType_Leaf2);
+	this->constructBlock(glm::round(position.x-1),glm::round(position.y+2),glm::round(position.z), BlockType_Leaf2);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+2),glm::round(position.z+1), BlockType_Leaf2);
+	this->constructBlock(glm::round(position.x),glm::round(position.y+2),glm::round(position.z-1), BlockType_Leaf2);
 }
 
 void Chunk::createLandscape(PerlinNoise *pn, const bool & generateTrees)
@@ -417,6 +445,13 @@ void Chunk::createLandscape(PerlinNoise *pn, const bool & generateTrees)
 				if (y<CHUNK_SIZE-4 && m_pBlocks[x][y][z].isActive() && !m_pBlocks[x][y + 1][z].isActive())
 				{
 					this->createTree(glm::vec3(x,y,z));
+				}
+			}
+			if (y>15 && y < 36)
+			{
+				if (y<CHUNK_SIZE-4 && m_pBlocks[x][y][z].isActive() && !m_pBlocks[x][y + 1][z].isActive())
+				{
+					this->createTreeSnow(glm::vec3(x,y,z));
 				}
 			}
 		}

@@ -39,7 +39,7 @@ public:
 
 	static const int TAILLE_X_TEXTURE = 16;
 
-	static const int TAILLE_Y_TEXTURE = 25;
+	static const int TAILLE_Y_TEXTURE = 27;
 
 	// Getter
 	Block*** getBlocks() const;
@@ -63,6 +63,7 @@ public:
 	// Prepare the render of seen Triangles
 	void createMesh();
 	void createTree(glm::vec3 position);
+	void createTreeSnow(glm::vec3 position);
 	void createLandscape(PerlinNoise *pn, const bool & generateTrees);
 
 	// render

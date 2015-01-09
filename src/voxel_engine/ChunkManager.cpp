@@ -477,7 +477,6 @@ Json::Value ChunkManager::loadAndParseJsonFile(const std::string& fileName){
             exit(1);
         }
         else{
-            std::cout << "Fichier chargé" << std::endl;
             return root;
         }
 
