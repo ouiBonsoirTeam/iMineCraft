@@ -724,7 +724,7 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 						if(x == 0)
 						{
 							if(ch_X_neg == NULL)
-								lXNegative = false;
+								lXNegative = true;
 							else
 								lXNegative = !(ch_X_neg->getBlock(max, y, z)->isActive());
 
@@ -733,7 +733,7 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 						else if(x == max)
 						{
 							if(ch_X_pos == NULL)
-								lXPositive = false;
+								lXPositive = true;
 							else
 								lXPositive = !(ch_X_pos->getBlock(0, y, z)->isActive());
 
@@ -748,7 +748,7 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 						if(y == 0)
 						{
 							if(ch_Y_neg == NULL)
-								lYNegative = false;
+								lYNegative = true;
 							else
 								lYNegative = !(ch_Y_neg->getBlock(x, max, z)->isActive());
 
@@ -757,7 +757,7 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 						else if(y == max)
 						{
 							if(ch_Y_pos == NULL)
-								lYPositive = false;
+								lYPositive = true;
 							else
 								lYPositive = !(ch_Y_pos->getBlock(x, 0, z)->isActive());
 
@@ -772,7 +772,7 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 						if(z == 0)
 						{
 							if(ch_Z_neg == NULL)
-								lZNegative = false;
+								lZNegative = true;
 							else
 								lZNegative = !(ch_Z_neg->getBlock(x, y, max)->isActive());
 
@@ -781,7 +781,7 @@ void Chunk::buildMesh(const Chunk * ch_X_neg, const Chunk * ch_X_pos, const Chun
 						else if(z == max)
 						{
 							if(ch_Z_pos == NULL)
-								lZPositive = false;
+								lZPositive = true;
 							else
 								lZPositive = !(ch_Z_pos->getBlock(x, y, 0)->isActive());
 
