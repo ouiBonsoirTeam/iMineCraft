@@ -50,7 +50,8 @@ void event_manager(SDLWindowManager& windowManager,
 				   BlockType& currentBlockType,
 				   std::vector<Mix_Chunk*> mix_chunk,
 				   float &breackCube,
-				   Torch& torch){
+				   Torch& torch,
+				   glm::vec3 &bedPos){
 
 	// INIT
 
@@ -98,6 +99,30 @@ void event_manager(SDLWindowManager& windowManager,
 			if (e.key.keysym.sym == SDLK_e)
 			{
 				torch.setPosition(ffCam.getPosition()+ffCam.getFrontVector()*2.f);
+			}
+
+			if (e.key.keysym.sym == SDLK_t)
+			{
+				if(!getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector()*2.f)->isActive()
+					&& !getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector()*2.f+glm::vec3(0,1,0))->isActive()
+					&& !getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector()*2.f+glm::vec3(0,2,0))->isActive()
+					&& !getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector()*2.f+glm::vec3(+1,0,0))->isActive()
+					&& !getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector()*2.f+glm::vec3(-1,0,0))->isActive()
+					&& !getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector()*2.f+glm::vec3(0,0,+1))->isActive()
+					&& !getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector()*2.f+glm::vec3(0,0,-1))->isActive()
+					&& getBlockFromChunk(chunkmanager, ffCam.getPosition(), ffCam.getFrontVector()*2.f+glm::vec3(0,-1,0))->isActive())
+				{
+					bedPos = ffCam.getPosition()+ffCam.getFrontVector()*2.f;
+				}
+			}
+
+			if (e.key.keysym.sym == SDLK_y)
+			{
+				ffCam.setPosition(bedPos+glm::vec3(0,1,0));
+				chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
+				ffCam.setJumpInertia(glm::vec3(0,0,0));
+				ffCam.setInertia(glm::vec3(0,0,0));
+				return;
 			}
 
 
