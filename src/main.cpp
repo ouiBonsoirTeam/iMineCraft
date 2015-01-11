@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 	Geometry bed;
 		bed.init(lightsProg, bed, "bed.obj", true, "bed.tga");
 
-	glm::vec3 bedPos=glm::vec3(0,0,0);
+	glm::vec3 bedPos=glm::vec3(0,glm::round(chunkmanager.getNoiseValue(0,0))+5,0);
 
 	srand(time(NULL));
 
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 
 		lightsProg.m_Program.use();
 			lander.draw(lightsProg, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
-			if (bedPos != glm::vec3(0,0,0))
+			if (bedPos != glm::vec3(0,glm::round(chunkmanager.getNoiseValue(0,0))+5,0))
 				bed.draw(lightsProg, bed, viewMatrix, bedPos, glm::vec3(0.01, 0.01, 0.01), 0, glm::vec3(1.0, 1.0, 1.0));
 		
 			crowbar.drawCrowbar(lightsProg, crowbar, ffCam, breakCube);
