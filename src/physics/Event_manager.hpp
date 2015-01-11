@@ -118,7 +118,7 @@ void event_manager(SDLWindowManager& windowManager,
 
 			if (e.key.keysym.sym == SDLK_y)
 			{
-				ffCam.setPosition(bedPos+glm::vec3(0,1,0));
+				ffCam.setPosition(bedPos+glm::vec3(0,3,0));
 				chunkmanager.update(ffCam.getPosition(), ffCam.getFrontVector());
 				ffCam.setJumpInertia(glm::vec3(0,0,0));
 				ffCam.setInertia(glm::vec3(0,0,0));
