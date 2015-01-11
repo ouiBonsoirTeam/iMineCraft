@@ -51,8 +51,7 @@ $ brew install cmake
 
 ####You need some libs
 **GLEW**
-Linux :
-```sh
+Linux : ```sh
 $ sudo apt-get install glew
 ```
 Mac OSX :
