@@ -21,7 +21,7 @@ An IMAC Engineering School OpenGL Project.
 6. Occlusion - precalculated shadow generation with an occlusion texture map
 7. Billboarding - for the point light and the HUD
 8. Skybox - 
-9. Sound design - ambient sound, different step sound, construct/destruct sound
+9. Sound design ([*Half-Life 2 - All Sounds Replaced With My Voice Mod*](http://www.fileplanet.com/220777/220000/fileinfo/Half-Life-2---All-Sounds-Replaced-With-My-Voice-Mod- "")) - ambient sound, different step sound, construct/destruct sound
 10. Inventory - 
 11. Save game - save constructed/destructed blocks, player location and inventory
   
