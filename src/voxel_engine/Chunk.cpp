@@ -397,7 +397,7 @@ void Chunk::createLandscape(PerlinNoise *pn, const bool & generateTrees)
 
 	if(generateTrees)
 	{
-		int nbTree = rand()%30;
+		int nbTree = rand()%50;
 
 		for (int i = 0; i < nbTree; ++i)
 		{
@@ -433,7 +433,7 @@ void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint id
 
     glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
-	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 1000.f);
+	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 3000.f);
 
 	glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
 
