@@ -3,7 +3,7 @@ Oui Bonsoir's iMineCraft
 An IMAC Engineering School OpenGL Project.
 ----------
 ![Oui Bonsoir](http://f.cl.ly/items/3P1I1q0Z2P1S3Y1q2J2W/base.png "")
-[*Triton Map Pack*](http://tritonsite.weebly.com "")
+[*Triton Texture Map Pack*](http://tritonsite.weebly.com "")
 
 
 ##Supported OS (require OpenGL 3+)
