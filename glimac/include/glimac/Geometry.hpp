@@ -91,6 +91,9 @@ public:
     void draw(LightsProgram &lightsProg, Geometry &obj, const glm::mat4 &viewMatrix, const glm::vec3 &trans, const glm::vec3 &scal, const float &angleR, const glm::vec3 &rot);
     void drawCrowbar(LightsProgram &lightsProg, Geometry &obj,const FreeFlyCamera& ffCam, float &breakCube);
 
+    void save(const std::string & jsonFolderPath, const std::string & name, const glm::vec3 & pos);
+    bool load(const std::string & saveFolder, const std::string & name, glm::vec3 & pos);
+
     void destruct();
 
     const BBox3f& getBoundingBox() const {

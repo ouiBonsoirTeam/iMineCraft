@@ -115,16 +115,18 @@ int main(int argc, char** argv)
 	Geometry crowbar;
 		crowbar.init(lightsProg, crowbar, "crowbar.obj", true, "metal02.png");
 
-	Geometry bed;
-		bed.init(lightsProg, bed, "bed.obj", true, "bed.tga");
 
 	glm::vec3 bedPos=glm::vec3(0,0,0);
+	Geometry bed;
+		bed.init(lightsProg, bed, "bed.obj", true, "bed.tga");
+		bed.load(savesFolder, "bed", bedPos);
 
 	srand(time(NULL));
 
 	Light sun = Light(glm::vec3(1,1,1), glm::vec3(-0.5,0.5,-0.5));
 
 	Torch torch(glm::vec3(3,glm::round(chunkmanager.getNoiseValue(3,4))+5,4));
+	torch.load(savesFolder);
 
 	// define current BlockType
 	BlockType currentBlockType = BlockType_Earth;
@@ -203,6 +205,8 @@ int main(int argc, char** argv)
 	chunkmanager.unloadWorld();
 	ffCam.save(savesFolder);
 	invent.save(savesFolder);
+	torch.save(savesFolder);
+	bed.save(savesFolder, "bed", bedPos);
 	
 	skybox.destruct();
 	crowbar.destruct();

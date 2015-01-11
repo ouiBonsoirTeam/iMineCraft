@@ -37,6 +37,9 @@ namespace glimac
 			void computeLight(LightsProgram & prog, FreeFlyCamera &ffCam);
 
 			void drawBillboard(GeneralProgram & prog, FreeFlyCamera &ffCam);
+
+			void save(const std::string &jsonFolderPath);
+			bool load(const std::string & saveFolder);
 	};
 	
 }

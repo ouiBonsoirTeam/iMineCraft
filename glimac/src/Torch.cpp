@@ -1,5 +1,8 @@
 #include <glimac/Torch.hpp>
 #include <glimac/Sphere.hpp>
+#include <json/json.h>
+#include <fstream>
+#include <iostream>
 
 
 namespace glimac 
@@ -204,6 +207,72 @@ namespace glimac
 
 	    //debind de la texture
 	    glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+
+
+	void Torch::save(const std::string &jsonFolderPath)
+	{
+		std::ofstream file;
+		file.open(jsonFolderPath + "A_light.json");
+
+		if (file.is_open())
+		{
+			Json::Value jsonValue;
+
+			jsonValue["pos_x"] = Json::Value(_position[0]);
+		    jsonValue["pos_y"] = Json::Value(_position[1]);
+		    jsonValue["pos_z"] = Json::Value(_position[2]);
+
+			Json::FastWriter l_writer;
+
+	        file << l_writer.write(jsonValue);
+
+	        file.close();
+
+		}
+		else
+		{
+			std::cerr << "Unable to open file" << std::endl;
+			exit(1);
+		}
+	}
+
+	bool Torch::load(const std::string & saveFolder)
+	{
+	    std::ifstream file;
+	    std::string filePath = saveFolder + "A_light.json";
+	    file.open(filePath);
+	    std::string str, contents;
+
+	    if (file.is_open())
+	    {
+	        while (std::getline(file, str))
+	        {
+	            contents += str;
+	        }  
+	        file.close();
+
+	        Json::Value root;
+	        Json::Reader reader;
+
+	        bool parsingSuccessful = reader.parse(contents, root);
+	        if ( !parsingSuccessful )
+	        {
+	            // report to the user the failure and their locations in the document.
+	            std::cerr  << "Failed to parse configuration\n"
+	                       << reader.getFormattedErrorMessages();
+	            return false;
+	        }
+	        else
+	        {
+	            _position = glm::vec3(root["pos_x"].asFloat(), root["pos_y"].asFloat(), root["pos_z"].asFloat());
+
+	            return true;
+	        }
+	    }
+
+	    return false;
 	}
 
 }

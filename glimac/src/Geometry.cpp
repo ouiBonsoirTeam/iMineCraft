@@ -2,6 +2,8 @@
 #include <glimac/tiny_obj_loader.h>
 #include <iostream>
 #include <algorithm>
+#include <json/json.h>
+#include <fstream>
 
 namespace glimac {
 
@@ -364,6 +366,70 @@ void Geometry::drawCrowbar(LightsProgram &lightsProg, Geometry &obj, const FreeF
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glBindVertexArray(0);
+}
+
+void Geometry::save(const std::string & jsonFolderPath, const std::string & name, const glm::vec3 & pos)
+{
+    std::ofstream file;
+    file.open(jsonFolderPath + "B_" + name + ".json");
+
+    if (file.is_open())
+    {
+        Json::Value jsonValue;
+
+        jsonValue["pos_x"] = Json::Value(pos[0]);
+        jsonValue["pos_y"] = Json::Value(pos[1]);
+        jsonValue["pos_z"] = Json::Value(pos[2]);
+
+        Json::FastWriter l_writer;
+
+        file << l_writer.write(jsonValue);
+
+        file.close();
+
+    }
+    else
+    {
+        std::cerr << "Unable to open file" << std::endl;
+        exit(1);
+    }
+}
+
+bool Geometry::load(const std::string & saveFolder, const std::string & name, glm::vec3 & pos)
+{
+    std::ifstream file;
+    std::string filePath = saveFolder + "B_" + name + ".json";
+    file.open(filePath);
+    std::string str, contents;
+
+    if (file.is_open())
+    {
+        while (std::getline(file, str))
+        {
+            contents += str;
+        }  
+        file.close();
+
+        Json::Value root;
+        Json::Reader reader;
+
+        bool parsingSuccessful = reader.parse(contents, root);
+        if ( !parsingSuccessful )
+        {
+            // report to the user the failure and their locations in the document.
+            std::cerr  << "Failed to parse configuration\n"
+                       << reader.getFormattedErrorMessages();
+            return false;
+        }
+        else
+        {
+            pos = glm::vec3(root["pos_x"].asFloat(), root["pos_y"].asFloat(), root["pos_z"].asFloat());
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void Geometry::destruct()
