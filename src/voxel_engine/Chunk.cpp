@@ -6,17 +6,12 @@
 #include <fstream>
 
 // Constructor
-Chunk::Chunk()
-{}
-
-Chunk::Chunk(glm::vec3 position)
-{
-	m_position = position;
-}
+Chunk::Chunk() {}
+Chunk::Chunk(glm::vec3 position) : m_position(position) {}
 
 // Destructor
-Chunk::~Chunk(){
-	// Delete the blocks
+Chunk::~Chunk()
+{
 	for (int i = 0; i < CHUNK_SIZE; ++i)
 	{
 		for (int j = 0; j < CHUNK_SIZE; ++j)
@@ -162,10 +157,6 @@ glm::mat3 Chunk::getAdjacentMap(int x, int y, int z, int adjacent_look)
 	if(blockExist(left)			&&		m_pBlocks[ (int) left[0] ][ (int) left[1] ][ (int) left[2] ].isActive())
 		adjacentMap[1][0] = 1;
 
-	
-
-   
-
 	return adjacentMap;
 }
 
@@ -208,7 +199,6 @@ glm::vec2 Chunk::computeCoordText(const int & x, const int & y, const bool crop)
 
 glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
 {
-
 	int topLeft = adjacentMap[0][0];
 	int top = adjacentMap[0][1];
 	int topRight = adjacentMap[0][2];
@@ -307,26 +297,6 @@ glm::vec2 Chunk::getOcclusionCoordText(glm::mat3 adjacentMap)
 	return res;
 }
 
-void Chunk::createMesh()
-{
-	for (int x = 0; x < CHUNK_SIZE; x++)
-	{
-		for (int y = 0; y < CHUNK_SIZE; y++)
-		{
-			// SPHERE
-			for (int z = 0; z < CHUNK_SIZE; z++)
-			{
-				if (sqrt((float) (x-CHUNK_SIZE/2)*(x-CHUNK_SIZE/2) + (y-CHUNK_SIZE/2)*(y-CHUNK_SIZE/2) + (z-CHUNK_SIZE/2)*(z-CHUNK_SIZE/2)) <= CHUNK_SIZE/2)
-					{
-						m_pBlocks[x][y][z].setActive();
-					}
-				else
-					continue;
-			}
-		}
-	}
-}
-
 void Chunk::createTree(glm::vec3 position)
 {
 	this->constructBlock(glm::round(position.x),glm::round(position.y),glm::round(position.z), BlockType_Wood);
@@ -421,8 +391,7 @@ void Chunk::createLandscape(PerlinNoise *pn, const bool & generateTrees)
 				m_pBlocks[x][1][z].setActive();
 				m_pBlocks[x][0][z].setType(BlockType_Lava);
 				m_pBlocks[x][0][z].setActive();
-			}
-			
+			}		
 		}
 	}
 
@@ -461,14 +430,13 @@ void Chunk::createLandscape(PerlinNoise *pn, const bool & generateTrees)
 void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint idTexture)
 {
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(m_position[0] * CHUNK_SIZE, m_position[1] * CHUNK_SIZE, m_position[2] * CHUNK_SIZE));
+
     glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
-	// A sortir de la classe : Identique dans tout le programme
-	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 1000.f);
 
 	glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
 
-   // Normale
 	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
 
 	glUniform1i(program.uTexture, 0);
@@ -478,8 +446,6 @@ void Chunk::render(LightsProgram &program, const glm::mat4 viewMatrix, GLuint id
 
 	m_pRenderer->renderMesh(idTexture);
 }
-
-void Chunk::update(){}
 
 void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & lXNegative, const bool &lXPositive,
 						const bool &lYNegative, const bool &lYPositive, const bool &lZNegative, const bool &lZPositive, const BlockType &blockType)
@@ -492,7 +458,6 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 	glm::vec3 v6(x-Block::BLOCK_RENDER_SIZE * 0.5, y-Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
 	glm::vec3 v7(x-Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
 	glm::vec3 v8(x+Block::BLOCK_RENDER_SIZE * 0.5, y+Block::BLOCK_RENDER_SIZE * 0.5, z-Block::BLOCK_RENDER_SIZE * 0.5);
-
 
 	// Normal
 	glm::vec3 n1;
@@ -510,7 +475,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		m_pRenderer->addNormal(n1);
 
 		m_pRenderer->addTriangle(v1, v2, v3);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
@@ -519,7 +484,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 											text_occlu + computeCoordText(1,0,true)));
 		
 		m_pRenderer->addTriangle(v1, v3, v4);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,1), 
 											text_occlu + computeCoordText(0,1,1)),
 								 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
@@ -538,7 +503,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		m_pRenderer->addNormal(n1);
 
 		m_pRenderer->addTriangle(v5, v6, v7);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
@@ -547,7 +512,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 											text_occlu + computeCoordText(1,0,true)));
 		
 		m_pRenderer->addTriangle(v5, v7, v8);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
@@ -565,7 +530,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		m_pRenderer->addNormal(n1);
 
 		m_pRenderer->addTriangle(v2, v5, v8);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
@@ -574,7 +539,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 											text_occlu + computeCoordText(1,0,true)));
 		
 		m_pRenderer->addTriangle(v2, v8, v3);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
@@ -593,7 +558,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		m_pRenderer->addNormal(n1);
 
 		m_pRenderer->addTriangle(v6, v1, v4);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 1, 0, 0), glm::vec4(1, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_side + computeCoordText(1,1,true), 
@@ -602,7 +567,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 											text_occlu + computeCoordText(1,0,true)));
 		
 		m_pRenderer->addTriangle(v6, v4, v7);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_side + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_side + computeCoordText(1,0,true), 
@@ -620,7 +585,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 		m_pRenderer->addNormal(n1);
 
 		m_pRenderer->addTriangle(v4, v3, v8);
-		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_up + computeCoordText(1,1,true), 
@@ -629,7 +594,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 											text_occlu + computeCoordText(1,0,true)));
 		
 		m_pRenderer->addTriangle(v4, v8, v7);
-		// m_pRenderer->addTexture(glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_up + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_up + computeCoordText(1,0,true), 
@@ -656,7 +621,7 @@ void Chunk::createCube(	const int &x, const int &y, const int &z, const bool & l
 											text_occlu + computeCoordText(1,0,true)));
 		
 		m_pRenderer->addTriangle(v6, v2, v1);
-		// m_pRenderer->addTexture(glm::vec4(0, 1, 0, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 0));
+
 		m_pRenderer->addTexture(glm::vec4(textCoord_bottom + computeCoordText(0,1,true), 
 											text_occlu + computeCoordText(0,1,true)),
 								 glm::vec4(textCoord_bottom + computeCoordText(1,0,true), 
@@ -685,8 +650,8 @@ void Chunk::load(const Json::Value &chunkData)
 
 void Chunk::setup(PerlinNoise *pn)
 {
-	// Create the blocks
 	m_pBlocks = new Block**[CHUNK_SIZE];
+	
 	for(int i = 0; i < CHUNK_SIZE; i++)
 	{
 		m_pBlocks[i] = new Block*[CHUNK_SIZE];

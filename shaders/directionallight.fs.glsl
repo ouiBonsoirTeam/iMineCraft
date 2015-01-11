@@ -8,14 +8,12 @@ out vec4 fFragColor;
 
 uniform sampler2D uTexture;
 
-//parametre du materiau
 uniform vec3 uKd;
 uniform vec3 uKs;
 uniform float uShininess;
 
-//info sur la lumiere
-uniform vec3 uLightDir_vs; 	//wi
-uniform vec3 uLightIntensity;	//Li
+uniform vec3 uLightDir_vs; 
+uniform vec3 uLightIntensity;
 
 vec3 blinnPhong()
 {

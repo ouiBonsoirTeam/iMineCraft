@@ -1,6 +1,5 @@
 #pragma once
 
-
 enum BlockType { 
 
 	BlockType_Lava,
@@ -18,12 +17,11 @@ enum BlockType {
 	BlockType_Count
 };
 
-
 class Block{
 
 private:
 	bool m_active = false;
-	BlockType m_blockType = BlockType_Grass;
+	BlockType m_blockType;
 
 public:
 	static const int BLOCK_RENDER_SIZE = 1;
@@ -32,10 +30,13 @@ public:
 	Block();
 	Block(BlockType blockType);
 
+	// Getters
 	bool isActive() const;
+	BlockType getType() const;
+
+	// Setters
 	void setActive();
 	void setInactive();
-	BlockType getType() const;
 	void setType(int blockType);
 
 	// Destructors

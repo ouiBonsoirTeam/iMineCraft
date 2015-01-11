@@ -63,7 +63,6 @@ int main(int argc, char** argv)
 	LightsProgram lightsProg(applicationPath);
 	HelmetProgram hellProg(applicationPath);
 	SkyboxProgram skyProgram(applicationPath);
-	//GeometryProgram geoProgram(applicationPath);
 
 	//Load texture
 	std::unique_ptr<Image> texturePointer;
@@ -174,7 +173,6 @@ int main(int argc, char** argv)
 		skyProgram.m_Program.use();
 			skybox.draw(skyProgram, viewMatrix);
 
-		//geoProgram.m_Program.use();
 		lightsProg.m_Program.use();
 			lander.draw(lightsProg, lander, viewMatrix, glm::vec3(4,glm::round(chunkmanager.getNoiseValue(4,8))+0.5,8), glm::vec3(0.5, 0.5, 0.5), 0, glm::vec3(1.0, 1.0, 1.0));
 			if (bedPos != glm::vec3(0,0,0))

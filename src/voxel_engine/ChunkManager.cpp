@@ -2,16 +2,47 @@
 #include <iostream>
 #include <fstream>
 
-ChunkManager::~ChunkManager(){
+// Getters
+
+Chunk* ChunkManager::getChunk(const int &x, const int &y, const int &z){
+    for (unsigned int i = 0; i < m_vpGlobalChunkList.size(); ++i)
+    {
+        if (m_vpGlobalChunkList.at(i)->getX() == x &&
+            m_vpGlobalChunkList.at(i)->getY() == y &&
+            m_vpGlobalChunkList.at(i)->getZ() == z)
+
+            return m_vpGlobalChunkList.at(i);
+    }
+
+    return NULL;
+}
+
+Chunk* ChunkManager::getChunk(const glm::vec3 &pos)
+{
+    for (unsigned int i = 0; i < m_vpGlobalChunkList.size(); ++i)
+    {
+        if (m_vpGlobalChunkList.at(i)->getPosition() == pos)
+            return m_vpGlobalChunkList.at(i);
+    }
+
+    return NULL;
+}
+
+bool ChunkManager::chunkExist(const glm::vec3 &position)
+{
     ChunkList::iterator iterator;   
 
     for(iterator = m_vpGlobalChunkList.begin(); iterator != m_vpGlobalChunkList.end(); ++iterator)
     {
         Chunk* pChunk = (*iterator);
-        delete pChunk;
+        if(pChunk->getPosition() == position)
+            return true;
     }
 
-};
+    return false;
+}
+
+// Initialization
 
 void ChunkManager::initialize(const std::string& saveFolder)
 {
@@ -33,6 +64,8 @@ void ChunkManager::initialize(const std::string& saveFolder)
     saveTerrain(randomseed);
 }
 
+// Update fonctions
+
 void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 cameraView)
 {
     // Transform camera position into relative chunk position
@@ -42,8 +75,8 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
         chunkCameraPosition[i] = (int)cameraPosition[i] / Chunk::CHUNK_SIZE;
     }
 
-    int chunkAreaLimit = 2;
-    int unloadLimit = chunkAreaLimit + 1;
+    int chunkAreaLimit = 3;
+    int unloadLimit = chunkAreaLimit + 2;
 
     for (int i = -unloadLimit; i <= unloadLimit; ++i)
     {
@@ -51,13 +84,12 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
         {
             for (int k = -unloadLimit; k <= unloadLimit; ++k)
             {
-                if(abs(i) >= unloadLimit || abs(j) >= unloadLimit || abs(k) >= unloadLimit)
+                if(abs(i) > unloadLimit || abs(j) > unloadLimit || abs(k) > unloadLimit)
                 {
                     glm::vec3 position(chunkCameraPosition[0] + i, chunkCameraPosition[1] + j, chunkCameraPosition[2] + k);
                 
-                    if(chunkExist(position)){
+                    if(chunkExist(position))
                          m_vpChunkUnloadList.push_back(getChunk(position));
-                    }
                 }
             }
         }
@@ -77,20 +109,6 @@ void ChunkManager::updateAsyncChunker(glm::vec3 cameraPosition, glm::vec3 camera
         }
     }
 } 
-
-bool ChunkManager::chunkExist(const glm::vec3 &position)
-{
-    ChunkList::iterator iterator;   
-
-    for(iterator = m_vpGlobalChunkList.begin(); iterator != m_vpGlobalChunkList.end(); ++iterator)
-    {
-        Chunk* pChunk = (*iterator);
-        if(pChunk->getPosition() == position)
-            return true;
-    }
-
-    return false;
-}
 
 void ChunkManager::updateLoadList()
 {
@@ -117,42 +135,61 @@ void ChunkManager::updateLoadList()
         }
     }
 
-    // Clear the load list (every frame)
     m_vpChunkLoadList.clear();
 }
 
-void ChunkManager::update(/*float dt, */glm::vec3 cameraPosition, glm::vec3 cameraView)
+void ChunkManager::updateUnloadList()
 {
+    ChunkList::iterator iterator;
 
-    updateAsyncChunker(cameraPosition, cameraView);
-
-    updateLoadList();
-
-    updateSetupList();
-
-    updateRebuildList();
-
-    updateFlagsList();
-
-    updateUnloadList();
-
-    updateVisibilityList(cameraPosition);
-
-    // Test if camera have moved
-    if(m_cameraPosition != cameraPosition || m_cameraView != cameraView)
+    for(iterator = m_vpChunkUnloadList.begin(); iterator != m_vpChunkUnloadList.end(); ++iterator)
     {
-        updateRenderList();
-        m_cameraPosition = cameraPosition;
-        m_cameraView = cameraView;
+        Chunk* pChunk = (*iterator);
+
+        if(pChunk->isLoaded() && pChunk->isSetup() && chunkExist(pChunk->getPosition()))
+        { 
+            ChunkList::iterator iterator3 = m_vpChunkVisibilityList.begin();
+            bool chunkFound = false;
+
+            while(iterator3 != m_vpChunkVisibilityList.end() && !chunkFound)
+            {
+                Chunk* pChunk3 = (*iterator3);
+
+                if (pChunk3 == pChunk)
+                {
+                    m_vpChunkVisibilityList.erase(iterator3);
+                    chunkFound = true;
+                }
+
+                ++iterator3;
+            }
+
+            ChunkList::iterator iterator2 = m_vpGlobalChunkList.begin();
+            chunkFound = false;
+
+            while(iterator2 != m_vpGlobalChunkList.end() && !chunkFound)
+            {
+                Chunk* pChunk2 = (*iterator2);
+                if (pChunk2 == pChunk)
+                {
+                    m_vpGlobalChunkList.erase(iterator2);
+                    chunkFound = true;
+                }
+                ++iterator2;
+            }
+
+            m_forceVisibilityUpdate = true;
+        }
+        pChunk->unload(m_pathJson);
     }
 
-    
+    m_vpChunkUnloadList.clear();
 }
 
 void ChunkManager::updateSetupList()
 {
-    // Setup any chunks that have not already been setup
     ChunkList::iterator iterator;
+
     for(iterator = m_vpChunkSetupList.begin(); iterator != m_vpChunkSetupList.end(); ++iterator)
     {
         Chunk* pChunk = (*iterator);
@@ -160,20 +197,18 @@ void ChunkManager::updateSetupList()
         if(pChunk->isSetup() == false)
         {
             pChunk->setup(&m_PerlinNoise);
-            // Only force the visibility update if we actually setup the chunk, some chunks wait in the pre-setup stage...
+
             m_forceVisibilityUpdate = true;
 
             m_vpChunkRebuildList.push_back(pChunk);
         }
     }
 
-    // Clear the setup list (every frame)
     m_vpChunkSetupList.clear();
 }
 
 void ChunkManager::updateRebuildList()
 {
-    // Rebuild any chunks that are in the rebuild chunk list
     ChunkList::iterator iterator;
 
     for(iterator = m_vpChunkRebuildList.begin(); iterator != m_vpChunkRebuildList.end(); ++iterator)
@@ -182,7 +217,7 @@ void ChunkManager::updateRebuildList()
 
         if(pChunk->isLoaded() && pChunk->isSetup())
         {
-            // Also add our neighbours since they might now be surrounded too (If we have neighbours)
+            // Also add our neighbours
             Chunk* pChunkXMinus = getChunk(pChunk->getX()-1, pChunk->getY(), pChunk->getZ());
             Chunk* pChunkXPlus = getChunk(pChunk->getX()+1, pChunk->getY(), pChunk->getZ());
             Chunk* pChunkYMinus = getChunk(pChunk->getX(), pChunk->getY()-1, pChunk->getZ());
@@ -193,8 +228,6 @@ void ChunkManager::updateRebuildList()
             pChunk->buildMesh( pChunkXMinus, pChunkXPlus, pChunkYMinus, pChunkYPlus, pChunkZMinus, pChunkZPlus );
 
             m_vpChunkUpdateFlagsList.push_back(pChunk);
-
-            
 
             if(pChunkXMinus != NULL) 
                 m_vpChunkUpdateFlagsList.push_back(pChunkXMinus);
@@ -218,11 +251,11 @@ void ChunkManager::updateRebuildList()
         }
     }
 
-    // Clear the rebuild list
     m_vpChunkRebuildList.clear();
 }
 
-void ChunkManager::updateFlagsList(){
+void ChunkManager::updateFlagsList()
+{
     ChunkList::iterator iterator;
 
     for(iterator = m_vpChunkUpdateFlagsList.begin(); iterator != m_vpChunkUpdateFlagsList.end(); ++iterator)
@@ -240,9 +273,8 @@ void ChunkManager::updateFlagsList(){
             {
                 Chunk* pChunk2 = (*iterator2);
                 if (pChunk2 == pChunk)
-                {
                     chunkFound = true;
-                }
+
                 ++iterator2;
             }
 
@@ -252,56 +284,94 @@ void ChunkManager::updateFlagsList(){
             m_forceVisibilityUpdate = true;
         }
     }
-    // Clear the rebuild list
+
     m_vpChunkUpdateFlagsList.clear();
 }
 
-
-void ChunkManager::updateUnloadList()
+void ChunkManager::updateVisibilityList(glm::vec3 cameraPosition)
 {
-    // Unload any chunks
+    if(m_forceVisibilityUpdate)
+    {
+        ChunkList::iterator iterator;
+        for(iterator = m_vpChunkVisibilityList.begin(); iterator != m_vpChunkVisibilityList.end(); ++iterator)
+        {
+            Chunk* pChunk = (*iterator);
+
+            if(pChunk->isLoaded() && pChunk->isSetup())
+            {
+                if (pChunk->isEmpty()) 
+                {
+                    m_vpChunkVisibilityList.erase(iterator);
+                    --iterator;
+                }
+            }
+        }
+    }
+}
+
+void ChunkManager::updateRenderList()
+{
+    m_vpChunkRenderList.clear();
+
     ChunkList::iterator iterator;
-    for(iterator = m_vpChunkUnloadList.begin(); iterator != m_vpChunkUnloadList.end(); ++iterator)
+    for(iterator = m_vpChunkVisibilityList.begin(); iterator != m_vpChunkVisibilityList.end(); ++iterator)
     {
         Chunk* pChunk = (*iterator);
 
-        if(pChunk->isLoaded() && pChunk->isSetup() && chunkExist(pChunk->getPosition()))
-        { 
-            ChunkList::iterator iterator3 = m_vpChunkVisibilityList.begin();
-            bool chunkFound = false;
-
-            while(iterator3 != m_vpChunkVisibilityList.end() && !chunkFound)
-            {
-                Chunk* pChunk3 = (*iterator3);
-                if (pChunk3 == pChunk)
-                {
-                    m_vpChunkVisibilityList.erase(iterator3);
-                    chunkFound = true;
-                }
-                ++iterator3;
-            }
-
-            ChunkList::iterator iterator2 = m_vpGlobalChunkList.begin();
-            chunkFound = false;
-
-            while(iterator2 != m_vpGlobalChunkList.end() && !chunkFound)
-            {
-                Chunk* pChunk2 = (*iterator2);
-                if (pChunk2 == pChunk)
-                {
-                    m_vpGlobalChunkList.erase(iterator2);
-                    chunkFound = true;
-                }
-                ++iterator2;
-            }
-
-            m_forceVisibilityUpdate = true;
+        if(pChunk != NULL)
+        {
+            if(pChunk->isLoaded() && pChunk->isSetup())
+                m_vpChunkRenderList.push_back(pChunk);
         }
-        pChunk->unload(m_pathJson);
-    }
-    // Clear the unload list (every frame)
-    m_vpChunkUnloadList.clear();
+    }    
 }
+
+void ChunkManager::update(/*float dt, */glm::vec3 cameraPosition, glm::vec3 cameraView)
+{
+    updateAsyncChunker(cameraPosition, cameraView);
+
+    updateLoadList();
+
+    updateSetupList();
+
+    updateRebuildList();
+
+    updateFlagsList();
+
+    updateUnloadList();
+
+    updateVisibilityList(cameraPosition);
+
+    // Test if camera have moved
+    if(m_cameraPosition != cameraPosition || m_cameraView != cameraView)
+    {
+        updateRenderList();
+        m_cameraPosition = cameraPosition;
+        m_cameraView = cameraView;
+    }
+}
+
+// Rendering
+
+void ChunkManager::render(LightsProgram &program, const glm::mat4 viewMatrix){
+    ChunkList::iterator iterator;
+
+    for(iterator = m_vpChunkRenderList.begin(); iterator != m_vpChunkRenderList.end(); ++iterator)
+    {
+        Chunk* pChunk = (*iterator);
+
+        pChunk->render(program, viewMatrix, 1);
+    }
+}
+
+// Rebuild Chunk if is modified
+
+void ChunkManager::addChunkToRebuildList(Chunk * chunk)
+{
+    m_vpChunkRebuildList.push_back(chunk);
+}
+
+// Load and save terrain
 
 int ChunkManager::loadTerrain(const std::string & saveFolder)
 {
@@ -324,15 +394,12 @@ int ChunkManager::loadTerrain(const std::string & saveFolder)
         bool parsingSuccessful = reader.parse(contents, root);
         if ( !parsingSuccessful )
         {
-            // report to the user the failure and their locations in the document.
             std::cerr  << "Failed to parse configuration\n"
                        << reader.getFormattedErrorMessages();
             exit(1);
         }
         else
-        {
             return root["perlin_seed"].asInt();
-        }
 
     }
     else
@@ -365,77 +432,7 @@ void ChunkManager::saveTerrain(const unsigned int & perlin_seed)
     }
 }
 
-void ChunkManager::unloadWorld()
-{
-    m_vpChunkUnloadList = m_vpGlobalChunkList;
-    updateUnloadList();
-}
-
-void ChunkManager::updateVisibilityList(glm::vec3 cameraPosition)
-{
-    if(m_forceVisibilityUpdate)
-    {
-        ChunkList::iterator iterator;
-        for(iterator = m_vpChunkVisibilityList.begin(); iterator != m_vpChunkVisibilityList.end(); ++iterator)
-        {
-            Chunk* pChunk = (*iterator);
-
-            if(pChunk->isLoaded() && pChunk->isSetup())
-            {
-                if (pChunk->isEmpty()) 
-                {
-                    m_vpChunkVisibilityList.erase(iterator);
-                    --iterator;
-                }
-                // A FAIRE: Tester les Chunks visibles avec la position de la caméra
-            }
-        }
-    }
-}
-
-void ChunkManager::updateRenderList()
-{
-    // Clear the render list each frame BEFORE we do our tests to see what chunks should be rendered
-    m_vpChunkRenderList.clear();
-
-    ChunkList::iterator iterator;
-    for(iterator = m_vpChunkVisibilityList.begin(); iterator != m_vpChunkVisibilityList.end(); ++iterator)
-    {
-        Chunk* pChunk = (*iterator);
-
-        if(pChunk != NULL)
-        {
-            if(pChunk->isLoaded() && pChunk->isSetup())
-            {
-                // if(pChunk->ShouldRender()) // Early flags check so we don't always have to do the frustum check...
-                // {
-                //     // Check if this chunk is inside the camera frustum
-                //     float c_offset = (Chunk::CHUNK_SIZE * Block::BLOCK_RENDER_SIZE) - Block::BLOCK_RENDER_SIZE;
-                //     glm::vec3 chunkCenter = pChunk->getPosition() + glm::vec3(c_offset, c_offset, c_offset);
-
-                //     float c_size = Chunk::CHUNK_SIZE * Block::BLOCK_RENDER_SIZE;
-                //     if(m_pRenderer->CubeInFrustum(m_pRenderer->GetActiveViewPort(), chunkCenter, c_size, c_size, c_size))
-                //     {
-                //         m_vpChunkRenderList.push_back(pChunk);
-                //     }
-                // }
-                m_vpChunkRenderList.push_back(pChunk);
-            }
-        }
-    } 
-        
-}
-
-void ChunkManager::render(LightsProgram &program, const glm::mat4 viewMatrix){
-    ChunkList::iterator iterator;
-
-    for(iterator = m_vpChunkRenderList.begin(); iterator != m_vpChunkRenderList.end(); ++iterator)
-    {
-        Chunk* pChunk = (*iterator);
-
-        pChunk->render(program, viewMatrix, 1);
-    }
-}
+// Json functions
 
 bool ChunkManager::jsonChunkExist(const std::string &fileName)
 {
@@ -450,7 +447,6 @@ bool ChunkManager::jsonChunkExist(const std::string &fileName)
     else
         return false;
 }
-
 
 Json::Value ChunkManager::loadAndParseJsonFile(const std::string& fileName){
     std::ifstream file;
@@ -471,45 +467,35 @@ Json::Value ChunkManager::loadAndParseJsonFile(const std::string& fileName){
         bool parsingSuccessful = reader.parse(contents, root);
         if ( !parsingSuccessful )
         {
-            // report to the user the failure and their locations in the document.
             std::cerr  << "Failed to parse configuration\n"
                        << reader.getFormattedErrorMessages();
             exit(1);
         }
-        else{
+        else
             return root;
-        }
-
     }
+
     else std::cerr << "Unable to open file";
     exit(1);  
 }
 
-Chunk* ChunkManager::getChunk(const int &x, const int &y, const int &z){
-    for (unsigned int i = 0; i < m_vpGlobalChunkList.size(); ++i)
-    {
-        if (m_vpGlobalChunkList.at(i)->getX() == x &&
-            m_vpGlobalChunkList.at(i)->getY() == y &&
-            m_vpGlobalChunkList.at(i)->getZ() == z)
+// Global unloading
 
-            return m_vpGlobalChunkList.at(i);
+void ChunkManager::unloadWorld()
+{
+    m_vpChunkUnloadList = m_vpGlobalChunkList;
+    updateUnloadList();
+}
+
+// Destructor
+
+ChunkManager::~ChunkManager(){
+    ChunkList::iterator iterator;   
+
+    for(iterator = m_vpGlobalChunkList.begin(); iterator != m_vpGlobalChunkList.end(); ++iterator)
+    {
+        Chunk* pChunk = (*iterator);
+        delete pChunk;
     }
 
-    return NULL;
-}
-
-Chunk* ChunkManager::getChunk(const glm::vec3 &pos)
-{
-    for (unsigned int i = 0; i < m_vpGlobalChunkList.size(); ++i)
-    {
-        if (m_vpGlobalChunkList.at(i)->getPosition() == pos)
-            return m_vpGlobalChunkList.at(i);
-    }
-
-    return NULL;
-}
-
-void ChunkManager::addChunkToRebuildList(Chunk * chunk)
-{
-    m_vpChunkRebuildList.push_back(chunk);
-}
+};

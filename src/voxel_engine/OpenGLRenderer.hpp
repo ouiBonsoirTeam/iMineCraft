@@ -12,7 +12,7 @@ using namespace glimac;
 class OpenGLRenderer
 {
 	GLuint m_vao;
-    // GLuint m_vbo;
+
     GLuint m_buffer[3];
 
     std::vector<glm::vec3> m_vertices;
