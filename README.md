@@ -40,41 +40,42 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
 ```
 
 ####You need CMake
-Linux :
+*Linux :*
 ```sh
 $ sudo apt-get install cmake
 ```
-Mac OSX :
+*Mac OSX :*
 ```sh
 $ brew install cmake
 ```
 
 ####You need some libs
-**GLEW**
-Linux : ```sh
+**GLEW**  
+*Linux :*
+```sh
 $ sudo apt-get install glew
 ```
-Mac OSX :
+*Mac OSX :*
 ```sh
 $ brew install glew
 ```
 
-**SDL2**
-Linux :
+**SDL2**  
+*Linux :*
 ```sh
 $ sudo apt-get install libsdl2-dev
 ```
-Mac OSX :
+*Mac OSX :*
 ```sh
 $ brew install sdl2
 ```
 
-**SDL2 MIXER**
-Linux :
+**SDL2 MIXER**  
+*Linux :*
 ```sh
 $ sudo apt-get install libsdl2-mixer-dev
 ```
-Mac OSX :
+*Mac OSX :*
 ```sh
 $ brew install sdl2_mixer
 ```
