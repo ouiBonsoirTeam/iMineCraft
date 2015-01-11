@@ -2,7 +2,10 @@ Oui Bonsoir's iMineCraft
 ==========
 An IMAC Engineering School OpenGL Project.
 ----------
-  
+
+
+
+
 ##Supported OS (require OpenGL 3+)
 	- Linux Ubuntu
 	- Mac OSX (tested on Yosemite)
@@ -82,7 +85,7 @@ $ brew install sdl2_mixer
   
   
 ##Now you can install the game !
-####Create your ``iMineCraft`` foler and clone the repo in
+####Create your ``iMineCraft`` foler and clone the repo inside
 ```sh
 $ git clone https://github.com/ouiBonsoirTeam/iMineCraft.git
 ```
