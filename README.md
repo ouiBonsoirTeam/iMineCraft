@@ -1,7 +1,12 @@
 Oui Bonsoir's iMineCraft
 ==========
-#An IMAC Engineering School OpenGL Project.
+An IMAC Engineering School OpenGL Project.
 ----------
+
+##Supported OS (require OpenGL 3+)
+	- Linux Ubuntu
+	- Mac OSX (tested on Yosemite)
+	- Windows soon
 
 
 ##Features
@@ -27,13 +32,76 @@ Oui Bonsoir's iMineCraft
 	- T : spawn a bed
 	- Y : teleport to the bed, or to the lander if no bed created
 
-##Install the game
-###Clone the repo
+
+##Prior installation to play the game
+###For Mac users, please install brew, this is a really cool package manager
+```sh
+$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+####You need CMake
+Linux :
+```sh
+$ sudo apt-get install cmake
+```
+Mac OSX :
+```sh
+$ brew install cmake
+```
+
+####You need some libs
+**GLEW**
+Linux :
+```sh
+$ sudo apt-get install glew
+```
+Mac OSX :
+```sh
+$ brew install glew
+```
+
+**SDL2**
+Linux :
+```sh
+$ sudo apt-get install libsdl2-dev
+```
+Mac OSX :
+```sh
+$ brew install sdl2
+```
+
+**SDL2 MIXER**
+Linux :
+```sh
+$ sudo apt-get install libsdl2-mixer-dev
+```
+Mac OSX :
+```sh
+$ brew install sdl2_mixer
+```
+
+
+##Now you can install the game !
+####Create your ``iMineCraft`` foler and clone the repo in
 ```sh
 $ git clone https://github.com/ouiBonsoirTeam/iMineCraft.git
 ```
-###
-
+####Create a ``iMinecraft-build`` folder next to ``iMineCraft`` and do the following
+```sh
+$ cd ../iMinecraft-build
+```
+####Build the project with
+```sh
+$ cmake ../iMineCraft
+```
+####Create the executable with
+```sh
+$ make -j
+```
+####Launch the game with
+```sh
+$ ./bin/Imacraft
+```
 
 
 ###You can access your saved game in
