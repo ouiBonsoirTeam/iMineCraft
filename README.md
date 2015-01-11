@@ -1,6 +1,8 @@
 Oui Bonsoir's iMineCraft
-#An IMAC Engineering School OpenGL Project.
 ==========
+#An IMAC Engineering School OpenGL Project.
+----------
+
 
 ##Features
 1. Chunk Manager - infinite world generation in real time
@@ -26,11 +28,15 @@ Oui Bonsoir's iMineCraft
 	- Y : teleport to the bed, or to the lander if no bed created
 
 ##Install the game
+###Clone the repo
+```sh
+$ git clone https://github.com/ouiBonsoirTeam/iMineCraft.git
+```
+###
 
 
 
-
-##You can access your saved game in
+###You can access your saved game in
 ``bin/assets/saves``
 
 
