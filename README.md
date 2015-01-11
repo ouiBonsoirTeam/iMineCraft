@@ -2,13 +2,13 @@ Oui Bonsoir's iMineCraft
 ==========
 An IMAC Engineering School OpenGL Project.
 ----------
-
+  
 ##Supported OS (require OpenGL 3+)
 	- Linux Ubuntu
 	- Mac OSX (tested on Yosemite)
 	- Windows soon
-
-
+  
+  
 ##Features
 1. Chunk Manager - infinite world generation in real time
 2. Physics - colision in all directions
@@ -21,7 +21,7 @@ An IMAC Engineering School OpenGL Project.
 9. Sound design - ambient sound, different step sound, construct/destruct sound
 10. Inventory - 
 11. Save game - save constructed/destructed blocks, player location and inventory
-
+  
 ##How to play
 	- ZQSD : move
 	- SPACE : jump or fly with your jetpack
@@ -31,14 +31,14 @@ An IMAC Engineering School OpenGL Project.
 	- E : place the point light on the aim
 	- T : spawn a bed
 	- Y : teleport to the bed, or to the lander if no bed created
-
-
+  
+  
 ##Prior installation to play the game
 ###For Mac users, please install brew, this is a really cool package manager
 ```sh
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
-
+  
 ####You need CMake
 *Linux :*
 ```sh
@@ -48,7 +48,7 @@ $ sudo apt-get install cmake
 ```sh
 $ brew install cmake
 ```
-
+  
 ####You need some libs
 **GLEW**  
 *Linux :*
@@ -59,7 +59,7 @@ $ sudo apt-get install glew
 ```sh
 $ brew install glew
 ```
-
+  
 **SDL2**  
 *Linux :*
 ```sh
@@ -69,7 +69,7 @@ $ sudo apt-get install libsdl2-dev
 ```sh
 $ brew install sdl2
 ```
-
+  
 **SDL2 MIXER**  
 *Linux :*
 ```sh
@@ -79,8 +79,8 @@ $ sudo apt-get install libsdl2-mixer-dev
 ```sh
 $ brew install sdl2_mixer
 ```
-
-
+  
+  
 ##Now you can install the game !
 ####Create your ``iMineCraft`` foler and clone the repo in
 ```sh
@@ -102,10 +102,10 @@ $ make -j
 ```sh
 $ ./bin/Imacraft
 ```
-
-
+  
+  
 ###You can access your saved game in
 ``bin/assets/saves``
-
-
+  
+  
 Have fun and be carefull, lava hurts !
