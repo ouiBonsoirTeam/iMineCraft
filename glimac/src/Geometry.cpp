@@ -248,7 +248,7 @@ void Geometry::draw(LightsProgram &lightsProg,
     glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
     // A sortir de la classe : Identique dans tout le programme
-    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 3000.f);
 
     glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
 
@@ -341,7 +341,7 @@ void Geometry::drawCrowbar(LightsProgram &lightsProg, Geometry &obj, const FreeF
     glm::mat4 modelViewMatrix = ffCam.getViewMatrix() * modelMatrix;
 
     // A sortir de la classe : Identique dans tout le programme
-    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+    glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 3000.f);
 
     glm::mat4 modelViewProjMatrix = projMatrix * modelViewMatrix;
 

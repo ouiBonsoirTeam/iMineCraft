@@ -75,12 +75,16 @@ int main(int argc, char** argv)
 	GLuint idTexture;
 	glGenTextures(1, &idTexture);
 	glBindTexture(GL_TEXTURE_2D,  idTexture);
-
+	glEnable(GL_TEXTURE_2D);
 	glTexImage2D(GL_TEXTURE_2D,  0,  GL_RGBA,  texturePointer->getWidth(),  
 					texturePointer->getHeight(),  0,  GL_RGBA,  GL_FLOAT,  texturePointer->getPixels());
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,  0);
 
 	std::string savesFolder = "bin/assets/saves/";
@@ -209,7 +213,9 @@ int main(int argc, char** argv)
 	bed.save(savesFolder, "bed", bedPos);
 	
 	skybox.destruct();
+	lander.destruct();
 	crowbar.destruct();
+	bed.destruct();
 
 	glDeleteTextures(1, &idTexture);
 	deletesound(mix_chunk, music);

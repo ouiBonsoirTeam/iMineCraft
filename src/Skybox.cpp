@@ -135,7 +135,7 @@ void Skybox::init(SkyboxProgram &skyProgram)
 void Skybox::draw(SkyboxProgram &skyProgram, const glm::mat4 &viewMatrix)
 {
 	//cste dans le programme, a degager de la classe
-	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 1000.f);
+	glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 3000.f);
 
 
 	glm::mat4 modelMatrix =  glm::scale(glm::mat4(1.0), glm::vec3(800, 800, 800)); 

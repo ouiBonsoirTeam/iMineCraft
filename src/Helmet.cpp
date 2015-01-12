@@ -150,7 +150,7 @@ void Helmet::drawBillboard(HelmetProgram & prog, FreeFlyCamera &ffCam)
 
 	glm::mat4 matrixMV = ffCam.getViewMatrix() * matrixM;
 
-	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 100.f);
+	glm::mat4 matrixP = glm::perspective(glm::radians(70.f), 800.f/600.f, 0.1f, 3000.f);
 
 	//calcul de la matrixViewProjetée
 	glm::mat4 matrixMVP = matrixP * matrixMV;
